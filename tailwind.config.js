@@ -1,7 +1,10 @@
 module.exports = {
-  content: ["./src/**/*.{js,jsx}", "./public/index.html"],
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}", // Checks all JS/JSX files in src/
+    "./public/index.html", // Checks your HTML file
+  ],
   theme: {
-    extend: {},
+    extend: {}, // (Optional) Add customizations later
   },
-  plugins: [],
+  plugins: [], // (Optional) Add plugins later
 };

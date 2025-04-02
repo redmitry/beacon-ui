@@ -3,7 +3,7 @@ const path = require("path");
 const validateConfig = require("./validateConfig");
 
 function loadConfig(configPath = "config.example.json") {
-  // Read and parse JSON (same as before)
+  // Read and parse JSON
   let rawConfig, config;
   try {
     rawConfig = fs.readFileSync(path.resolve(__dirname, configPath), "utf8");
@@ -15,6 +15,11 @@ function loadConfig(configPath = "config.example.json") {
   // Delegate validation
   const { isValid, error, config: validatedConfig } = validateConfig(config);
   if (!isValid) throw new Error(`Config validation failed:\n${error}`);
+
+  // Add this: Log critical config values
+  console.log("✅ Config loaded successfully:");
+  console.log(`- API_URL: ${validatedConfig.apiUrl}`);
+  console.log(`- BeaconType: ${validatedConfig.beaconType}`);
 
   return validatedConfig;
 }

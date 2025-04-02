@@ -5,6 +5,12 @@ const hexColor = Joi.string().pattern(/^#[0-9A-Fa-f]{6}$/);
 const schema = Joi.object({
   beaconType: Joi.string().valid("singleBeacon", "networkBeacon").required(),
 
+  apiUrl: Joi.string().uri().required().messages({
+    "string.uri":
+      'API_URL must be a valid URL (e.g., "https://example.com/api")',
+    "any.required": "API_URL is required",
+  }),
+
   ui: Joi.object({
     title: Joi.string().min(3).max(100).required(),
 

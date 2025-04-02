@@ -1,5 +1,6 @@
 {
   "beaconType": "networkBeacon",
+  "apiUrl": "https://beacon-network-backend-demo.ega-archive.org/beacon-network/v2.0.0",
   "ui": {
     "title": "EGA Beacon Network Browser",
     "colors": {
