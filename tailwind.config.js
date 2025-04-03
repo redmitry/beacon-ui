@@ -12,8 +12,12 @@ module.exports = {
         "logo-h": "38px",
       },
       colors: {
-        primary: config.ui.colors.primary,
-        secondary: config.ui.colors.secondary,
+        primary: {
+          DEFAULT: config.ui.colors.primary,
+        },
+        secondary: {
+          DEFAULT: config.ui.colors.secondary,
+        },
       },
     },
   },

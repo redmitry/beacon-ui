@@ -12,16 +12,10 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import PropTypes from "prop-types";
+import config from "../config/config.json";
 
-export default function Navbar({ title, main }) {
+export default function Navbar({ title, main, navItems }) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const navItems = [
-    "AF Browser",
-    "Network Members",
-    "About",
-    "Contact",
-    "Log in",
-  ];
 
   const textStyle = {
     fontFamily: '"Open Sans", sans-serif',
@@ -34,7 +28,15 @@ export default function Navbar({ title, main }) {
 
   return (
     <>
-      <AppBar position="fixed" elevation={0} className="bg-primary text-white">
+      <AppBar
+        position="fixed"
+        elevation={0}
+        sx={{
+          backgroundColor: config.ui.colors.primary,
+          color: "white",
+          px: 4,
+        }}
+      >
         <Toolbar sx={{ justifyContent: "space-between" }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 4 }}>
             <img
@@ -42,7 +44,13 @@ export default function Navbar({ title, main }) {
               alt="Logo"
               className="w-logo-w h-logo-h object-contain"
             />
-            <Typography className="font-sans font-normal text-base leading-none tracking-normal">
+            <Typography
+              className="font-sans"
+              sx={{
+                fontWeight: "bold",
+                fontFamily: '"Open Sans", sans-serif',
+              }}
+            >
               {title}
             </Typography>
           </Box>
@@ -64,7 +72,7 @@ export default function Navbar({ title, main }) {
                 <Button
                   key={item}
                   sx={{
-                    ...textStyle, // Spread shared text style
+                    ...textStyle,
                     textTransform: "none",
                   }}
                 >
@@ -76,13 +84,26 @@ export default function Navbar({ title, main }) {
         </Toolbar>
       </AppBar>
 
-      {/* Mobile drawer - now with white text */}
       <Drawer
         open={mobileOpen}
         onClose={() => setMobileOpen(false)}
         sx={{ display: { sm: "none" } }}
       >
-        <List sx={{ width: 240, pt: 8 }}>
+        <List sx={{ width: 240, pt: 3 }}>
+          <ListItem
+            sx={{
+              px: 3,
+              py: 1,
+              justifyContent: "flex-start",
+              textTransform: "none",
+              fontFamily: '"Open Sans", sans-serif',
+              fontWeight: 700,
+              fontSize: "16px",
+              color: config.ui.colors.primary,
+            }}
+          >
+            {title}
+          </ListItem>
           {navItems.map((item) => (
             <ListItem key={item} disablePadding>
               <Button
@@ -95,6 +116,7 @@ export default function Navbar({ title, main }) {
                   fontFamily: '"Open Sans", sans-serif',
                   fontWeight: 400,
                   fontSize: "16px",
+                  color: config.ui.colors.primary,
                 }}
               >
                 {item}
@@ -110,4 +132,5 @@ export default function Navbar({ title, main }) {
 Navbar.propTypes = {
   title: PropTypes.string.isRequired,
   main: PropTypes.string.isRequired,
+  navItems: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
