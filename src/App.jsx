@@ -1,7 +1,15 @@
+import Navbar from "./components/Navbar";
+import { CssBaseline, Box } from "@mui/material";
+import config from "./config/config.json";
+
 export default function App() {
   return (
-    <div className="p-4 bg-red-500 text-white">
-      ⚡ Tailwind Test: If this is red, it's working!
-    </div>
+    <>
+      <CssBaseline />
+      <Navbar title={config.ui.title} main={config.ui.logos.main} />
+      <Box component="main" sx={{ pt: 8 }}>
+        {" "}
+      </Box>
+    </>
   );
 }
