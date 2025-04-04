@@ -1,5 +1,6 @@
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import Founders from "./components/Founders";
 import { CssBaseline, Box } from "@mui/material";
 import config from "./config/config.json";
 
@@ -13,15 +14,32 @@ export default function App() {
   ];
 
   return (
-    <>
+    <Box
+      sx={{
+        backgroundColor: "#F5F5F5",
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <CssBaseline />
       <Navbar
         title={config.ui.title}
         main={config.ui.logos.main}
         navItems={navItems}
       />
-      <Box component="main" sx={{ pt: 8 }}></Box>
+      <Box
+        component="main"
+        sx={{
+          pt: 8,
+          flexGrow: 1,
+          px: 2,
+        }}
+      >
+        <Founders />
+      </Box>
+
       <Footer navItems={navItems} />
-    </>
+    </Box>
   );
 }

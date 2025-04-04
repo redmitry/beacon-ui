@@ -1,6 +1,6 @@
 import { Box, Container, Typography, Link as MuiLink } from "@mui/material";
-import maingrey from "../maingrey.svg";
-import crg from "../crg.svg";
+import maingrey from "../assets/logos/maingrey.svg";
+import crg from "../assets/logos/crg.svg";
 
 export default function Footer({ navItems }) {
   return (
@@ -10,6 +10,7 @@ export default function Footer({ navItems }) {
         backgroundColor: "#eee",
         py: 2,
         px: 4,
+        minHeight: "68x",
         mt: 4,
         position: "fixed",
         bottom: 0,
@@ -17,16 +18,17 @@ export default function Footer({ navItems }) {
         right: 0,
       }}
     >
-      <Container
+      <Box
         sx={{
           display: "flex",
           flexDirection: { xs: "column", sm: "row" },
           justifyContent: "space-between",
           alignItems: "center",
           gap: 2,
+          mx: 4,
         }}
       >
-        <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+        <Box sx={{ display: "flex", gap: 3, alignItems: "center" }}>
           <Typography variant="body2" color="black">
             Beacon User Interface template provided by:
           </Typography>
@@ -52,7 +54,7 @@ export default function Footer({ navItems }) {
             </MuiLink>
           ))}
         </Box>
-      </Container>
+      </Box>
     </Box>
   );
 }

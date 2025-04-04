@@ -24,6 +24,8 @@ export default function Navbar({ title, main, navItems }) {
     lineHeight: "100%",
     letterSpacing: "0%",
     color: "white",
+    // whiteSpace: "nowrap",
+    // flexWrap: "wrap",
   };
 
   return (
@@ -35,6 +37,7 @@ export default function Navbar({ title, main, navItems }) {
           backgroundColor: config.ui.colors.primary,
           color: "white",
           px: 4,
+          minHeight: "68x",
         }}
       >
         <Toolbar sx={{ justifyContent: "space-between" }}>
