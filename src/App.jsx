@@ -1,6 +1,7 @@
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Founders from "./components/Founders";
+import FiltersContainer from "./components/FiltersContainer";
 import { CssBaseline, Box } from "@mui/material";
 import config from "./config/config.json";
 
@@ -37,6 +38,7 @@ export default function App() {
         }}
       >
         <Founders />
+        <FiltersContainer />
       </Box>
 
       <Footer navItems={navItems} />
