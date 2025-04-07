@@ -29,16 +29,38 @@ export default function App() {
         main={config.ui.logos.main}
         navItems={navItems}
       />
+
       <Box
         component="main"
         sx={{
           pt: 8,
           flexGrow: 1,
-          px: 2,
+          display: "flex",
+          flexDirection: { xs: "column", md: "row" },
+          px: { xs: 2, md: 4 },
+          gap: 4,
         }}
       >
-        <Founders />
-        <FiltersContainer />
+        <Box
+          sx={{
+            flexGrow: 1,
+            maxWidth: { md: "calc(100% - 362px)" },
+          }}
+        >
+          <Founders />
+        </Box>
+        <Box
+          sx={{
+            width: { xs: "100%", md: "338px" },
+            flexShrink: 0,
+            position: { md: "sticky" },
+            top: 90,
+            alignSelf: "flex-start",
+            height: "fit-content",
+          }}
+        >
+          <FiltersContainer />
+        </Box>
       </Box>
 
       <Footer navItems={navItems} />
