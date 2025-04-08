@@ -27,11 +27,14 @@ const schema = Joi.object({
     }).required(),
 
     commonFilters: Joi.object({
-      topics: Joi.array().items(Joi.string().min(1).max(20)).max(3).required(),
+      filterCategories: Joi.array()
+        .items(Joi.string().min(1).max(20))
+        .max(3)
+        .required(),
 
       filterLabels: Joi.object()
         .pattern(
-          Joi.string().valid(...Joi.ref("...topics")),
+          Joi.string().valid(...Joi.ref("...filterCategories")),
           Joi.array().items(Joi.string().min(1).max(30)).max(6)
         )
         .required(),

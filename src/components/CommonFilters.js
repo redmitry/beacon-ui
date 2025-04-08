@@ -1,30 +1,3 @@
-// import { Chip, Box } from "@mui/material";
-
-// export default function CommonFilters() {
-//   const filters = [
-//     "Female",
-//     "Male",
-//     "Age",
-//     "Weight",
-//     "Height",
-//     "Cancer",
-//     "COVID",
-//   ];
-
-//   return (
-//     <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-//       {filters.map((filter) => (
-//         <Chip
-//           key={filter}
-//           label={filter}
-//           onClick={() => console.log(filter)}
-//           sx={{ borderRadius: 1 }}
-//         />
-//       ))}
-//     </Box>
-//   );
-// }
-
 import {
   Box,
   Chip,
@@ -35,124 +8,102 @@ import {
 } from "@mui/material";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { useState } from "react";
+import config from "../config/config.json";
 
 export default function CommonFilters() {
-  const [expanded, setExpanded] = useState({
-    demographics: true,
-    cancer: false,
-    covid: false,
+  const filterCategories = config.ui.commonFilters.filterCategories;
+  const filterLabels = config.ui.commonFilters.filterLabels;
+
+  // 🧼 Utility: get cleaned list of valid labels
+  const getValidLabels = (topic) =>
+    filterLabels[topic]?.filter(
+      (label) => label.trim() !== "" && !/^label\d*$/i.test(label.trim()) // remove "label", "label1", etc.
+    ) ?? [];
+
+  // 🌟 Open first category with valid labels
+  const [expanded, setExpanded] = useState(() => {
+    const initialState = {};
+    let firstSet = false;
+    filterCategories.forEach((topic) => {
+      const validLabels = getValidLabels(topic);
+      if (validLabels.length > 0 && !firstSet) {
+        initialState[topic] = true;
+        firstSet = true;
+      } else {
+        initialState[topic] = false;
+      }
+    });
+    return initialState;
   });
 
-  const demographicFilters = [
-    "Female",
-    "Male",
-    "Age Of Onset",
-    "Weight",
-    "Height",
-  ];
-
   const handleChange = (panel) => (event, isExpanded) => {
-    setExpanded({ ...expanded, [panel]: isExpanded });
+    setExpanded((prev) => ({
+      ...prev,
+      [panel]: isExpanded,
+    }));
   };
 
   const summarySx = {
     px: 0,
-    flexDirection: "row-reverse",
+    "& .MuiAccordionSummary-expandIconWrapper": {
+      marginLeft: "auto",
+      transition: "transform 0.2s ease-in-out",
+    },
     "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
       transform: "rotate(90deg)",
     },
     "& .MuiAccordionSummary-content": {
-      ml: 1,
+      mr: 1,
     },
   };
 
   return (
     <Box>
-      <Accordion
-        expanded={expanded.demographics}
-        onChange={handleChange("demographics")}
-        disableGutters
-        elevation={0}
-        sx={{
-          backgroundColor: "transparent",
-          boxShadow: "none",
-          "&::before": { display: "none" },
-        }}
-      >
-        <AccordionSummary
-          expandIcon={<KeyboardArrowRightIcon />}
-          sx={summarySx}
-        >
-          <Typography
-            translate="no"
-            sx={{ fontStyle: "italic", fontSize: "14px" }}
+      {filterCategories.map((topic) => {
+        const validLabels = getValidLabels(topic);
+        if (validLabels.length === 0) return null; // 💥 Skip empty categories
+
+        return (
+          <Accordion
+            key={topic}
+            expanded={expanded[topic]}
+            onChange={handleChange(topic)}
+            disableGutters
+            elevation={0}
+            sx={{
+              backgroundColor: "transparent",
+              boxShadow: "none",
+              "&::before": { display: "none" },
+            }}
           >
-            Demographics
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails sx={{ px: 0, pt: 0 }}>
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-            {demographicFilters.map((filter) => (
-              <Chip
+            <AccordionSummary
+              expandIcon={<KeyboardArrowRightIcon />}
+              sx={summarySx}
+            >
+              <Typography
                 translate="no"
-                key={filter}
-                label={filter}
-                onClick={() => console.log(filter)}
-                variant="outlined"
-                sx={{ borderRadius: 2 }}
-              />
-            ))}
-          </Box>
-        </AccordionDetails>
-      </Accordion>
-
-      <Accordion
-        expanded={expanded.cancer}
-        onChange={handleChange("cancer")}
-        disableGutters
-        elevation={0}
-        sx={{
-          backgroundColor: "transparent",
-          boxShadow: "none",
-          "&::before": { display: "none" },
-        }}
-      >
-        <AccordionSummary
-          expandIcon={<KeyboardArrowRightIcon />}
-          sx={summarySx}
-        >
-          <Typography
-            translate="no"
-            sx={{ fontStyle: "italic", fontSize: "14px" }}
-          >
-            Cancer
-          </Typography>
-        </AccordionSummary>
-      </Accordion>
-
-      <Accordion
-        expanded={expanded.covid}
-        onChange={handleChange("covid")}
-        disableGutters
-        elevation={0}
-        sx={{
-          backgroundColor: "transparent",
-          boxShadow: "none",
-          "&::before": { display: "none" },
-        }}
-      >
-        <AccordionSummary
-          expandIcon={<KeyboardArrowRightIcon />}
-          sx={summarySx}
-        >
-          <Typography
-            translate="no"
-            sx={{ fontStyle: "italic", fontSize: "14px" }}
-          >
-            Covid
-          </Typography>
-        </AccordionSummary>
-      </Accordion>
+                sx={{ fontStyle: "italic", fontSize: "14px" }}
+              >
+                {topic.charAt(0).toUpperCase() + topic.slice(1)}
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{ px: 0, pt: 0 }}>
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                {validLabels.map((label) => (
+                  <Chip
+                    translate="no"
+                    key={label}
+                    label={label}
+                    onClick={() => console.log(label)}
+                    variant="outlined"
+                    sx={{ borderRadius: 2 }}
+                  />
+                ))}
+              </Box>
+            </AccordionDetails>
+          </Accordion>
+        );
+      })}
     </Box>
   );
 }
