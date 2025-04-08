@@ -39,12 +39,13 @@ export default function App() {
           flexDirection: { xs: "column", md: "row" },
           px: { xs: 2, md: 4 },
           gap: 4,
+          flexWrap: "wrap",
         }}
       >
         <Box
           sx={{
-            flexGrow: 1,
-            maxWidth: { md: "calc(100% - 362px)" },
+            flexGrow: { xs: 0, md: 1 },
+            height: { xs: "50px", sm: "70px", md: "90px" },
           }}
         >
           <Founders />
@@ -54,7 +55,8 @@ export default function App() {
             width: { xs: "100%", md: "338px" },
             flexShrink: 0,
             position: { md: "sticky" },
-            top: 90,
+            mt: { xs: "auto", md: "30px" },
+            mb: "50px",
             alignSelf: "flex-start",
             height: "fit-content",
           }}

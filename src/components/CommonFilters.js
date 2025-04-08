@@ -1,6 +1,5 @@
 import {
   Box,
-  Chip,
   Typography,
   Accordion,
   AccordionSummary,
@@ -9,18 +8,17 @@ import {
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { useState } from "react";
 import config from "../config/config.json";
+import FilterLabel from "./FilterLabel";
 
 export default function CommonFilters() {
   const filterCategories = config.ui.commonFilters.filterCategories;
   const filterLabels = config.ui.commonFilters.filterLabels;
 
-  // 🧼 Utility: get cleaned list of valid labels
   const getValidLabels = (topic) =>
     filterLabels[topic]?.filter(
-      (label) => label.trim() !== "" && !/^label\d*$/i.test(label.trim()) // remove "label", "label1", etc.
+      (label) => label.trim() !== "" && !/^label\d*$/i.test(label.trim())
     ) ?? [];
 
-  // 🌟 Open first category with valid labels
   const [expanded, setExpanded] = useState(() => {
     const initialState = {};
     let firstSet = false;
@@ -61,7 +59,7 @@ export default function CommonFilters() {
     <Box>
       {filterCategories.map((topic) => {
         const validLabels = getValidLabels(topic);
-        if (validLabels.length === 0) return null; // 💥 Skip empty categories
+        if (validLabels.length === 0) return null;
 
         return (
           <Accordion
@@ -90,13 +88,11 @@ export default function CommonFilters() {
             <AccordionDetails sx={{ px: 0, pt: 0 }}>
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
                 {validLabels.map((label) => (
-                  <Chip
-                    translate="no"
+                  <FilterLabel
                     key={label}
                     label={label}
                     onClick={() => console.log(label)}
-                    variant="outlined"
-                    sx={{ borderRadius: 2 }}
+                    bgColor={`${config.ui.colors.primary}26`}
                   />
                 ))}
               </Box>

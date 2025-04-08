@@ -4,18 +4,30 @@ import crg from "../assets/logos/crg.svg";
 
 export default function Footer({ navItems }) {
   return (
+    // <Box
+    //   component="footer"
+    //   sx={{
+    //     backgroundColor: "#eee",
+    //     py: 2,
+    //     px: 4,
+    //     minHeight: "68px",
+    //     mt: "auto",
+    //     position: "fixed",
+    // bottom: 0,
+    // left: 0,
+    // right: 0,
+    //   }}
+    // >
+
     <Box
       component="footer"
       sx={{
         backgroundColor: "#eee",
         py: 2,
         px: 4,
-        minHeight: "68x",
-        mt: 4,
-        position: "fixed",
-        bottom: 0,
-        left: 0,
-        right: 0,
+
+        minHeight: "68px", // 💥 typo fixed (was "68x")
+        mt: "auto", // 💖 this pushes the footer to the bottom when content is short
       }}
     >
       <Box
