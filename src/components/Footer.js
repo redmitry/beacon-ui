@@ -1,4 +1,5 @@
 import { Box, Typography, Link as MuiLink } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 import maingrey from "../assets/logos/maingrey.svg";
 import crg from "../assets/logos/crg.svg";
 
@@ -10,7 +11,6 @@ export default function Footer({ navItems }) {
         backgroundColor: "#eee",
         py: 2,
         px: 4,
-
         minHeight: "68px",
         mt: "auto",
       }}
@@ -30,28 +30,60 @@ export default function Footer({ navItems }) {
             Beacon User Interface template provided by:
           </Typography>
 
-          <img src={maingrey} alt="EGA Logo" style={{ height: 34 }} />
-          <img src={crg} alt="CRG Logo" style={{ height: 34 }} />
+          <MuiLink
+            href="https://ega-archive.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img src={maingrey} alt="EGA Logo" style={{ height: 34 }} />
+          </MuiLink>
+
+          <MuiLink
+            href="https://www.crg.eu/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img src={crg} alt="CRG Logo" style={{ height: 34 }} />
+          </MuiLink>
         </Box>
 
         <Box sx={{ display: "flex", gap: 2 }}>
-          {navItems.map((item) => (
-            <MuiLink
-              key={item.label}
-              href={item.url || "#"}
-              target={item.url ? "_blank" : "_self"}
-              rel={item.url ? "noopener noreferrer" : undefined}
-              underline="none"
-              sx={{
-                fontFamily: '"Open Sans", sans-serif',
-                fontSize: "14px",
-                color: "#333",
-                "&:hover": { textDecoration: "underline" },
-              }}
-            >
-              {item.label}
-            </MuiLink>
-          ))}
+          {navItems
+            .filter((item) => item.label && item.label.trim() !== "")
+            .map((item) =>
+              item.url && item.url.startsWith("http") ? (
+                <MuiLink
+                  key={item.label}
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  underline="none"
+                  sx={{
+                    fontFamily: '"Open Sans", sans-serif',
+                    fontSize: "14px",
+                    color: "#333",
+                    "&:hover": { textDecoration: "underline" },
+                  }}
+                >
+                  {item.label}
+                </MuiLink>
+              ) : (
+                <MuiLink
+                  key={item.label}
+                  component={RouterLink}
+                  to={item.url}
+                  underline="none"
+                  sx={{
+                    fontFamily: '"Open Sans", sans-serif',
+                    fontSize: "14px",
+                    color: "#333",
+                    "&:hover": { textDecoration: "underline" },
+                  }}
+                >
+                  {item.label}
+                </MuiLink>
+              )
+            )}
         </Box>
       </Box>
     </Box>
