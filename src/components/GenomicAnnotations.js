@@ -9,6 +9,7 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { useState } from "react";
 import config from "../config/config.json";
 import FilterLabel from "./FilterLabel";
+import { lighten } from "@mui/system";
 
 export default function GenomicAnnotations() {
   const filterCategories = [
@@ -74,6 +75,9 @@ export default function GenomicAnnotations() {
     },
   };
 
+  const secondaryColor = config.ui.colors.secondary;
+  const secondaryLight = lighten(secondaryColor, 0.4);
+
   return (
     <Box>
       {filterCategories.map((topic) => {
@@ -113,7 +117,7 @@ export default function GenomicAnnotations() {
                     key={label}
                     label={label}
                     onClick={() => console.log(label)}
-                    bgColor={config.ui.colors.secondary}
+                    bgColor="genomic"
                   />
                 ))}
               </Box>
