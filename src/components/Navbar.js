@@ -24,8 +24,6 @@ export default function Navbar({ title, main, navItems }) {
     lineHeight: "100%",
     letterSpacing: "0%",
     color: "white",
-    // whiteSpace: "nowrap",
-    // flexWrap: "wrap",
   };
 
   return (
@@ -71,17 +69,22 @@ export default function Navbar({ title, main, navItems }) {
               <MenuIcon />
             </IconButton>
             <Box sx={{ display: { xs: "none", sm: "flex" }, gap: 2 }}>
-              {navItems.map((item) => (
-                <Button
-                  key={item}
-                  sx={{
-                    ...textStyle,
-                    textTransform: "none",
-                  }}
-                >
-                  {item}
-                </Button>
-              ))}
+              {navItems
+                .filter((item) => item.label && item.label.trim() !== "")
+                .map((item) => (
+                  <Button
+                    key={item.label}
+                    href={item.url || "#"}
+                    target={item.url ? "_blank" : "_self"}
+                    rel={item.url ? "noopener noreferrer" : undefined}
+                    sx={{
+                      ...textStyle,
+                      textTransform: "none",
+                    }}
+                  >
+                    {item.label}
+                  </Button>
+                ))}
             </Box>
           </Box>
         </Toolbar>
@@ -107,25 +110,30 @@ export default function Navbar({ title, main, navItems }) {
           >
             {title}
           </ListItem>
-          {navItems.map((item) => (
-            <ListItem key={item} disablePadding>
-              <Button
-                fullWidth
-                sx={{
-                  px: 3,
-                  py: 1,
-                  justifyContent: "flex-start",
-                  textTransform: "none",
-                  fontFamily: '"Open Sans", sans-serif',
-                  fontWeight: 400,
-                  fontSize: "16px",
-                  color: config.ui.colors.primary,
-                }}
-              >
-                {item}
-              </Button>
-            </ListItem>
-          ))}
+          {navItems
+            .filter((item) => item.label && item.label.trim() !== "")
+            .map((item) => (
+              <ListItem key={item.label} disablePadding>
+                <Button
+                  fullWidth
+                  href={item.url || "#"}
+                  target={item.url ? "_blank" : "_self"}
+                  rel={item.url ? "noopener noreferrer" : undefined}
+                  sx={{
+                    px: 3,
+                    py: 1,
+                    justifyContent: "flex-start",
+                    textTransform: "none",
+                    fontFamily: '"Open Sans", sans-serif',
+                    fontWeight: 400,
+                    fontSize: "16px",
+                    color: config.ui.colors.primary,
+                  }}
+                >
+                  {item.label}
+                </Button>
+              </ListItem>
+            ))}
         </List>
       </Drawer>
     </>
@@ -135,5 +143,10 @@ export default function Navbar({ title, main, navItems }) {
 Navbar.propTypes = {
   title: PropTypes.string.isRequired,
   main: PropTypes.string.isRequired,
-  navItems: PropTypes.arrayOf(PropTypes.string).isRequired,
+  navItems: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string,
+      url: PropTypes.string,
+    })
+  ).isRequired,
 };

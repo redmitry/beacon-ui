@@ -1,18 +1,126 @@
-import { Chip, Box } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+} from "@mui/material";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import { useState } from "react";
+import config from "../config/config.json";
+import FilterLabel from "./FilterLabel";
 
 export default function GenomicAnnotations() {
-  const annotations = ["SNPs", "CNVs", "Indels", "Gene Expression", "Pathway"];
+  const filterCategories = [
+    "SNP Examples",
+    "CNV Examples",
+    "Protein Examples",
+    "Molecular Effect",
+  ];
+
+  const filterLabels = {
+    "SNP Examples": ["TP53 : 7661960T>C", "NC_000023.10 : 33038255C>A"],
+    "CNV Examples": [
+      "NC_000001.11 : 1234del",
+      "MSK1 : 7572837_7578461del",
+      "NC_000001.11 : [5000, 7676], [7669, 10000]del",
+    ],
+    "Protein Examples": ["TP53 : p.Trp285Cys", "NP_003997.1:p.Trp24Cys"],
+    "Molecular Effect": [
+      "Missense Variant",
+      "Frameshift Variant",
+      "Stop gained",
+      "Gain of function",
+      "Loss of function",
+      "Null mutation",
+    ],
+  };
+
+  const [expanded, setExpanded] = useState(() => {
+    const initialState = {};
+    let firstSet = false;
+    filterCategories.forEach((topic) => {
+      const validLabels = filterLabels[topic]?.filter(
+        (label) => label.trim() !== ""
+      );
+      if (validLabels.length > 0 && !firstSet) {
+        initialState[topic] = true;
+        firstSet = true;
+      } else {
+        initialState[topic] = false;
+      }
+    });
+    return initialState;
+  });
+
+  const handleChange = (panel) => (event, isExpanded) => {
+    setExpanded((prev) => ({
+      ...prev,
+      [panel]: isExpanded,
+    }));
+  };
+
+  const summarySx = {
+    px: 0,
+    "& .MuiAccordionSummary-expandIconWrapper": {
+      marginLeft: "auto",
+      transition: "transform 0.2s ease-in-out",
+    },
+    "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
+      transform: "rotate(90deg)",
+    },
+    "& .MuiAccordionSummary-content": {
+      mr: 1,
+    },
+  };
 
   return (
-    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-      {annotations.map((anno) => (
-        <Chip
-          key={anno}
-          label={anno}
-          onClick={() => console.log(anno)}
-          sx={{ borderRadius: 1, bgcolor: "#e3f2fd" }}
-        />
-      ))}
+    <Box>
+      {filterCategories.map((topic) => {
+        const validLabels = filterLabels[topic]?.filter(
+          (label) => label.trim() !== ""
+        );
+        if (!validLabels || validLabels.length === 0) return null;
+
+        return (
+          <Accordion
+            key={topic}
+            expanded={expanded[topic]}
+            onChange={handleChange(topic)}
+            disableGutters
+            elevation={0}
+            sx={{
+              backgroundColor: "transparent",
+              boxShadow: "none",
+              "&::before": { display: "none" },
+            }}
+          >
+            <AccordionSummary
+              expandIcon={<KeyboardArrowRightIcon />}
+              sx={summarySx}
+            >
+              <Typography
+                translate="no"
+                sx={{ fontStyle: "italic", fontSize: "14px" }}
+              >
+                {topic}
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{ px: 0, pt: 0 }}>
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                {validLabels.map((label) => (
+                  <FilterLabel
+                    key={label}
+                    label={label}
+                    onClick={() => console.log(label)}
+                    bgColor={config.ui.colors.secondary}
+                  />
+                ))}
+              </Box>
+            </AccordionDetails>
+          </Accordion>
+        );
+      })}
     </Box>
   );
 }

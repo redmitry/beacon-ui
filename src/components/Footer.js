@@ -4,21 +4,6 @@ import crg from "../assets/logos/crg.svg";
 
 export default function Footer({ navItems }) {
   return (
-    // <Box
-    //   component="footer"
-    //   sx={{
-    //     backgroundColor: "#eee",
-    //     py: 2,
-    //     px: 4,
-    //     minHeight: "68px",
-    //     mt: "auto",
-    //     position: "fixed",
-    // bottom: 0,
-    // left: 0,
-    // right: 0,
-    //   }}
-    // >
-
     <Box
       component="footer"
       sx={{
@@ -26,8 +11,8 @@ export default function Footer({ navItems }) {
         py: 2,
         px: 4,
 
-        minHeight: "68px", // 💥 typo fixed (was "68x")
-        mt: "auto", // 💖 this pushes the footer to the bottom when content is short
+        minHeight: "68px",
+        mt: "auto",
       }}
     >
       <Box
@@ -52,8 +37,10 @@ export default function Footer({ navItems }) {
         <Box sx={{ display: "flex", gap: 2 }}>
           {navItems.map((item) => (
             <MuiLink
-              key={item}
-              href="#"
+              key={item.label}
+              href={item.url || "#"}
+              target={item.url ? "_blank" : "_self"}
+              rel={item.url ? "noopener noreferrer" : undefined}
               underline="none"
               sx={{
                 fontFamily: '"Open Sans", sans-serif',
@@ -62,7 +49,7 @@ export default function Footer({ navItems }) {
                 "&:hover": { textDecoration: "underline" },
               }}
             >
-              {item}
+              {item.label}
             </MuiLink>
           ))}
         </Box>

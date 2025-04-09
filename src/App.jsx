@@ -6,12 +6,21 @@ import { CssBaseline, Box } from "@mui/material";
 import config from "./config/config.json";
 
 export default function App() {
+  const baseNavItems = [
+    { label: "Network Members" },
+    { label: "About" },
+    { label: "Contact" },
+    { label: "Log in" },
+  ];
+
+  const filteredBaseItems =
+    config.beaconType !== "networkBeacon"
+      ? baseNavItems.filter((item) => item.label !== "Network Members")
+      : baseNavItems;
+
   const navItems = [
-    "AF Browser",
-    "Network Members",
-    "About",
-    "Contact",
-    "Log in",
+    ...(config.ui.externalNavBarLink || []),
+    ...filteredBaseItems,
   ];
 
   return (
