@@ -13,6 +13,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import PropTypes from "prop-types";
 import config from "../config/config.json";
+import { Link } from "react-router-dom";
 
 export default function Navbar({ title, main, navItems }) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -47,9 +48,14 @@ export default function Navbar({ title, main, navItems }) {
             />
             <Typography
               className="font-sans"
+              component={Link}
+              to="/"
               sx={{
                 fontWeight: "bold",
                 fontFamily: '"Open Sans", sans-serif',
+                color: "white",
+                textDecoration: "none",
+                cursor: "pointer",
               }}
             >
               {title}
@@ -71,20 +77,34 @@ export default function Navbar({ title, main, navItems }) {
             <Box sx={{ display: { xs: "none", sm: "flex" }, gap: 2 }}>
               {navItems
                 .filter((item) => item.label && item.label.trim() !== "")
-                .map((item) => (
-                  <Button
-                    key={item.label}
-                    href={item.url || "#"}
-                    target={item.url ? "_blank" : "_self"}
-                    rel={item.url ? "noopener noreferrer" : undefined}
-                    sx={{
-                      ...textStyle,
-                      textTransform: "none",
-                    }}
-                  >
-                    {item.label}
-                  </Button>
-                ))}
+                .map((item) =>
+                  item.url && item.url.startsWith("http") ? (
+                    <Button
+                      key={item.label}
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      sx={{
+                        ...textStyle,
+                        textTransform: "none",
+                      }}
+                    >
+                      {item.label}
+                    </Button>
+                  ) : (
+                    <Button
+                      key={item.label}
+                      component={Link}
+                      to={item.url}
+                      sx={{
+                        ...textStyle,
+                        textTransform: "none",
+                      }}
+                    >
+                      {item.label}
+                    </Button>
+                  )
+                )}
             </Box>
           </Box>
         </Toolbar>
@@ -114,24 +134,44 @@ export default function Navbar({ title, main, navItems }) {
             .filter((item) => item.label && item.label.trim() !== "")
             .map((item) => (
               <ListItem key={item.label} disablePadding>
-                <Button
-                  fullWidth
-                  href={item.url || "#"}
-                  target={item.url ? "_blank" : "_self"}
-                  rel={item.url ? "noopener noreferrer" : undefined}
-                  sx={{
-                    px: 3,
-                    py: 1,
-                    justifyContent: "flex-start",
-                    textTransform: "none",
-                    fontFamily: '"Open Sans", sans-serif',
-                    fontWeight: 400,
-                    fontSize: "16px",
-                    color: config.ui.colors.primary,
-                  }}
-                >
-                  {item.label}
-                </Button>
+                {item.url && item.url.startsWith("http") ? (
+                  <Button
+                    fullWidth
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    sx={{
+                      px: 3,
+                      py: 1,
+                      justifyContent: "flex-start",
+                      textTransform: "none",
+                      fontFamily: '"Open Sans", sans-serif',
+                      fontWeight: 400,
+                      fontSize: "16px",
+                      color: config.ui.colors.primary,
+                    }}
+                  >
+                    {item.label}
+                  </Button>
+                ) : (
+                  <Button
+                    fullWidth
+                    component={Link}
+                    to={item.url}
+                    sx={{
+                      px: 3,
+                      py: 1,
+                      justifyContent: "flex-start",
+                      textTransform: "none",
+                      fontFamily: '"Open Sans", sans-serif',
+                      fontWeight: 400,
+                      fontSize: "16px",
+                      color: config.ui.colors.primary,
+                    }}
+                  >
+                    {item.label}
+                  </Button>
+                )}
               </ListItem>
             ))}
         </List>
@@ -148,5 +188,5 @@ Navbar.propTypes = {
       label: PropTypes.string,
       url: PropTypes.string,
     })
-  ).isRequired,
+  ),
 };
