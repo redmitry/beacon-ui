@@ -2,6 +2,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Founders from "./components/Founders";
 import FiltersContainer from "./components/FiltersContainer";
+import Search from "./components/Search";
 import About from "./components/pages/About";
 import Contact from "./components/pages/Contact";
 import NetworkMembers from "./components/pages/NetworkMembers";
@@ -84,11 +85,14 @@ function HomePage() {
       <Box
         sx={{
           flexGrow: { xs: 0, md: 1 },
-          height: { xs: "50px", sm: "70px", md: "90px" },
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         <Founders />
+        <Search />
       </Box>
+
       <Box
         sx={{
           width: { xs: "100%", md: "338px" },
