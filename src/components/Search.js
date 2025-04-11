@@ -8,11 +8,14 @@ import {
 } from "@mui/material";
 import config from "../config/config.json";
 import { darken, lighten } from "@mui/system";
+import { InputBase } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 
 export default function Search() {
   const [entryTypes, setEntryTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState(null);
+  const [activeInput, setActiveInput] = useState("filter");
 
   useEffect(() => {
     const fetchEntryTypes = async () => {
@@ -195,6 +198,73 @@ export default function Search() {
           ))}
         </Box>
       )}
+      <Box sx={{ display: "flex", alignItems: "center", mb: 2, mt: 4 }}>
+        <Typography variant="body1">
+          2. Use the search bar on the left to add <b>Filtering terms</b> or the
+          search bar on the right to add a <b>Genomic query:</b>
+        </Typography>
+      </Box>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          gap: 2,
+        }}
+      >
+        {/* Filtering Terms Input */}
+        <Box
+          onClick={() => setActiveInput("filter")}
+          sx={{
+            flex: activeInput === "filter" ? 1 : 0.3,
+            display: "flex",
+            alignItems: "center",
+            border: `1.5px solid ${config.ui.colors.darkPrimary}`,
+            borderRadius: "999px",
+            px: 2,
+            py: 1,
+            cursor: "text",
+            backgroundColor: "#fff",
+            transition: "flex 0.3s ease",
+          }}
+        >
+          <SearchIcon sx={{ color: config.ui.colors.darkPrimary, mr: 1 }} />
+          <InputBase
+            placeholder="Search by Filtering Terms"
+            fullWidth
+            sx={{
+              fontFamily: '"Open Sans", sans-serif',
+              fontSize: "14px",
+            }}
+          />
+        </Box>
+
+        {/* Genomic Query Input */}
+        <Box
+          onClick={() => setActiveInput("genomic")}
+          sx={{
+            flex: activeInput === "genomic" ? 1 : 0.3,
+            display: "flex",
+            alignItems: "center",
+            border: `1.5px solid ${config.ui.colors.darkPrimary}`,
+            borderRadius: "999px",
+            px: 2,
+            py: 1,
+            cursor: "text",
+            backgroundColor: "#fff",
+            transition: "flex 0.3s ease",
+          }}
+        >
+          <SearchIcon sx={{ color: config.ui.colors.darkPrimary, mr: 1 }} />
+          <InputBase
+            placeholder="Genomic Query"
+            fullWidth
+            sx={{
+              fontFamily: '"Open Sans", sans-serif',
+              fontSize: "14px",
+            }}
+          />
+        </Box>
+      </Box>
     </Box>
   );
 }
