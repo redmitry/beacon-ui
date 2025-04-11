@@ -17,11 +17,24 @@ export default function Search() {
   useEffect(() => {
     const fetchEntryTypes = async () => {
       try {
-        const res = await fetch(`${config.apiUrl}/entry_types`);
+        const res = await fetch(`${config.apiUrl}/map`);
         const data = await res.json();
-        const entries = Object.values(data.response.entryTypes || {});
+
+        const endpointSets = data.response.endpointSets || {};
+        const entries = Object.entries(endpointSets).map(([key, value]) => {
+          const rootUrl = value.rootUrl || "";
+          const pathSegment = rootUrl.split("/").pop();
+
+          return {
+            id: key,
+            pathSegment: pathSegment,
+          };
+        });
+
         setEntryTypes(entries);
-        console.log(entries);
+        if (entries.length > 0) {
+          setSelectedType(entries[0].id);
+        }
       } catch (err) {
         console.error("Error fetching entry types:", err);
       } finally {
@@ -32,19 +45,32 @@ export default function Search() {
     fetchEntryTypes();
   }, []);
 
-  const formatEntryLabel = (id) =>
-    id === "genomicVariation"
-      ? "Genomic Variation"
-      : id.charAt(0).toUpperCase() + id.slice(1);
+  const formatEntryLabel = (segment) => {
+    if (!segment) return "Unknown";
+
+    if (segment === "g_variants") return "Genomic Variants";
+
+    return segment.charAt(0).toUpperCase() + segment.slice(1);
+  };
 
   const primaryColor = config.ui.colors.primary;
   const primaryDarkColor = config.ui.colors.darkPrimary;
   const selectedBgColor = lighten(primaryDarkColor, 0.9);
 
+  const entryTypeDescriptions = {
+    analyses: "Text for analysis",
+    biosamples: "query biosample data (e.g. histological samples).",
+    cohorts: "Text for cohort",
+    datasets: "Text for dataset",
+    g_variants: "query genomic variants across individuals.",
+    individuals: "query individual-level data (e.g. phenotypes, ancestry).",
+    runs: "Text for run",
+  };
+
   return (
     <Box
       sx={{
-        minWidth: "1056px",
+        mazWidth: "1056px",
         borderRadius: "10px",
         backgroundColor: "#FFFFFF",
         boxShadow: "0px 8px 11px 0px #9BA0AB24",
@@ -80,7 +106,13 @@ export default function Search() {
                 fontFamily: '"Open Sans", sans-serif',
               }}
             >
-              <li>Dynamic</li>
+              {entryTypes.map((entry) => (
+                <li key={entry.pathSegment}>
+                  <b>{formatEntryLabel(entry.pathSegment)}</b>:{" "}
+                  {entryTypeDescriptions[entry.pathSegment] ||
+                    `No description for ${entry.pathSegment}`}
+                </li>
+              ))}
             </Box>
           }
           placement="top-start"
@@ -93,6 +125,7 @@ export default function Search() {
                 border: "1px solid black",
                 boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
                 fontFamily: '"Open Sans", sans-serif',
+                minWidth: "400px",
               },
             },
             arrow: {
@@ -113,6 +146,7 @@ export default function Search() {
               width: "20px",
               height: "20px",
               ml: 3,
+              mb: "4px",
               borderRadius: "30px",
               backgroundColor: config.ui.colors.primary,
               color: "white",
@@ -156,7 +190,7 @@ export default function Search() {
                 },
               }}
             >
-              {formatEntryLabel(entry.id)}
+              {formatEntryLabel(entry.pathSegment)}
             </Button>
           ))}
         </Box>
