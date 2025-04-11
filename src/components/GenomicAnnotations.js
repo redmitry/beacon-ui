@@ -12,12 +12,19 @@ import FilterLabel from "./FilterLabel";
 import { lighten } from "@mui/system";
 
 export default function GenomicAnnotations() {
-  const filterCategories = [
+  const allGenomicCategories = [
     "SNP Examples",
     "CNV Examples",
     "Protein Examples",
     "Molecular Effect",
   ];
+
+  const genomicVisibleCategories =
+    config.ui.genomicAnnotations?.visibleGenomicCategories || [];
+
+  const filterCategories = allGenomicCategories.filter((cat) =>
+    genomicVisibleCategories.includes(cat)
+  );
 
   const filterLabels = {
     "SNP Examples": ["TP53 : 7661960T>C", "NC_000023.10 : 33038255C>A"],
@@ -40,7 +47,7 @@ export default function GenomicAnnotations() {
   const [expanded, setExpanded] = useState(() => {
     const initialState = {};
     let firstSet = false;
-    filterCategories.forEach((topic) => {
+    allGenomicCategories.forEach((topic) => {
       const validLabels = filterLabels[topic]?.filter(
         (label) => label.trim() !== ""
       );
@@ -55,10 +62,7 @@ export default function GenomicAnnotations() {
   });
 
   const handleChange = (panel) => (event, isExpanded) => {
-    setExpanded((prev) => ({
-      ...prev,
-      [panel]: isExpanded,
-    }));
+    setExpanded({ [panel]: isExpanded });
   };
 
   const summarySx = {
@@ -74,9 +78,6 @@ export default function GenomicAnnotations() {
       mr: 1,
     },
   };
-
-  const secondaryColor = config.ui.colors.secondary;
-  const secondaryLight = lighten(secondaryColor, 0.4);
 
   return (
     <Box>

@@ -11,6 +11,16 @@ const schema = Joi.object({
     "any.required": "API_URL is required",
   }),
 
+  assemblyId: Joi.array()
+    .items(Joi.string().min(1))
+    .min(1)
+    .required()
+    .messages({
+      "any.required": "assemblyId is required",
+      "array.min": "At least one assemblyId must be provided",
+      "string.min": "assemblyId values cannot be empty strings",
+    }),
+
   ui: Joi.object({
     title: Joi.string().min(3).max(100).required(),
 
@@ -39,6 +49,26 @@ const schema = Joi.object({
         )
         .required(),
     }).required(),
+
+    genomicAnnotations: Joi.object({
+      visibleGenomicCategories: Joi.array()
+        .items(
+          Joi.string().valid(
+            "SNP Examples",
+            "CNV Examples",
+            "Protein Examples",
+            "Molecular Effect"
+          )
+        )
+        .min(1)
+        .required()
+        .messages({
+          "any.required":
+            "visibleGenomicCategories is required under genomicAnnotations",
+          "array.min":
+            "At least one genomicAnnotations category must be provided",
+        }),
+    }).optional(),
   }).required(),
 });
 
