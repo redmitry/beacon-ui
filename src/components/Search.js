@@ -15,7 +15,7 @@ export default function Search() {
   const [entryTypes, setEntryTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState(null);
-  const [activeInput, setActiveInput] = useState("filter");
+  const [activeInput, setActiveInput] = useState("genomic");
 
   useEffect(() => {
     const fetchEntryTypes = async () => {
@@ -211,33 +211,6 @@ export default function Search() {
           gap: 2,
         }}
       >
-        {/* Filtering Terms Input */}
-        <Box
-          onClick={() => setActiveInput("filter")}
-          sx={{
-            flex: activeInput === "filter" ? 1 : 0.3,
-            display: "flex",
-            alignItems: "center",
-            border: `1.5px solid ${config.ui.colors.darkPrimary}`,
-            borderRadius: "999px",
-            px: 2,
-            py: 1,
-            cursor: "text",
-            backgroundColor: "#fff",
-            transition: "flex 0.3s ease",
-          }}
-        >
-          <SearchIcon sx={{ color: config.ui.colors.darkPrimary, mr: 1 }} />
-          <InputBase
-            placeholder="Search by Filtering Terms"
-            fullWidth
-            sx={{
-              fontFamily: '"Open Sans", sans-serif',
-              fontSize: "14px",
-            }}
-          />
-        </Box>
-
         {/* Genomic Query Input */}
         <Box
           onClick={() => setActiveInput("genomic")}
@@ -257,6 +230,32 @@ export default function Search() {
           <SearchIcon sx={{ color: config.ui.colors.darkPrimary, mr: 1 }} />
           <InputBase
             placeholder="Genomic Query"
+            fullWidth
+            sx={{
+              fontFamily: '"Open Sans", sans-serif',
+              fontSize: "14px",
+            }}
+          />
+        </Box>
+        {/* Filtering Terms Input */}
+        <Box
+          onClick={() => setActiveInput("filter")}
+          sx={{
+            flex: activeInput === "filter" ? 1 : 0.3,
+            display: "flex",
+            alignItems: "center",
+            border: `1.5px solid ${config.ui.colors.darkPrimary}`,
+            borderRadius: "999px",
+            px: 2,
+            py: 1,
+            cursor: "text",
+            backgroundColor: "#fff",
+            transition: "flex 0.3s ease",
+          }}
+        >
+          <SearchIcon sx={{ color: config.ui.colors.darkPrimary, mr: 1 }} />
+          <InputBase
+            placeholder="Search by Filtering Terms"
             fullWidth
             sx={{
               fontFamily: '"Open Sans", sans-serif',
