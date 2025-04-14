@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Box, Tabs, Tab, Typography } from "@mui/material";
 import CommonFilters from "./CommonFilters";
 import GenomicAnnotations from "./GenomicAnnotations";
+import { useSelectedEntry } from "./context/SelectedEntryContext";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -20,11 +21,43 @@ function TabPanel(props) {
 }
 
 export default function FiltersContainer() {
+  const { selectedPathSegment } = useSelectedEntry();
+  const isGenomicSelected = selectedPathSegment === "g_variants";
   const [tabValue, setTabValue] = useState(0);
+
+  useEffect(() => {
+    setTabValue(0);
+  }, [selectedPathSegment]);
 
   const handleChange = (event, newValue) => {
     setTabValue(newValue);
   };
+
+  const tabs = isGenomicSelected
+    ? [
+        {
+          label: "Genomic Annotations",
+          component: <GenomicAnnotations />,
+          title: "Genomic Annotations",
+        },
+        {
+          label: "Common Filters",
+          component: <CommonFilters />,
+          title: "Most Common Filters",
+        },
+      ]
+    : [
+        {
+          label: "Common Filters",
+          component: <CommonFilters />,
+          title: "Most Common Filters",
+        },
+        {
+          label: "Genomic Annotations",
+          component: <GenomicAnnotations />,
+          title: "Genomic Annotations",
+        },
+      ];
 
   return (
     <Box
@@ -49,70 +82,42 @@ export default function FiltersContainer() {
           },
         }}
       >
-        <Tab
-          label="Common Filters"
-          sx={{
-            textTransform: "none",
-            fontSize: "14px",
-            fontWeight: tabValue === 0 ? "bold" : "normal",
-            color: tabValue === 0 ? "black" : "#9E9E9E",
-            p: 0,
-            mr: 3,
-            minHeight: "32px",
-            minWidth: "unset",
-            "&.Mui-selected": {
-              color: "black",
-            },
-          }}
-        />
-        <Tab
-          label="Genomic Annotations"
-          sx={{
-            textTransform: "none",
-            fontSize: "14px",
-            fontWeight: tabValue === 1 ? "bold" : "normal",
-            color: tabValue === 1 ? "black" : "#9E9E9E",
-            p: 0,
-            minHeight: "32px",
-            minWidth: "unset",
-            "&.Mui-selected": {
-              color: "black",
-            },
-          }}
-        />
+        {tabs.map((tab, i) => (
+          <Tab
+            key={tab.label}
+            label={tab.label}
+            sx={{
+              textTransform: "none",
+              fontSize: "14px",
+              fontWeight: tabValue === i ? "bold" : "normal",
+              color: tabValue === i ? "black" : "#9E9E9E",
+              p: 0,
+              mr: i === 0 ? 3 : 0,
+              minHeight: "32px",
+              minWidth: "unset",
+              "&.Mui-selected": { color: "black" },
+            }}
+          />
+        ))}
       </Tabs>
 
-      <TabPanel value={tabValue} index={0}>
-        <Typography
-          variant="body1"
-          sx={{
-            fontWeight: "bold",
-            fontSize: "14px",
-            lineHeight: "19px",
-            mb: 0.5,
-            color: "black",
-          }}
-        >
-          Most Common Filters
-        </Typography>
-        <CommonFilters />
-      </TabPanel>
-
-      <TabPanel value={tabValue} index={1}>
-        <Typography
-          variant="body1"
-          sx={{
-            fontWeight: "bold",
-            fontSize: "14px",
-            lineHeight: "19px",
-            mb: 2,
-            color: "black",
-          }}
-        >
-          Genomic Annotations
-        </Typography>
-        <GenomicAnnotations />
-      </TabPanel>
+      {tabs.map((tab, i) => (
+        <TabPanel value={tabValue} index={i} key={tab.label}>
+          <Typography
+            variant="body1"
+            sx={{
+              fontWeight: "bold",
+              fontSize: "14px",
+              lineHeight: "19px",
+              mb: 0.5,
+              color: "black",
+            }}
+          >
+            {tab.title}
+          </Typography>
+          {tab.component}
+        </TabPanel>
+      ))}
     </Box>
   );
 }

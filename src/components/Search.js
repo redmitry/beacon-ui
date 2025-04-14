@@ -5,38 +5,47 @@ import {
   Tooltip,
   Button,
   CircularProgress,
+  InputBase,
 } from "@mui/material";
 import config from "../config/config.json";
 import { darken, lighten } from "@mui/system";
-import { InputBase } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import { useSelectedEntry } from "./context/SelectedEntryContext";
 
 export default function Search() {
   const [entryTypes, setEntryTypes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedType, setSelectedType] = useState(null);
-  const [activeInput, setActiveInput] = useState("genomic");
+  const [activeInput, setActiveInput] = useState(null);
+  const { selectedPathSegment, setSelectedPathSegment } = useSelectedEntry();
+
+  const configuredOrder = config.ui.entryTypesOrder;
+
+  const sortEntries = (entries) =>
+    configuredOrder?.length > 0 && entries.length > 1
+      ? [...entries].sort(
+          (a, b) =>
+            configuredOrder.indexOf(a.pathSegment) -
+            configuredOrder.indexOf(b.pathSegment)
+        )
+      : entries;
 
   useEffect(() => {
     const fetchEntryTypes = async () => {
       try {
         const res = await fetch(`${config.apiUrl}/map`);
         const data = await res.json();
-
         const endpointSets = data.response.endpointSets || {};
-        const entries = Object.entries(endpointSets).map(([key, value]) => {
-          const rootUrl = value.rootUrl || "";
-          const pathSegment = rootUrl.split("/").pop();
 
-          return {
-            id: key,
-            pathSegment: pathSegment,
-          };
+        const entries = Object.entries(endpointSets).map(([key, value]) => {
+          const pathSegment = value.rootUrl?.split("/").pop();
+          return { id: key, pathSegment };
         });
 
-        setEntryTypes(entries);
-        if (entries.length > 0) {
-          setSelectedType(entries[0].id);
+        const sorted = sortEntries(entries);
+        setEntryTypes(sorted);
+
+        if (sorted.length > 0) {
+          setSelectedPathSegment(sorted[0].pathSegment);
         }
       } catch (err) {
         console.error("Error fetching entry types:", err);
@@ -48,26 +57,25 @@ export default function Search() {
     fetchEntryTypes();
   }, []);
 
+  useEffect(() => {
+    setActiveInput(selectedPathSegment === "g_variants" ? "genomic" : "filter");
+  }, [selectedPathSegment]);
+
+  const selectedEntry = entryTypes.find(
+    (e) => e.pathSegment === selectedPathSegment
+  );
+
+  const isGenomicFirstOrOnly =
+    entryTypes.length === 1 ||
+    entryTypes[0]?.pathSegment === "g_variants" ||
+    selectedPathSegment === "g_variants";
+
   const formatEntryLabel = (segment) => {
     if (!segment) return "Unknown";
-
-    if (segment === "g_variants") return "Genomic Variants";
-
-    return segment.charAt(0).toUpperCase() + segment.slice(1);
+    return segment === "g_variants"
+      ? "Genomic Variants"
+      : segment.charAt(0).toUpperCase() + segment.slice(1);
   };
-
-  const configuredOrder = config.ui.entryTypesOrder;
-
-  const sortedEntries =
-    configuredOrder?.length > 0 && entryTypes.length > 1
-      ? [...entryTypes].sort(
-          (a, b) =>
-            configuredOrder.indexOf(a.pathSegment) -
-            configuredOrder.indexOf(b.pathSegment)
-        )
-      : entryTypes;
-
-  console.log(sortedEntries);
 
   const primaryColor = config.ui.colors.primary;
   const primaryDarkColor = config.ui.colors.darkPrimary;
@@ -83,46 +91,73 @@ export default function Search() {
     runs: "Text for run",
   };
 
+  const renderInput = (type) => (
+    <Box
+      onClick={() => setActiveInput(type)}
+      sx={{
+        flex: activeInput === type ? 1 : 0.3,
+        display: "flex",
+        alignItems: "center",
+        border: `1.5px solid ${primaryDarkColor}`,
+        borderRadius: "999px",
+        px: 2,
+        py: 1,
+        cursor: "text",
+        backgroundColor: "#fff",
+        transition: "flex 0.3s ease",
+      }}
+    >
+      <SearchIcon sx={{ color: primaryDarkColor, mr: 1 }} />
+      <InputBase
+        placeholder={
+          type === "genomic" ? "Genomic Query" : "Search by Filtering Terms"
+        }
+        fullWidth
+        sx={{
+          fontFamily: '"Open Sans", sans-serif',
+          fontSize: "14px",
+        }}
+      />
+    </Box>
+  );
+
   return (
     <Box
       sx={{
         mazWidth: "1056px",
+        mb: 6,
         borderRadius: "10px",
         backgroundColor: "#FFFFFF",
         boxShadow: "0px 8px 11px 0px #9BA0AB24",
-        pt: "24px",
-        pr: "32px",
-        pb: "24px",
-        pl: "32px",
+        p: "24px 32px",
       }}
     >
       <Typography
         sx={{
           mb: 2,
-          display: "inline-block",
           fontWeight: 700,
+          fontFamily: '"Open Sans", sans-serif',
+          fontSize: "14px",
         }}
       >
         Search
       </Typography>
 
       <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-        <Typography variant="body1">
+        <Typography
+          variant="body1"
+          sx={{ fontFamily: '"Open Sans", sans-serif', fontSize: "14px" }}
+        >
           1. Choose the <b>result type</b> for your search.
         </Typography>
+
         <Tooltip
           title={
             <Box
               component="ul"
-              sx={{
-                m: 0,
-                p: 0,
-                listStyleType: "disc",
-                pl: "20px",
-                fontFamily: '"Open Sans", sans-serif',
-              }}
+              sx={{ pl: "20px", fontFamily: '"Open Sans", sans-serif' }}
             >
-              {sortedEntries.map((entry) => (
+              {entryTypes.map((entry) => (
                 <li key={entry.pathSegment}>
                   <b>{formatEntryLabel(entry.pathSegment)}</b>:{" "}
                   {entryTypeDescriptions[entry.pathSegment] ||
@@ -136,21 +171,14 @@ export default function Search() {
           componentsProps={{
             tooltip: {
               sx: {
-                backgroundColor: "#FFFFFF",
-                color: "#000000",
+                backgroundColor: "#fff",
+                color: "#000",
                 border: "1px solid black",
-                boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
-                fontFamily: '"Open Sans", sans-serif',
                 minWidth: "400px",
               },
             },
             arrow: {
-              sx: {
-                color: "#FFFFFF",
-                "&::before": {
-                  border: "1px solid black",
-                },
-              },
+              sx: { color: "#fff", "&::before": { border: "1px solid black" } },
             },
           }}
         >
@@ -158,17 +186,15 @@ export default function Search() {
             component="span"
             sx={{
               cursor: "pointer",
-              display: "inline-block",
-              width: "20px",
-              height: "20px",
               ml: 3,
               mb: "4px",
+              width: "20px",
+              height: "20px",
               borderRadius: "30px",
-              backgroundColor: config.ui.colors.primary,
+              backgroundColor: primaryColor,
               color: "white",
               textAlign: "center",
               fontSize: "14px",
-              fontFamily: '"Open Sans", sans-serif',
             }}
           >
             i
@@ -180,29 +206,36 @@ export default function Search() {
         <CircularProgress />
       ) : (
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
-          {sortedEntries.map((entry) => (
+          {entryTypes.map((entry) => (
             <Button
               key={entry.id}
-              onClick={() => setSelectedType(entry.id)}
+              onClick={() => setSelectedPathSegment(entry.pathSegment)}
               variant="outlined"
               sx={{
                 borderRadius: "999px",
-                fontWeight: 600,
+                fontWeight: 700,
                 textTransform: "none",
                 fontFamily: '"Open Sans", sans-serif',
+                fontSize: "14px",
                 backgroundColor:
-                  selectedType === entry.id ? selectedBgColor : "#FFFFFF",
-                color: selectedType === entry.id ? "black" : primaryColor,
+                  selectedPathSegment === entry.pathSegment
+                    ? selectedBgColor
+                    : "#FFFFFF",
+                color:
+                  selectedPathSegment === entry.pathSegment
+                    ? "black"
+                    : primaryColor,
                 border: `1px solid ${
-                  selectedType === entry.id ? "black" : primaryColor
+                  selectedPathSegment === entry.pathSegment
+                    ? "black"
+                    : primaryColor
                 }`,
                 boxShadow: "none",
                 "&:hover": {
                   backgroundColor:
-                    selectedType === entry.id
+                    selectedPathSegment === entry.pathSegment
                       ? selectedBgColor
                       : darken("#FFFFFF", 0.05),
-                  boxShadow: "none",
                 },
               }}
             >
@@ -211,12 +244,19 @@ export default function Search() {
           ))}
         </Box>
       )}
+
       <Box sx={{ display: "flex", alignItems: "center", mb: 2, mt: 4 }}>
-        <Typography variant="body1">
-          2. Use the search bar on the left to add <b>Filtering terms</b> or the
-          search bar on the right to add a <b>Genomic query:</b>
+        <Typography
+          variant="body1"
+          sx={{ fontFamily: '"Open Sans", sans-serif', fontSize: "14px" }}
+        >
+          2. Use the search bar on the left to add{" "}
+          <b>{isGenomicFirstOrOnly ? "Genomic query" : "Filtering terms"}</b> or
+          the search bar on the right to add a{" "}
+          <b>{isGenomicFirstOrOnly ? "Filtering terms" : "Genomic query"}:</b>
         </Typography>
       </Box>
+
       <Box
         sx={{
           display: "flex",
@@ -224,58 +264,17 @@ export default function Search() {
           gap: 2,
         }}
       >
-        {/* Genomic Query Input */}
-        <Box
-          onClick={() => setActiveInput("genomic")}
-          sx={{
-            flex: activeInput === "genomic" ? 1 : 0.3,
-            display: "flex",
-            alignItems: "center",
-            border: `1.5px solid ${config.ui.colors.darkPrimary}`,
-            borderRadius: "999px",
-            px: 2,
-            py: 1,
-            cursor: "text",
-            backgroundColor: "#fff",
-            transition: "flex 0.3s ease",
-          }}
-        >
-          <SearchIcon sx={{ color: config.ui.colors.darkPrimary, mr: 1 }} />
-          <InputBase
-            placeholder="Genomic Query"
-            fullWidth
-            sx={{
-              fontFamily: '"Open Sans", sans-serif',
-              fontSize: "14px",
-            }}
-          />
-        </Box>
-        {/* Filtering Terms Input */}
-        <Box
-          onClick={() => setActiveInput("filter")}
-          sx={{
-            flex: activeInput === "filter" ? 1 : 0.3,
-            display: "flex",
-            alignItems: "center",
-            border: `1.5px solid ${config.ui.colors.darkPrimary}`,
-            borderRadius: "999px",
-            px: 2,
-            py: 1,
-            cursor: "text",
-            backgroundColor: "#fff",
-            transition: "flex 0.3s ease",
-          }}
-        >
-          <SearchIcon sx={{ color: config.ui.colors.darkPrimary, mr: 1 }} />
-          <InputBase
-            placeholder="Search by Filtering Terms"
-            fullWidth
-            sx={{
-              fontFamily: '"Open Sans", sans-serif',
-              fontSize: "14px",
-            }}
-          />
-        </Box>
+        {isGenomicFirstOrOnly ? (
+          <>
+            {renderInput("genomic")}
+            {renderInput("filter")}
+          </>
+        ) : (
+          <>
+            {renderInput("filter")}
+            {renderInput("genomic")}
+          </>
+        )}
       </Box>
     </Box>
   );

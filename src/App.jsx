@@ -15,6 +15,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import { SelectedEntryProvider } from "./components/context/SelectedEntryContext";
 
 export default function App() {
   const baseNavItems = [
@@ -74,38 +75,40 @@ export default function App() {
 
 function HomePage() {
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: { xs: "column", md: "row" },
-        gap: 4,
-        flexWrap: "wrap",
-      }}
-    >
+    <SelectedEntryProvider>
       <Box
         sx={{
-          flexGrow: { xs: 0, md: 1 },
           display: "flex",
-          flexDirection: "column",
+          flexDirection: { xs: "column", md: "row" },
+          gap: 4,
+          flexWrap: "wrap",
         }}
       >
-        <Founders />
-        <Search />
-      </Box>
+        <Box
+          sx={{
+            flexGrow: { xs: 0, md: 1 },
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <Founders />
+          <Search />
+        </Box>
 
-      <Box
-        sx={{
-          width: { xs: "100%", md: "338px" },
-          flexShrink: 0,
-          position: { md: "sticky" },
-          mt: { xs: "auto", md: "30px" },
-          mb: "50px",
-          alignSelf: "flex-start",
-          height: "fit-content",
-        }}
-      >
-        <FiltersContainer />
+        <Box
+          sx={{
+            width: { xs: "100%", md: "338px" },
+            flexShrink: 0,
+            position: { md: "sticky" },
+            mt: { xs: "auto", md: "30px" },
+            mb: "50px",
+            alignSelf: "flex-start",
+            height: "fit-content",
+          }}
+        >
+          <FiltersContainer />
+        </Box>
       </Box>
-    </Box>
+    </SelectedEntryProvider>
   );
 }
