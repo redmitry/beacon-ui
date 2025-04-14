@@ -56,6 +56,19 @@ export default function Search() {
     return segment.charAt(0).toUpperCase() + segment.slice(1);
   };
 
+  const configuredOrder = config.ui.entryTypesOrder;
+
+  const sortedEntries =
+    configuredOrder?.length > 0 && entryTypes.length > 1
+      ? [...entryTypes].sort(
+          (a, b) =>
+            configuredOrder.indexOf(a.pathSegment) -
+            configuredOrder.indexOf(b.pathSegment)
+        )
+      : entryTypes;
+
+  console.log(sortedEntries);
+
   const primaryColor = config.ui.colors.primary;
   const primaryDarkColor = config.ui.colors.darkPrimary;
   const selectedBgColor = lighten(primaryDarkColor, 0.9);
@@ -109,7 +122,7 @@ export default function Search() {
                 fontFamily: '"Open Sans", sans-serif',
               }}
             >
-              {entryTypes.map((entry) => (
+              {sortedEntries.map((entry) => (
                 <li key={entry.pathSegment}>
                   <b>{formatEntryLabel(entry.pathSegment)}</b>:{" "}
                   {entryTypeDescriptions[entry.pathSegment] ||
@@ -167,7 +180,7 @@ export default function Search() {
         <CircularProgress />
       ) : (
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
-          {entryTypes.map((entry) => (
+          {sortedEntries.map((entry) => (
             <Button
               key={entry.id}
               onClick={() => setSelectedType(entry.id)}

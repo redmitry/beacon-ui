@@ -2,6 +2,16 @@ const Joi = require("joi");
 
 const hexColor = Joi.string().pattern(/^#[0-9A-Fa-f]{6}$/);
 
+const allowedEntryTypes = [
+  "analyses",
+  "biosamples",
+  "cohorts",
+  "datasets",
+  "g_variants",
+  "individuals",
+  "runs",
+];
+
 const schema = Joi.object({
   beaconType: Joi.string().valid("singleBeacon", "networkBeacon").required(),
 
@@ -69,6 +79,13 @@ const schema = Joi.object({
             "At least one genomicAnnotations category must be provided",
         }),
     }).optional(),
+    entryTypesOrder: Joi.array()
+      .items(Joi.string().valid(...allowedEntryTypes))
+      .max(7)
+      .optional()
+      .messages({
+        "array.max": "You can specify a maximum of 7 entry types for ordering.",
+      }),
   }).required(),
 });
 
