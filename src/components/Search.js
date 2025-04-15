@@ -13,7 +13,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useSelectedEntry } from "./context/SelectedEntryContext";
 
 export default function Search() {
-  const [entryTypes, setEntryTypes] = useState([]);
+  const { entryTypes, setEntryTypes } = useSelectedEntry();
   const [loading, setLoading] = useState(true);
   const [activeInput, setActiveInput] = useState(null);
   const { selectedPathSegment, setSelectedPathSegment } = useSelectedEntry();
@@ -70,6 +70,18 @@ export default function Search() {
   const onlyEntryPath = entryTypes[0]?.pathSegment;
   const isSingleNonGenomic =
     isSingleEntryType && onlyEntryPath !== "g_variants";
+
+  const singleEntryCustomLabels = {
+    g_variants: "Genomic Variants",
+    individuals: "Individual Level Data",
+    biosamples: "Biosamples",
+    runs: "Runs",
+    analyses: "Analysis",
+    cohorts: "Cohorts",
+    datasets: "Datasets",
+  };
+
+  const hasGenomic = entryTypes.some((e) => e.pathSegment === "g_variants");
 
   const isGenomicFirstOrOnly =
     entryTypes.length === 1 ||
@@ -146,8 +158,11 @@ export default function Search() {
           fontSize: entryTypes.length === 1 ? "16px" : "14px",
         }}
       >
-        {entryTypes.length === 1
-          ? `Search for ${formatEntryLabel(entryTypes[0]?.pathSegment)}`
+        {isSingleEntryType
+          ? `Search ${
+              singleEntryCustomLabels[onlyEntryPath] ||
+              formatEntryLabel(onlyEntryPath)
+            }`
           : "Search"}
       </Typography>
 
@@ -292,15 +307,19 @@ export default function Search() {
         {isSingleNonGenomic ? (
           renderInput("filter")
         ) : isGenomicFirstOrOnly ? (
+          hasGenomic && (
+            <>
+              {renderInput("genomic")}
+              {renderInput("filter")}
+            </>
+          )
+        ) : hasGenomic ? (
           <>
-            {renderInput("genomic")}
             {renderInput("filter")}
+            {renderInput("genomic")}
           </>
         ) : (
-          <>
-            {renderInput("filter")}
-            {renderInput("genomic")}
-          </>
+          renderInput("filter")
         )}
       </Box>
     </Box>

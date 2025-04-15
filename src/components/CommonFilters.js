@@ -9,7 +9,6 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { useState } from "react";
 import config from "../config/config.json";
 import FilterLabel from "./FilterLabel";
-import { lighten } from "@mui/system";
 
 export default function CommonFilters() {
   const filterCategories = config.ui.commonFilters.filterCategories;
