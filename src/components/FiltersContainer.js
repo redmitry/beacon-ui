@@ -4,9 +4,7 @@ import CommonFilters from "./CommonFilters";
 import GenomicAnnotations from "./GenomicAnnotations";
 import { useSelectedEntry } from "./context/SelectedEntryContext";
 
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
+function TabPanel({ children, value, index, ...other }) {
   return (
     <div
       role="tabpanel"
@@ -21,43 +19,40 @@ function TabPanel(props) {
 }
 
 export default function FiltersContainer() {
-  const { selectedPathSegment } = useSelectedEntry();
+  const { selectedPathSegment, entryTypes } = useSelectedEntry();
   const isGenomicSelected = selectedPathSegment === "g_variants";
+
+  const isSingleEntryType = entryTypes.length === 1;
+  const onlyEntryPath = entryTypes[0]?.pathSegment;
+  const isSingleNonGenomic =
+    isSingleEntryType && onlyEntryPath !== "g_variants";
+
   const [tabValue, setTabValue] = useState(0);
 
   useEffect(() => {
-    setTabValue(0);
+    setTabValue(0); // Reset to first tab when selectedPathSegment changes
   }, [selectedPathSegment]);
 
-  const handleChange = (event, newValue) => {
-    setTabValue(newValue);
-  };
+  const tabs = [];
 
-  const tabs = isGenomicSelected
-    ? [
-        {
-          label: "Genomic Annotations",
-          component: <GenomicAnnotations />,
-          title: "Genomic Annotations",
-        },
-        {
-          label: "Common Filters",
-          component: <CommonFilters />,
-          title: "Most Common Filters",
-        },
-      ]
-    : [
-        {
-          label: "Common Filters",
-          component: <CommonFilters />,
-          title: "Most Common Filters",
-        },
-        {
-          label: "Genomic Annotations",
-          component: <GenomicAnnotations />,
-          title: "Genomic Annotations",
-        },
-      ];
+  if (isGenomicSelected && !isSingleNonGenomic) {
+    tabs.push({
+      label: "Genomic Annotations",
+      component: <GenomicAnnotations />,
+      title: "Genomic Annotations",
+    });
+    tabs.push({
+      label: "Common Filters",
+      component: <CommonFilters />,
+      title: "Most Common Filters",
+    });
+  } else {
+    tabs.push({
+      label: "Common Filters",
+      component: <CommonFilters />,
+      title: "Most Common Filters",
+    });
+  }
 
   return (
     <Box
@@ -69,37 +64,39 @@ export default function FiltersContainer() {
         maxWidth: "338px",
       }}
     >
-      <Tabs
-        value={tabValue}
-        onChange={handleChange}
-        aria-label="Filter tabs"
-        sx={{
-          minHeight: "32px",
-          borderBottom: "1px solid #E0E0E0",
-          mb: 0,
-          "& .MuiTabs-indicator": {
-            display: "none",
-          },
-        }}
-      >
-        {tabs.map((tab, i) => (
-          <Tab
-            key={tab.label}
-            label={tab.label}
-            sx={{
-              textTransform: "none",
-              fontSize: "14px",
-              fontWeight: tabValue === i ? "bold" : "normal",
-              color: tabValue === i ? "black" : "#9E9E9E",
-              p: 0,
-              mr: i === 0 ? 3 : 0,
-              minHeight: "32px",
-              minWidth: "unset",
-              "&.Mui-selected": { color: "black" },
-            }}
-          />
-        ))}
-      </Tabs>
+      {tabs.length > 1 && (
+        <Tabs
+          value={tabValue}
+          onChange={handleChange}
+          aria-label="Filter tabs"
+          sx={{
+            minHeight: "32px",
+            borderBottom: "1px solid #E0E0E0",
+            mb: 0,
+            "& .MuiTabs-indicator": {
+              display: "none",
+            },
+          }}
+        >
+          {tabs.map((tab, i) => (
+            <Tab
+              key={tab.label}
+              label={tab.label}
+              sx={{
+                textTransform: "none",
+                fontSize: "14px",
+                fontWeight: tabValue === i ? "bold" : "normal",
+                color: tabValue === i ? "black" : "#9E9E9E",
+                p: 0,
+                mr: i === 0 ? 3 : 0,
+                minHeight: "32px",
+                minWidth: "unset",
+                "&.Mui-selected": { color: "black" },
+              }}
+            />
+          ))}
+        </Tabs>
+      )}
 
       {tabs.map((tab, i) => (
         <TabPanel value={tabValue} index={i} key={tab.label}>
@@ -120,4 +117,8 @@ export default function FiltersContainer() {
       ))}
     </Box>
   );
+
+  function handleChange(event, newValue) {
+    setTabValue(newValue);
+  }
 }

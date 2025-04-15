@@ -32,7 +32,8 @@ export default function Search() {
   useEffect(() => {
     const fetchEntryTypes = async () => {
       try {
-        const res = await fetch(`${config.apiUrl}/map`);
+        // const res = await fetch(`${config.apiUrl}/map`);
+        const res = await fetch("/api.json");
         const data = await res.json();
         const endpointSets = data.response.endpointSets || {};
 
@@ -64,6 +65,11 @@ export default function Search() {
   const selectedEntry = entryTypes.find(
     (e) => e.pathSegment === selectedPathSegment
   );
+
+  const isSingleEntryType = entryTypes.length === 1;
+  const onlyEntryPath = entryTypes[0]?.pathSegment;
+  const isSingleNonGenomic =
+    isSingleEntryType && onlyEntryPath !== "g_variants";
 
   const isGenomicFirstOrOnly =
     entryTypes.length === 1 ||
@@ -137,74 +143,81 @@ export default function Search() {
           mb: 2,
           fontWeight: 700,
           fontFamily: '"Open Sans", sans-serif',
-          fontSize: "14px",
+          fontSize: entryTypes.length === 1 ? "16px" : "14px",
         }}
       >
-        Search
+        {entryTypes.length === 1
+          ? `Search for ${formatEntryLabel(entryTypes[0]?.pathSegment)}`
+          : "Search"}
       </Typography>
 
-      <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-        <Typography
-          variant="body1"
-          sx={{ fontFamily: '"Open Sans", sans-serif', fontSize: "14px" }}
-        >
-          1. Choose the <b>result type</b> for your search.
-        </Typography>
+      {!isSingleEntryType && (
+        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+          <Typography
+            variant="body1"
+            sx={{ fontFamily: '"Open Sans", sans-serif', fontSize: "14px" }}
+          >
+            1. Choose the <b>result type</b> for your search.
+          </Typography>
 
-        <Tooltip
-          title={
-            <Box
-              component="ul"
-              sx={{ pl: "20px", fontFamily: '"Open Sans", sans-serif' }}
-            >
-              {entryTypes.map((entry) => (
-                <li key={entry.pathSegment}>
-                  <b>{formatEntryLabel(entry.pathSegment)}</b>:{" "}
-                  {entryTypeDescriptions[entry.pathSegment] ||
-                    `No description for ${entry.pathSegment}`}
-                </li>
-              ))}
-            </Box>
-          }
-          placement="top-start"
-          arrow
-          componentsProps={{
-            tooltip: {
-              sx: {
-                backgroundColor: "#fff",
-                color: "#000",
-                border: "1px solid black",
-                minWidth: "400px",
+          <Tooltip
+            title={
+              <Box
+                component="ul"
+                sx={{ pl: "20px", fontFamily: '"Open Sans", sans-serif' }}
+              >
+                {entryTypes.map((entry) => (
+                  <li key={entry.pathSegment}>
+                    <b>{formatEntryLabel(entry.pathSegment)}</b>:{" "}
+                    {entryTypeDescriptions[entry.pathSegment] ||
+                      `No description for ${entry.pathSegment}`}
+                  </li>
+                ))}
+              </Box>
+            }
+            placement="top-start"
+            arrow
+            componentsProps={{
+              tooltip: {
+                sx: {
+                  backgroundColor: "#fff",
+                  color: "#000",
+                  border: "1px solid black",
+                  minWidth: "400px",
+                },
               },
-            },
-            arrow: {
-              sx: { color: "#fff", "&::before": { border: "1px solid black" } },
-            },
-          }}
-        >
-          <Box
-            component="span"
-            sx={{
-              cursor: "pointer",
-              ml: 3,
-              mb: "4px",
-              width: "20px",
-              height: "20px",
-              borderRadius: "30px",
-              backgroundColor: primaryColor,
-              color: "white",
-              textAlign: "center",
-              fontSize: "14px",
+              arrow: {
+                sx: {
+                  color: "#fff",
+                  "&::before": { border: "1px solid black" },
+                },
+              },
             }}
           >
-            i
-          </Box>
-        </Tooltip>
-      </Box>
+            <Box
+              component="span"
+              sx={{
+                cursor: "pointer",
+                ml: 3,
+                mb: "4px",
+                width: "20px",
+                height: "20px",
+                borderRadius: "30px",
+                backgroundColor: primaryColor,
+                color: "white",
+                textAlign: "center",
+                fontSize: "14px",
+              }}
+            >
+              i
+            </Box>
+          </Tooltip>
+        </Box>
+      )}
 
       {loading ? (
         <CircularProgress />
-      ) : (
+      ) : !isSingleEntryType ? (
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
           {entryTypes.map((entry) => (
             <Button
@@ -243,18 +256,30 @@ export default function Search() {
             </Button>
           ))}
         </Box>
-      )}
+      ) : null}
 
       <Box sx={{ display: "flex", alignItems: "center", mb: 2, mt: 4 }}>
-        <Typography
-          variant="body1"
-          sx={{ fontFamily: '"Open Sans", sans-serif', fontSize: "14px" }}
-        >
-          2. Use the search bar on the left to add{" "}
-          <b>{isGenomicFirstOrOnly ? "Genomic query" : "Filtering terms"}</b> or
-          the search bar on the right to add a{" "}
-          <b>{isGenomicFirstOrOnly ? "Filtering terms" : "Genomic query"}:</b>
-        </Typography>
+        {isSingleNonGenomic ? (
+          <Typography
+            variant="body1"
+            sx={{ fontFamily: '"Open Sans", sans-serif', fontSize: "14px" }}
+          >
+            Add the <b>Filtering Terms</b> you need for your search:
+          </Typography>
+        ) : (
+          <Typography
+            variant="body1"
+            sx={{ fontFamily: '"Open Sans", sans-serif', fontSize: "14px" }}
+          >
+            {isSingleEntryType ? "" : "2. "}
+            Use the search bar on the left to add{" "}
+            <b>
+              {isGenomicFirstOrOnly ? "Genomic query" : "Filtering terms"}
+            </b>{" "}
+            or the search bar on the right to add a{" "}
+            <b>{isGenomicFirstOrOnly ? "Filtering terms" : "Genomic query"}:</b>
+          </Typography>
+        )}
       </Box>
 
       <Box
@@ -264,7 +289,9 @@ export default function Search() {
           gap: 2,
         }}
       >
-        {isGenomicFirstOrOnly ? (
+        {isSingleNonGenomic ? (
+          renderInput("filter")
+        ) : isGenomicFirstOrOnly ? (
           <>
             {renderInput("genomic")}
             {renderInput("filter")}

@@ -20,8 +20,10 @@ import { SelectedEntryProvider } from "./components/context/SelectedEntryContext
 export default function App() {
   const baseNavItems = [
     { label: "Network Members", url: "/network-members" },
-    { label: "About", url: "/about" },
-    { label: "Contact", url: "/contact" },
+    ...(config.ui.showAboutPage ? [{ label: "About", url: "/about" }] : []),
+    ...(config.ui.showContactPage
+      ? [{ label: "Contact", url: "/contact" }]
+      : []),
     { label: "Log in", url: "/login" },
   ];
 
@@ -60,8 +62,12 @@ export default function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/network-members" element={<NetworkMembers />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
+            {config.ui.showAboutPage && (
+              <Route path="/about" element={<About />} />
+            )}
+            {config.ui.showContactPage && (
+              <Route path="/contact" element={<Contact />} />
+            )}
             <Route path="/login" element={<Login />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
