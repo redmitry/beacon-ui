@@ -6,17 +6,24 @@ import {
   Button,
   CircularProgress,
   InputBase,
+  Select,
+  MenuItem,
 } from "@mui/material";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import config from "../config/config.json";
 import { darken, lighten } from "@mui/system";
 import SearchIcon from "@mui/icons-material/Search";
 import { useSelectedEntry } from "./context/SelectedEntryContext";
+import AllFilteringTerms from "./AllFilteringTerms";
+import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
+import ScienceOutlinedIcon from "@mui/icons-material/ScienceOutlined";
 
 export default function Search() {
   const { entryTypes, setEntryTypes } = useSelectedEntry();
   const [loading, setLoading] = useState(true);
   const [activeInput, setActiveInput] = useState(null);
   const { selectedPathSegment, setSelectedPathSegment } = useSelectedEntry();
+  const [assembly, setAssembly] = useState(config.assemblyId[0]);
 
   const configuredOrder = config.ui.entryTypesOrder;
 
@@ -109,35 +116,99 @@ export default function Search() {
     runs: "Text for run",
   };
 
-  const renderInput = (type) => (
-    <Box
-      onClick={() => setActiveInput(type)}
-      sx={{
-        flex: activeInput === type ? 1 : 0.3,
-        display: "flex",
-        alignItems: "center",
-        border: `1.5px solid ${primaryDarkColor}`,
-        borderRadius: "999px",
-        px: 2,
-        py: 1,
-        cursor: "text",
-        backgroundColor: "#fff",
-        transition: "flex 0.3s ease",
-      }}
-    >
-      <SearchIcon sx={{ color: primaryDarkColor, mr: 1 }} />
-      <InputBase
-        placeholder={
-          type === "genomic" ? "Genomic Query" : "Search by Filtering Terms"
-        }
-        fullWidth
+  const renderInput = (type) => {
+    if (type === "genomic") {
+      return (
+        <Box
+          onClick={() => setActiveInput(type)}
+          sx={{
+            flex: activeInput === type ? 1 : 0.3,
+            display: "flex",
+            alignItems: "center",
+            border: `1.5px solid ${primaryDarkColor}`,
+            borderRadius: "999px",
+            backgroundColor: "#fff",
+            transition: "flex 0.3s ease",
+          }}
+        >
+          {activeInput === "genomic" && (
+            <Select
+              value={assembly}
+              onChange={(e) => setAssembly(e.target.value)}
+              variant="standard"
+              disableUnderline
+              IconComponent={KeyboardArrowDownIcon}
+              sx={{
+                backgroundColor: "black",
+                color: "#fff",
+                fontSize: "12px",
+                fontWeight: 700,
+                fontFamily: '"Open Sans", sans-serif',
+                pl: 3,
+                pr: 2,
+                py: 0,
+                height: "100%",
+                borderTopLeftRadius: "999px",
+                borderBottomLeftRadius: "999px",
+                ".MuiSelect-icon": {
+                  color: "#fff",
+                  mr: 1,
+                },
+              }}
+            >
+              {config.assemblyId.map((id) => (
+                <MenuItem key={id} value={id} sx={{ fontSize: "12px" }}>
+                  {id}
+                </MenuItem>
+              ))}
+            </Select>
+          )}
+
+          <Box sx={{ px: 1, color: primaryDarkColor }}>
+            <SearchIcon />
+          </Box>
+
+          <InputBase
+            placeholder="Search by Genomic Query"
+            fullWidth
+            sx={{
+              fontFamily: '"Open Sans", sans-serif',
+              fontSize: "14px",
+              pr: 2,
+            }}
+          />
+        </Box>
+      );
+    }
+
+    return (
+      <Box
+        onClick={() => setActiveInput(type)}
         sx={{
-          fontFamily: '"Open Sans", sans-serif',
-          fontSize: "14px",
+          flex: activeInput === type ? 1 : 0.3,
+          display: "flex",
+          alignItems: "center",
+          border: `1.5px solid ${primaryDarkColor}`,
+          borderRadius: "999px",
+          px: 2,
+          py: 1,
+          cursor: "text",
+          backgroundColor: "#fff",
+          transition: "flex 0.3s ease",
         }}
-      />
-    </Box>
-  );
+      >
+        <SearchIcon sx={{ color: primaryDarkColor, mr: 1 }} />
+        <InputBase
+          placeholder="Search by Filtering Terms"
+          fullWidth
+          sx={{
+            fontFamily: '"Open Sans", sans-serif',
+            fontSize: "14px",
+          }}
+        />
+      </Box>
+    );
+  };
 
   return (
     <Box
@@ -321,6 +392,20 @@ export default function Search() {
         ) : (
           renderInput("filter")
         )}
+      </Box>
+      <Box sx={{ mt: 5, display: "flex", gap: 2, flexWrap: "wrap" }}>
+        <AllFilteringTerms
+          icon={<ScienceOutlinedIcon />}
+          label="Genomic Query Builder"
+          selected={activeInput === "genomicBuilder"}
+          onClick={() => console.log("Genomic Query Builder clicked")}
+        />
+        <AllFilteringTerms
+          icon={<FilterAltOutlinedIcon />}
+          label="All Filtering Terms"
+          selected={activeInput === "filterTerms"}
+          onClick={() => console.log("All Filtering Terms clicked")}
+        />
       </Box>
     </Box>
   );
