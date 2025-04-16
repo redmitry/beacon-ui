@@ -14,9 +14,8 @@ import config from "../config/config.json";
 import { darken, lighten } from "@mui/system";
 import SearchIcon from "@mui/icons-material/Search";
 import { useSelectedEntry } from "./context/SelectedEntryContext";
-import AllFilteringTerms from "./AllFilteringTerms";
-import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
-import ScienceOutlinedIcon from "@mui/icons-material/ScienceOutlined";
+import GenomicQueryBuilderButton from "./GenomicQueryBuilderButton";
+import AllFilteringTermsButton from "./AllFilteringTermsButton";
 
 export default function Search() {
   const { entryTypes, setEntryTypes } = useSelectedEntry();
@@ -24,6 +23,7 @@ export default function Search() {
   const [activeInput, setActiveInput] = useState(null);
   const { selectedPathSegment, setSelectedPathSegment } = useSelectedEntry();
   const [assembly, setAssembly] = useState(config.assemblyId[0]);
+  const [selectedTool, setSelectedTool] = useState(null);
 
   const configuredOrder = config.ui.entryTypesOrder;
 
@@ -394,17 +394,15 @@ export default function Search() {
         )}
       </Box>
       <Box sx={{ mt: 5, display: "flex", gap: 2, flexWrap: "wrap" }}>
-        <AllFilteringTerms
-          icon={<ScienceOutlinedIcon />}
-          label="Genomic Query Builder"
-          selected={activeInput === "genomicBuilder"}
-          onClick={() => console.log("Genomic Query Builder clicked")}
-        />
-        <AllFilteringTerms
-          icon={<FilterAltOutlinedIcon />}
-          label="All Filtering Terms"
-          selected={activeInput === "filterTerms"}
-          onClick={() => console.log("All Filtering Terms clicked")}
+        {hasGenomic && (
+          <GenomicQueryBuilderButton
+            onClick={() => setSelectedTool("genomicQueryBuilder")}
+            selected={selectedTool === "genomicQueryBuilder"}
+          />
+        )}
+        <AllFilteringTermsButton
+          onClick={() => setSelectedTool("allFilteringTerms")}
+          selected={selectedTool === "allFilteringTerms"}
         />
       </Box>
     </Box>
