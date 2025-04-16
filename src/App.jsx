@@ -9,6 +9,7 @@ import NetworkMembers from "./components/pages/NetworkMembers";
 import Login from "./components/pages/Login";
 import { CssBaseline, Box } from "@mui/material";
 import config from "./config/config.json";
+import { useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -80,6 +81,7 @@ export default function App() {
 }
 
 function HomePage() {
+  const [searchHeight, setSearchHeight] = useState(null);
   return (
     <SelectedEntryProvider>
       <Box
@@ -98,7 +100,7 @@ function HomePage() {
           }}
         >
           <Founders />
-          <Search />
+          <Search onHeightChange={setSearchHeight} />
         </Box>
 
         <Box
@@ -106,10 +108,15 @@ function HomePage() {
             width: { xs: "100%", md: "338px" },
             flexShrink: 0,
             position: { md: "sticky" },
-            mt: { xs: "auto", md: "30px" },
+            mt: { xs: "0px", md: "30px" },
             mb: "50px",
             alignSelf: "flex-start",
-            height: "fit-content",
+            height: `${searchHeight + 55}px`,
+            backgroundColor: "white",
+            p: 3,
+            borderRadius: "10px",
+            boxShadow: "0px 8px 11px 0px #9BA0AB24",
+            maxWidth: "338px",
           }}
         >
           <FiltersContainer />

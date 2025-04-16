@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Box,
   Typography,
@@ -17,13 +17,21 @@ import { useSelectedEntry } from "./context/SelectedEntryContext";
 import GenomicQueryBuilderButton from "./GenomicQueryBuilderButton";
 import AllFilteringTermsButton from "./AllFilteringTermsButton";
 
-export default function Search() {
+export default function Search({ onHeightChange }) {
   const { entryTypes, setEntryTypes } = useSelectedEntry();
   const [loading, setLoading] = useState(true);
   const [activeInput, setActiveInput] = useState(null);
   const { selectedPathSegment, setSelectedPathSegment } = useSelectedEntry();
   const [assembly, setAssembly] = useState(config.assemblyId[0]);
   const [selectedTool, setSelectedTool] = useState(null);
+  const searchRef = useRef(null);
+
+  useEffect(() => {
+    if (searchRef.current && onHeightChange) {
+      const height = searchRef.current.offsetHeight;
+      onHeightChange(height);
+    }
+  }, []);
 
   const configuredOrder = config.ui.entryTypesOrder;
 
@@ -39,8 +47,8 @@ export default function Search() {
   useEffect(() => {
     const fetchEntryTypes = async () => {
       try {
-        // const res = await fetch(`${config.apiUrl}/map`);
-        const res = await fetch("/api.json");
+        const res = await fetch(`${config.apiUrl}/map`);
+        // const res = await fetch("/api.json");
         const data = await res.json();
         const endpointSets = data.response.endpointSets || {};
 
@@ -212,6 +220,7 @@ export default function Search() {
 
   return (
     <Box
+      ref={searchRef}
       sx={{
         mazWidth: "1056px",
         mb: 6,
@@ -396,12 +405,20 @@ export default function Search() {
       <Box sx={{ mt: 5, display: "flex", gap: 2, flexWrap: "wrap" }}>
         {hasGenomic && (
           <GenomicQueryBuilderButton
-            onClick={() => setSelectedTool("genomicQueryBuilder")}
+            onClick={() =>
+              setSelectedTool((prev) =>
+                prev === "genomicQueryBuilder" ? null : "genomicQueryBuilder"
+              )
+            }
             selected={selectedTool === "genomicQueryBuilder"}
           />
         )}
         <AllFilteringTermsButton
-          onClick={() => setSelectedTool("allFilteringTerms")}
+          onClick={() =>
+            setSelectedTool((prev) =>
+              prev === "allFilteringTerms" ? null : "allFilteringTerms"
+            )
+          }
           selected={selectedTool === "allFilteringTerms"}
         />
       </Box>

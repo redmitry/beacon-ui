@@ -2,7 +2,7 @@ import StyledButton from "./StyledButtons";
 import { ReactComponent as FilterIcon } from "../assets/logos/filteringterms.svg";
 import PropTypes from "prop-types";
 
-export default function AllFilteringTermsButton({ onClick, selected = false }) {
+export default function AllFilteringTermsButton({ onClick, selected }) {
   return (
     <StyledButton
       icon={<FilterIcon />}

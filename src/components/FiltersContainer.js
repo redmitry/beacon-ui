@@ -71,15 +71,7 @@ export default function FiltersContainer() {
   }
 
   return (
-    <Box
-      sx={{
-        p: 3,
-        backgroundColor: "white",
-        borderRadius: "10px",
-        boxShadow: "0px 8px 11px 0px #9BA0AB24",
-        maxWidth: "338px",
-      }}
-    >
+    <Box>
       <Tabs
         value={tabValue}
         onChange={handleChange}

@@ -2,10 +2,7 @@ import StyledButton from "./StyledButtons";
 import { ReactComponent as DnaIcon } from "../assets/logos/dna.svg";
 import PropTypes from "prop-types";
 
-export default function GenomicQueryBuilderButton({
-  onClick,
-  selected = false,
-}) {
+export default function GenomicQueryBuilderButton({ onClick, selected }) {
   return (
     <StyledButton
       icon={<DnaIcon />}
