@@ -1,6 +1,6 @@
 import { Chip } from "@mui/material";
 import { alpha } from "@mui/system";
-import config from "../config/config.json";
+import config from "../../config/config.json";
 
 export default function FilterLabel({ label, onClick, bgColor }) {
   let backgroundColor = "";

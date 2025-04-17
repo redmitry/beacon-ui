@@ -8,7 +8,7 @@ import {
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { useState } from "react";
 import config from "../config/config.json";
-import FilterLabel from "./FilterLabel";
+import FilterLabel from "./styling/FilterLabel";
 
 export default function GenomicAnnotations() {
   const allGenomicCategories = [
@@ -89,7 +89,8 @@ export default function GenomicAnnotations() {
         return (
           <Accordion
             key={topic}
-            expanded={expanded[topic]}
+            // expanded={expanded[topic]}
+            expanded={!!expanded[topic]}
             onChange={handleChange(topic)}
             disableGutters
             elevation={0}

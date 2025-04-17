@@ -1,4 +1,4 @@
-import StyledButton from "./StyledButtons";
+import StyledButton from "./styling/StyledButtons";
 import { ReactComponent as FilterIcon } from "../assets/logos/filteringterms.svg";
 import PropTypes from "prop-types";
 

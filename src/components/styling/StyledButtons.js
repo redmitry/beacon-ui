@@ -1,7 +1,7 @@
 import { Button } from "@mui/material";
 import PropTypes from "prop-types";
-import config from "../config/config.json";
-import { darken, lighten } from "@mui/system";
+import config from "../../config/config.json";
+import { lighten } from "@mui/system";
 import { alpha } from "@mui/material/styles";
 
 export default function AllFilteringTerms({ icon, label, selected, onClick }) {
@@ -36,7 +36,7 @@ export default function AllFilteringTerms({ icon, label, selected, onClick }) {
 
 const primaryColor = config.ui.colors.primary;
 const unselectedBorderColor = alpha(primaryColor, 0.15);
-const selectedBg = lighten(primaryColor, 0.5);
+const selectedBg = alpha(primaryColor, 0.15);
 const primaryDarkColor = config.ui.colors.darkPrimary;
 const selectedBgColor = lighten(primaryDarkColor, 0.9);
 

@@ -17,13 +17,17 @@ import { useSelectedEntry } from "./context/SelectedEntryContext";
 import GenomicQueryBuilderButton from "./GenomicQueryBuilderButton";
 import AllFilteringTermsButton from "./AllFilteringTermsButton";
 
-export default function Search({ onHeightChange }) {
+export default function Search({
+  onHeightChange,
+  selectedTool,
+  setSelectedTool,
+}) {
   const { entryTypes, setEntryTypes } = useSelectedEntry();
   const [loading, setLoading] = useState(true);
   const [activeInput, setActiveInput] = useState(null);
   const { selectedPathSegment, setSelectedPathSegment } = useSelectedEntry();
   const [assembly, setAssembly] = useState(config.assemblyId[0]);
-  const [selectedTool, setSelectedTool] = useState(null);
+
   const searchRef = useRef(null);
 
   useEffect(() => {
@@ -124,6 +128,12 @@ export default function Search({ onHeightChange }) {
     runs: "Text for run",
   };
 
+  const handleAllFilteringClick = () => {
+    setSelectedTool((prev) =>
+      prev === "allFilteringTerms" ? null : "allFilteringTerms"
+    );
+  };
+
   const renderInput = (type) => {
     if (type === "genomic") {
       return (
@@ -219,209 +229,209 @@ export default function Search({ onHeightChange }) {
   };
 
   return (
-    <Box
-      ref={searchRef}
-      sx={{
-        mazWidth: "1056px",
-        mb: 6,
-        borderRadius: "10px",
-        backgroundColor: "#FFFFFF",
-        boxShadow: "0px 8px 11px 0px #9BA0AB24",
-        p: "24px 32px",
-      }}
-    >
-      <Typography
+    <>
+      <Box
+        ref={searchRef}
         sx={{
-          mb: 2,
-          fontWeight: 700,
-          fontFamily: '"Open Sans", sans-serif',
-          fontSize: entryTypes.length === 1 ? "16px" : "14px",
+          mazWidth: "1056px",
+          mb: 6,
+          borderRadius: "10px",
+          backgroundColor: "#FFFFFF",
+          boxShadow: "0px 8px 11px 0px #9BA0AB24",
+          p: "24px 32px",
         }}
       >
-        {isSingleEntryType
-          ? `Search ${
-              singleEntryCustomLabels[onlyEntryPath] ||
-              formatEntryLabel(onlyEntryPath)
-            }`
-          : "Search"}
-      </Typography>
+        <Typography
+          sx={{
+            mb: 2,
+            fontWeight: 700,
+            fontFamily: '"Open Sans", sans-serif',
+            fontSize: entryTypes.length === 1 ? "16px" : "14px",
+          }}
+        >
+          {isSingleEntryType
+            ? `Search ${
+                singleEntryCustomLabels[onlyEntryPath] ||
+                formatEntryLabel(onlyEntryPath)
+              }`
+            : "Search"}
+        </Typography>
 
-      {!isSingleEntryType && (
-        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-          <Typography
-            variant="body1"
-            sx={{ fontFamily: '"Open Sans", sans-serif', fontSize: "14px" }}
-          >
-            1. Choose the <b>result type</b> for your search.
-          </Typography>
+        {!isSingleEntryType && (
+          <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+            <Typography
+              variant="body1"
+              sx={{ fontFamily: '"Open Sans", sans-serif', fontSize: "14px" }}
+            >
+              1. Choose the <b>result type</b> for your search.
+            </Typography>
 
-          <Tooltip
-            title={
-              <Box
-                component="ul"
-                sx={{ pl: "20px", fontFamily: '"Open Sans", sans-serif' }}
-              >
-                {entryTypes.map((entry) => (
-                  <li key={entry.pathSegment}>
-                    <b>{formatEntryLabel(entry.pathSegment)}</b>:{" "}
-                    {entryTypeDescriptions[entry.pathSegment] ||
-                      `No description for ${entry.pathSegment}`}
-                  </li>
-                ))}
-              </Box>
-            }
-            placement="top-start"
-            arrow
-            componentsProps={{
-              tooltip: {
-                sx: {
-                  backgroundColor: "#fff",
-                  color: "#000",
-                  border: "1px solid black",
-                  minWidth: "400px",
+            <Tooltip
+              title={
+                <Box
+                  component="ul"
+                  sx={{ pl: "20px", fontFamily: '"Open Sans", sans-serif' }}
+                >
+                  {entryTypes.map((entry) => (
+                    <li key={entry.pathSegment}>
+                      <b>{formatEntryLabel(entry.pathSegment)}</b>:{" "}
+                      {entryTypeDescriptions[entry.pathSegment] ||
+                        `No description for ${entry.pathSegment}`}
+                    </li>
+                  ))}
+                </Box>
+              }
+              placement="top-start"
+              arrow
+              componentsProps={{
+                tooltip: {
+                  sx: {
+                    backgroundColor: "#fff",
+                    color: "#000",
+                    border: "1px solid black",
+                    minWidth: "400px",
+                  },
                 },
-              },
-              arrow: {
-                sx: {
-                  color: "#fff",
-                  "&::before": { border: "1px solid black" },
+                arrow: {
+                  sx: {
+                    color: "#fff",
+                    "&::before": { border: "1px solid black" },
+                  },
                 },
-              },
-            }}
-          >
-            <Box
-              component="span"
-              sx={{
-                cursor: "pointer",
-                ml: 3,
-                mb: "4px",
-                width: "20px",
-                height: "20px",
-                borderRadius: "30px",
-                backgroundColor: primaryColor,
-                color: "white",
-                textAlign: "center",
-                fontSize: "14px",
               }}
             >
-              i
-            </Box>
-          </Tooltip>
-        </Box>
-      )}
+              <Box
+                component="span"
+                sx={{
+                  cursor: "pointer",
+                  ml: 3,
+                  mb: "4px",
+                  width: "20px",
+                  height: "20px",
+                  borderRadius: "30px",
+                  backgroundColor: primaryColor,
+                  color: "white",
+                  textAlign: "center",
+                  fontSize: "14px",
+                }}
+              >
+                i
+              </Box>
+            </Tooltip>
+          </Box>
+        )}
 
-      {loading ? (
-        <CircularProgress />
-      ) : !isSingleEntryType ? (
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
-          {entryTypes.map((entry) => (
-            <Button
-              key={entry.id}
-              onClick={() => setSelectedPathSegment(entry.pathSegment)}
-              variant="outlined"
-              sx={{
-                borderRadius: "999px",
-                fontWeight: 700,
-                textTransform: "none",
-                fontFamily: '"Open Sans", sans-serif',
-                fontSize: "14px",
-                backgroundColor:
-                  selectedPathSegment === entry.pathSegment
-                    ? selectedBgColor
-                    : "#FFFFFF",
-                color:
-                  selectedPathSegment === entry.pathSegment
-                    ? "black"
-                    : primaryColor,
-                border: `1px solid ${
-                  selectedPathSegment === entry.pathSegment
-                    ? "black"
-                    : primaryColor
-                }`,
-                boxShadow: "none",
-                "&:hover": {
+        {loading ? (
+          <CircularProgress />
+        ) : !isSingleEntryType ? (
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+            {entryTypes.map((entry) => (
+              <Button
+                key={entry.id}
+                onClick={() => setSelectedPathSegment(entry.pathSegment)}
+                variant="outlined"
+                sx={{
+                  borderRadius: "999px",
+                  fontWeight: 700,
+                  textTransform: "none",
+                  fontFamily: '"Open Sans", sans-serif',
+                  fontSize: "14px",
                   backgroundColor:
                     selectedPathSegment === entry.pathSegment
                       ? selectedBgColor
-                      : darken("#FFFFFF", 0.05),
-                },
-              }}
+                      : "#FFFFFF",
+                  color:
+                    selectedPathSegment === entry.pathSegment
+                      ? "black"
+                      : primaryColor,
+                  border: `1px solid ${
+                    selectedPathSegment === entry.pathSegment
+                      ? "black"
+                      : primaryColor
+                  }`,
+                  boxShadow: "none",
+                  "&:hover": {
+                    backgroundColor:
+                      selectedPathSegment === entry.pathSegment
+                        ? selectedBgColor
+                        : darken("#FFFFFF", 0.05),
+                  },
+                }}
+              >
+                {formatEntryLabel(entry.pathSegment)}
+              </Button>
+            ))}
+          </Box>
+        ) : null}
+
+        <Box sx={{ display: "flex", alignItems: "center", mb: 2, mt: 4 }}>
+          {isSingleNonGenomic ? (
+            <Typography
+              variant="body1"
+              sx={{ fontFamily: '"Open Sans", sans-serif', fontSize: "14px" }}
             >
-              {formatEntryLabel(entry.pathSegment)}
-            </Button>
-          ))}
+              Add the <b>Filtering Terms</b> you need for your search:
+            </Typography>
+          ) : (
+            <Typography
+              variant="body1"
+              sx={{ fontFamily: '"Open Sans", sans-serif', fontSize: "14px" }}
+            >
+              {isSingleEntryType ? "" : "2. "}
+              Use the search bar on the left to add{" "}
+              <b>
+                {isGenomicFirstOrOnly ? "Genomic query" : "Filtering terms"}
+              </b>{" "}
+              or the search bar on the right to add a{" "}
+              <b>
+                {isGenomicFirstOrOnly ? "Filtering terms" : "Genomic query"}:
+              </b>
+            </Typography>
+          )}
         </Box>
-      ) : null}
 
-      <Box sx={{ display: "flex", alignItems: "center", mb: 2, mt: 4 }}>
-        {isSingleNonGenomic ? (
-          <Typography
-            variant="body1"
-            sx={{ fontFamily: '"Open Sans", sans-serif', fontSize: "14px" }}
-          >
-            Add the <b>Filtering Terms</b> you need for your search:
-          </Typography>
-        ) : (
-          <Typography
-            variant="body1"
-            sx={{ fontFamily: '"Open Sans", sans-serif', fontSize: "14px" }}
-          >
-            {isSingleEntryType ? "" : "2. "}
-            Use the search bar on the left to add{" "}
-            <b>
-              {isGenomicFirstOrOnly ? "Genomic query" : "Filtering terms"}
-            </b>{" "}
-            or the search bar on the right to add a{" "}
-            <b>{isGenomicFirstOrOnly ? "Filtering terms" : "Genomic query"}:</b>
-          </Typography>
-        )}
-      </Box>
-
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: { xs: "column", sm: "row" },
-          gap: 2,
-        }}
-      >
-        {isSingleNonGenomic ? (
-          renderInput("filter")
-        ) : isGenomicFirstOrOnly ? (
-          hasGenomic && (
-            <>
-              {renderInput("genomic")}
-              {renderInput("filter")}
-            </>
-          )
-        ) : hasGenomic ? (
-          <>
-            {renderInput("filter")}
-            {renderInput("genomic")}
-          </>
-        ) : (
-          renderInput("filter")
-        )}
-      </Box>
-      <Box sx={{ mt: 5, display: "flex", gap: 2, flexWrap: "wrap" }}>
-        {hasGenomic && (
-          <GenomicQueryBuilderButton
-            onClick={() =>
-              setSelectedTool((prev) =>
-                prev === "genomicQueryBuilder" ? null : "genomicQueryBuilder"
-              )
-            }
-            selected={selectedTool === "genomicQueryBuilder"}
-          />
-        )}
-        <AllFilteringTermsButton
-          onClick={() =>
-            setSelectedTool((prev) =>
-              prev === "allFilteringTerms" ? null : "allFilteringTerms"
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            gap: 2,
+          }}
+        >
+          {isSingleNonGenomic ? (
+            renderInput("filter")
+          ) : isGenomicFirstOrOnly ? (
+            hasGenomic && (
+              <>
+                {renderInput("genomic")}
+                {renderInput("filter")}
+              </>
             )
-          }
-          selected={selectedTool === "allFilteringTerms"}
-        />
+          ) : hasGenomic ? (
+            <>
+              {renderInput("filter")}
+              {renderInput("genomic")}
+            </>
+          ) : (
+            renderInput("filter")
+          )}
+        </Box>
+        <Box sx={{ mt: 5, display: "flex", gap: 2, flexWrap: "wrap" }}>
+          {hasGenomic && (
+            <GenomicQueryBuilderButton
+              onClick={() =>
+                setSelectedTool((prev) =>
+                  prev === "genomicQueryBuilder" ? null : "genomicQueryBuilder"
+                )
+              }
+              selected={selectedTool === "genomicQueryBuilder"}
+            />
+          )}
+          <AllFilteringTermsButton
+            onClick={handleAllFilteringClick}
+            selected={selectedTool === "allFilteringTerms"}
+          />
+        </Box>
       </Box>
-    </Box>
+    </>
   );
 }

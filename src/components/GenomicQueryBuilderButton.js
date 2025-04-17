@@ -1,4 +1,4 @@
-import StyledButton from "./StyledButtons";
+import StyledButton from "./styling/StyledButtons";
 import { ReactComponent as DnaIcon } from "../assets/logos/dna.svg";
 import PropTypes from "prop-types";
 

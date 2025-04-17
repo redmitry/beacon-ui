@@ -17,8 +17,10 @@ import {
   Navigate,
 } from "react-router-dom";
 import { SelectedEntryProvider } from "./components/context/SelectedEntryContext";
+import AllFilteringTermsComponent from "./components/AllFilteringTermsComponent";
 
 export default function App() {
+  const [selectedTool, setSelectedTool] = useState(null);
   const baseNavItems = [
     { label: "Network Members", url: "/network-members" },
     ...(config.ui.showAboutPage ? [{ label: "About", url: "/about" }] : []),
@@ -58,10 +60,23 @@ export default function App() {
 
         <Box
           component="main"
-          sx={{ pt: 10, px: { xs: 2, md: 4 }, flexGrow: 1 }}
+          sx={{
+            pt: 10,
+            px: { xs: 2, md: 4 },
+            flexGrow: 1,
+          }}
         >
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route
+              path="/"
+              element={
+                <HomePage
+                  selectedTool={selectedTool}
+                  setSelectedTool={setSelectedTool}
+                />
+              }
+            />
+
             <Route path="/network-members" element={<NetworkMembers />} />
             {config.ui.showAboutPage && (
               <Route path="/about" element={<About />} />
@@ -72,6 +87,16 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
+          {selectedTool === "allFilteringTerms" && (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <AllFilteringTermsComponent />
+            </Box>
+          )}
         </Box>
 
         <Footer navItems={navItems} />
@@ -80,7 +105,7 @@ export default function App() {
   );
 }
 
-function HomePage() {
+function HomePage({ selectedTool, setSelectedTool }) {
   const [searchHeight, setSearchHeight] = useState(null);
   return (
     <SelectedEntryProvider>
@@ -90,6 +115,7 @@ function HomePage() {
           flexDirection: { xs: "column", md: "row" },
           gap: 4,
           flexWrap: "wrap",
+          height: "470px",
         }}
       >
         <Box
@@ -100,7 +126,11 @@ function HomePage() {
           }}
         >
           <Founders />
-          <Search onHeightChange={setSearchHeight} />
+          <Search
+            onHeightChange={setSearchHeight}
+            selectedTool={selectedTool}
+            setSelectedTool={setSelectedTool}
+          />
         </Box>
 
         <Box
@@ -109,9 +139,9 @@ function HomePage() {
             flexShrink: 0,
             position: { md: "sticky" },
             mt: { xs: "0px", md: "30px" },
-            mb: "50px",
+            mb: { xs: "50px", md: "40px", lg: "0px" },
             alignSelf: "flex-start",
-            height: `${searchHeight + 55}px`,
+            height: `${searchHeight + 45}px`,
             backgroundColor: "white",
             p: 3,
             borderRadius: "10px",
