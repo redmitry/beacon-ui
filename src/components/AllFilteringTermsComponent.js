@@ -18,7 +18,8 @@ export default function AllFilteringTermsTable() {
   useEffect(() => {
     const fetchFilteringTerms = async () => {
       try {
-        const res = await fetch(`${config.apiUrl}/filtering_terms`);
+        // const res = await fetch(`${config.apiUrl}/filtering_terms`);
+        const res = await fetch("/api.json");
         const data = await res.json();
         setFilteringTerms(data);
       } catch (err) {

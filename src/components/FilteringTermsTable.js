@@ -26,6 +26,9 @@ export default function FilteringTermsTable({ filteringTerms }) {
     fontWeight: 700,
   };
 
+  const capitalize = (word) =>
+    word?.charAt(0).toUpperCase() + word?.slice(1).toLowerCase();
+
   const allFilteringTerms = filteringTerms?.response?.filteringTerms ?? [];
 
   const handleChangePage = (event, newPage) => {
@@ -62,7 +65,40 @@ export default function FilteringTermsTable({ filteringTerms }) {
                 <TableRow key={index}>
                   <TableCell>{term.id}</TableCell>
                   <TableCell>{term.label || ""}</TableCell>
-                  <TableCell>{term.scopes?.join(", ") || ""}</TableCell>
+                  <TableCell>
+                    {term.scopes?.map((scope, i) => (
+                      <Box
+                        key={i}
+                        component="span"
+                        sx={{
+                          display: "inline-block",
+                          backgroundColor:
+                            scope.toLowerCase() === "individual"
+                              ? config.ui.colors.primary
+                              : "#fff",
+                          color:
+                            scope.toLowerCase() === "individual"
+                              ? "#fff"
+                              : config.ui.colors.darkPrimary,
+                          border: `1px solid ${
+                            scope.toLowerCase() === "individual"
+                              ? config.ui.colors.primary
+                              : config.ui.colors.darkPrimary
+                          }`,
+                          borderRadius: "7px",
+                          fontSize: "12px",
+                          px: 1.5,
+                          py: 0.3,
+                          mr: 1,
+                          mb: 0.5,
+                          fontFamily: '"Open Sans", sans-serif',
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {capitalize(scope)}
+                      </Box>
+                    ))}
+                  </TableCell>
                 </TableRow>
               ))}
           </TableBody>
