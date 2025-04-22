@@ -5,12 +5,16 @@ import SearchIcon from "@mui/icons-material/Search";
 import { alpha } from "@mui/material/styles";
 import FilteringTermsTable from "./FilteringTermsTable";
 import { useSelectedEntry } from "./context/SelectedEntryContext";
+import { InputAdornment, IconButton } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import Fuse from "fuse.js";
 
 export default function AllFilteringTermsComponent() {
   const [filteringTerms, setFilteringTerms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const { selectedPathSegment } = useSelectedEntry();
+  const [filteredTerms, setFilteredTerms] = useState([]);
 
   const primaryDarkColor = config.ui.colors.darkPrimary;
   const primaryColor = config.ui.colors.primary;
@@ -20,8 +24,8 @@ export default function AllFilteringTermsComponent() {
   useEffect(() => {
     const fetchFilteringTerms = async () => {
       try {
-        // const res = await fetch(`${config.apiUrl}/filtering_terms`);
-        const res = await fetch("/api.json");
+        const res = await fetch(`${config.apiUrl}/filtering_terms`);
+        // const res = await fetch("/api.json");
         const data = await res.json();
         setFilteringTerms(data);
       } catch (err) {
@@ -33,6 +37,22 @@ export default function AllFilteringTermsComponent() {
 
     fetchFilteringTerms();
   }, []);
+
+  useEffect(() => {
+    if (!filteringTerms?.response?.filteringTerms) return;
+
+    const fuse = new Fuse(filteringTerms.response.filteringTerms, {
+      keys: ["id", "label"],
+      threshold: 0.6,
+    });
+
+    if (searchQuery.trim() === "") {
+      setFilteredTerms(filteringTerms.response.filteringTerms);
+    } else {
+      const results = fuse.search(searchQuery);
+      setFilteredTerms(results.map((res) => res.item));
+    }
+  }, [searchQuery, filteringTerms]);
 
   return (
     <Box
@@ -66,7 +86,20 @@ export default function AllFilteringTermsComponent() {
           variant="outlined"
           InputProps={{
             startAdornment: (
-              <SearchIcon sx={{ color: primaryDarkColor, mr: 1 }} />
+              <InputAdornment position="start">
+                <SearchIcon sx={{ color: primaryDarkColor, mr: 1 }} />
+              </InputAdornment>
+            ),
+            endAdornment: searchQuery && (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => setSearchQuery("")}
+                  size="small"
+                  sx={{ color: primaryDarkColor }}
+                >
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              </InputAdornment>
             ),
           }}
           sx={{
@@ -106,7 +139,7 @@ export default function AllFilteringTermsComponent() {
         }}
       >
         <FilteringTermsTable
-          filteringTerms={filteringTerms}
+          filteringTerms={{ response: { filteringTerms: filteredTerms } }}
           defaultScope={selectedPathSegment}
         />
       </Box>

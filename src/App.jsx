@@ -88,17 +88,6 @@ export default function App() {
               <Route path="/login" element={<Login />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
-
-            {selectedTool === "allFilteringTerms" && (
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                }}
-              >
-                <AllFilteringTermsComponent />
-              </Box>
-            )}
           </Box>
 
           <Footer navItems={navItems} />
@@ -118,7 +107,7 @@ function HomePage({ selectedTool, setSelectedTool }) {
         flexDirection: { xs: "column", md: "row" },
         gap: 4,
         flexWrap: "wrap",
-        height: "470px",
+        flexGrow: 1,
       }}
     >
       <Box
@@ -154,6 +143,19 @@ function HomePage({ selectedTool, setSelectedTool }) {
       >
         <FiltersContainer />
       </Box>
+      {selectedTool === "allFilteringTerms" && (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            width: "100%",
+            marginTop: "-40px",
+            marginBottom: "40px",
+          }}
+        >
+          <AllFilteringTermsComponent />
+        </Box>
+      )}
     </Box>
   );
 }

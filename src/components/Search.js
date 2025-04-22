@@ -16,6 +16,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useSelectedEntry } from "./context/SelectedEntryContext";
 import GenomicQueryBuilderButton from "./GenomicQueryBuilderButton";
 import AllFilteringTermsButton from "./AllFilteringTermsButton";
+import FilteringTermsDropdownResults from "./FilteringTermsDropdownResults";
 
 export default function Search({
   onHeightChange,
@@ -25,6 +26,7 @@ export default function Search({
   const { entryTypes, setEntryTypes } = useSelectedEntry();
   const [loading, setLoading] = useState(true);
   const [activeInput, setActiveInput] = useState(null);
+  const [searchInput, setSearchInput] = useState("");
   const { selectedPathSegment, setSelectedPathSegment } = useSelectedEntry();
   const [assembly, setAssembly] = useState(config.assemblyId[0]);
 
@@ -219,11 +221,14 @@ export default function Search({
         <InputBase
           placeholder="Search by Filtering Terms"
           fullWidth
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
           sx={{
             fontFamily: '"Open Sans", sans-serif',
             fontSize: "14px",
           }}
         />
+        <FilteringTermsDropdownResults searchInput={searchInput} />
       </Box>
     );
   };
