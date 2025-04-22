@@ -4,11 +4,13 @@ import config from "../config/config.json";
 import SearchIcon from "@mui/icons-material/Search";
 import { alpha } from "@mui/material/styles";
 import FilteringTermsTable from "./FilteringTermsTable";
+import { useSelectedEntry } from "./context/SelectedEntryContext";
 
-export default function AllFilteringTermsTable() {
+export default function AllFilteringTermsComponent() {
   const [filteringTerms, setFilteringTerms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const { selectedPathSegment } = useSelectedEntry();
 
   const primaryDarkColor = config.ui.colors.darkPrimary;
   const primaryColor = config.ui.colors.primary;
@@ -103,7 +105,10 @@ export default function AllFilteringTermsTable() {
           width: "100%",
         }}
       >
-        <FilteringTermsTable filteringTerms={filteringTerms} />
+        <FilteringTermsTable
+          filteringTerms={filteringTerms}
+          defaultScope={selectedPathSegment}
+        />
       </Box>
     </Box>
   );

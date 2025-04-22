@@ -21,6 +21,7 @@ import AllFilteringTermsComponent from "./components/AllFilteringTermsComponent"
 
 export default function App() {
   const [selectedTool, setSelectedTool] = useState(null);
+
   const baseNavItems = [
     { label: "Network Members", url: "/network-members" },
     ...(config.ui.showAboutPage ? [{ label: "About", url: "/about" }] : []),
@@ -42,116 +43,117 @@ export default function App() {
   const navItems = [...cleanedExternalLinks, ...filteredBaseItems];
 
   return (
-    <Router>
-      <Box
-        sx={{
-          backgroundColor: "#F5F5F5",
-          minHeight: "100vh",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <CssBaseline />
-        <Navbar
-          title={config.ui.title}
-          main={config.ui.logos.main}
-          navItems={navItems}
-        />
-
+    <SelectedEntryProvider>
+      <Router>
         <Box
-          component="main"
           sx={{
-            pt: 10,
-            px: { xs: 2, md: 4 },
-            flexGrow: 1,
+            backgroundColor: "#F5F5F5",
+            minHeight: "100vh",
+            display: "flex",
+            flexDirection: "column",
           }}
         >
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <HomePage
-                  selectedTool={selectedTool}
-                  setSelectedTool={setSelectedTool}
-                />
-              }
-            />
+          <CssBaseline />
+          <Navbar
+            title={config.ui.title}
+            main={config.ui.logos.main}
+            navItems={navItems}
+          />
 
-            <Route path="/network-members" element={<NetworkMembers />} />
-            {config.ui.showAboutPage && (
-              <Route path="/about" element={<About />} />
+          <Box
+            component="main"
+            sx={{
+              pt: 10,
+              px: { xs: 2, md: 4 },
+              flexGrow: 1,
+            }}
+          >
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <HomePage
+                    selectedTool={selectedTool}
+                    setSelectedTool={setSelectedTool}
+                  />
+                }
+              />
+              <Route path="/network-members" element={<NetworkMembers />} />
+              {config.ui.showAboutPage && (
+                <Route path="/about" element={<About />} />
+              )}
+              {config.ui.showContactPage && (
+                <Route path="/contact" element={<Contact />} />
+              )}
+              <Route path="/login" element={<Login />} />
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+
+            {selectedTool === "allFilteringTerms" && (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <AllFilteringTermsComponent />
+              </Box>
             )}
-            {config.ui.showContactPage && (
-              <Route path="/contact" element={<Contact />} />
-            )}
-            <Route path="/login" element={<Login />} />
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-          {selectedTool === "allFilteringTerms" && (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              <AllFilteringTermsComponent />
-            </Box>
-          )}
+          </Box>
+
+          <Footer navItems={navItems} />
         </Box>
-
-        <Footer navItems={navItems} />
-      </Box>
-    </Router>
+      </Router>
+    </SelectedEntryProvider>
   );
 }
 
 function HomePage({ selectedTool, setSelectedTool }) {
   const [searchHeight, setSearchHeight] = useState(null);
+
   return (
-    <SelectedEntryProvider>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: { xs: "column", md: "row" },
+        gap: 4,
+        flexWrap: "wrap",
+        height: "470px",
+      }}
+    >
       <Box
         sx={{
+          flexGrow: { xs: 0, md: 1 },
           display: "flex",
-          flexDirection: { xs: "column", md: "row" },
-          gap: 4,
-          flexWrap: "wrap",
-          height: "470px",
+          flexDirection: "column",
         }}
       >
-        <Box
-          sx={{
-            flexGrow: { xs: 0, md: 1 },
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <Founders />
-          <Search
-            onHeightChange={setSearchHeight}
-            selectedTool={selectedTool}
-            setSelectedTool={setSelectedTool}
-          />
-        </Box>
-
-        <Box
-          sx={{
-            width: { xs: "100%", md: "338px" },
-            flexShrink: 0,
-            position: { md: "sticky" },
-            mt: { xs: "0px", md: "30px" },
-            mb: { xs: "50px", md: "40px", lg: "0px" },
-            alignSelf: "flex-start",
-            height: `${searchHeight + 45}px`,
-            backgroundColor: "white",
-            p: 3,
-            borderRadius: "10px",
-            boxShadow: "0px 8px 11px 0px #9BA0AB24",
-            maxWidth: "338px",
-          }}
-        >
-          <FiltersContainer />
-        </Box>
+        <Founders />
+        <Search
+          onHeightChange={setSearchHeight}
+          selectedTool={selectedTool}
+          setSelectedTool={setSelectedTool}
+        />
       </Box>
-    </SelectedEntryProvider>
+
+      <Box
+        sx={{
+          width: { xs: "100%", md: "338px" },
+          flexShrink: 0,
+          position: { md: "sticky" },
+          mt: { xs: "0px", md: "30px" },
+          mb: { xs: "50px", md: "40px", lg: "0px" },
+          alignSelf: "flex-start",
+          height: `${searchHeight + 45}px`,
+          backgroundColor: "white",
+          p: 3,
+          borderRadius: "10px",
+          boxShadow: "0px 8px 11px 0px #9BA0AB24",
+          maxWidth: "338px",
+        }}
+      >
+        <FiltersContainer />
+      </Box>
+    </Box>
   );
 }
