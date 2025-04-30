@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Paper,
   List,
@@ -9,10 +9,28 @@ import {
 } from "@mui/material";
 import Fuse from "fuse.js";
 import config from "../config/config.json";
-const FilteringTermsDropdownResults = ({ searchInput }) => {
+
+const FilteringTermsDropdownResults = ({ searchInput, onCloseDropdown }) => {
   const [allTerms, setAllTerms] = useState([]);
   const [filteredTerms, setFilteredTerms] = useState([]);
   const [loading, setLoading] = useState(false);
+  const containerRef = useRef();
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target)
+      ) {
+        onCloseDropdown();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const primaryDarkColor = config.ui.colors.darkPrimary;
 
@@ -57,11 +75,13 @@ const FilteringTermsDropdownResults = ({ searchInput }) => {
   return (
     <Box
       fullWidth
+      ref={containerRef}
       sx={{
         position: "absolute",
-        width: "60%",
-        zIndex: 3,
-        cursor: "pointer",
+        top: "100%",
+        left: 0,
+        width: "100%",
+        zIndex: 5,
       }}
     >
       {loading ? (
@@ -81,15 +101,41 @@ const FilteringTermsDropdownResults = ({ searchInput }) => {
               border: `1px solid ${primaryDarkColor}`,
             }}
           >
-            <List>
-              {filteredTerms.map((term) => (
-                <ListItem key={term.id} button>
-                  <ListItemText
-                    primary={term.label}
-                    secondary={term.id}
-                    primaryTypographyProps={{ fontSize: "14px" }}
-                    secondaryTypographyProps={{ fontSize: "12px" }}
-                  />
+            <List disablePadding>
+              {filteredTerms.map((term, index) => (
+                <ListItem
+                  key={term.id}
+                  button
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    borderBottom:
+                      index !== filteredTerms.length - 1
+                        ? "1px solid #E0E0E0"
+                        : "none",
+                    px: 2,
+                    py: 1,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      fontSize: "12px",
+                      fontFamily: '"Open Sans", sans-serif',
+                      color: "#000",
+                    }}
+                  >
+                    {term.label}
+                  </Box>
+                  <Box
+                    sx={{
+                      fontSize: "12px",
+                      fontFamily: '"Open Sans", sans-serif',
+                      color: "#666",
+                    }}
+                  >
+                    {term.id}
+                  </Box>
                 </ListItem>
               ))}
             </List>
