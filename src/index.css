@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.tabpanel {
+  height: 100%;
+  min-height: 360px;
+}

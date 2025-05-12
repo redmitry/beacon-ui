@@ -9,14 +9,16 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { useState } from "react";
 import config from "../config/config.json";
 import FilterLabel from "./styling/FilterLabel";
+import { useSelectedEntry } from "./context/SelectedEntryContext";
 
 export default function CommonFilters() {
   const filterCategories = config.ui.commonFilters.filterCategories;
   const filterLabels = config.ui.commonFilters.filterLabels;
+  const { selectedFilter, setSelectedFilter, setExtraFilter } = useSelectedEntry();
 
   const getValidLabels = (topic) =>
     filterLabels[topic]?.filter(
-      (label) => label.trim() !== "" && !/^label\d*$/i.test(label.trim())
+      (item) => (item.label).trim() !== "" && !/^(item.label)\d*$/i.test((item.label).trim())
     ) ?? [];
 
   const [expanded, setExpanded] = useState(() => {
@@ -37,6 +39,20 @@ export default function CommonFilters() {
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded({ [panel]: isExpanded });
   };
+
+  const handleCommonFilterChange = (item) => {
+    console.log("item: ", item)
+    if(item.type === "alphanumeric") {
+      setExtraFilter(item);
+    } else {
+      setSelectedFilter((prevFilters) => {
+        if (prevFilters.some(filter => filter.key === item.key)) {
+          return prevFilters;
+        }
+        return [...prevFilters, item];
+      });
+    }
+  }
 
   const summarySx = {
     px: 0,
@@ -85,11 +101,11 @@ export default function CommonFilters() {
             </AccordionSummary>
             <AccordionDetails sx={{ px: 0, pt: 0 }}>
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                {validLabels.map((label) => (
+                {validLabels.map((item) => (
                   <FilterLabel
-                    key={label}
-                    label={label}
-                    onClick={() => console.log(label)}
+                    key={item.label}
+                    label={item.label}
+                    onClick={() => handleCommonFilterChange(item)}
                     bgColor="common"
                   />
                 ))}

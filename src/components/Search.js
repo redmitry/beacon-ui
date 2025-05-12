@@ -17,6 +17,9 @@ import { useSelectedEntry } from "./context/SelectedEntryContext";
 import GenomicQueryBuilderButton from "./GenomicQueryBuilderButton";
 import AllFilteringTermsButton from "./AllFilteringTermsButton";
 import FilteringTermsDropdownResults from "./FilteringTermsDropdownResults";
+import QueryFilter from './search/QueryApplied';
+import SearchButton from "./search/SearchButton";
+import FilterTermsExtra from "./search/FilterTemsExtra";
 
 export default function Search({
   onHeightChange,
@@ -24,6 +27,8 @@ export default function Search({
   setSelectedTool,
 }) {
   const { entryTypes, setEntryTypes } = useSelectedEntry();
+  const { selectedFilter, setSelectedFilter } = useSelectedEntry();
+  const { extraFilter } = useSelectedEntry();
   const [loading, setLoading] = useState(true);
   const [activeInput, setActiveInput] = useState(null);
   const [searchInput, setSearchInput] = useState("");
@@ -459,21 +464,37 @@ export default function Search({
             renderInput("filter")
           )}
         </Box>
-        <Box sx={{ mt: 5, display: "flex", gap: 2, flexWrap: "wrap" }}>
-          {hasGenomic && (
-            <GenomicQueryBuilderButton
-              onClick={() =>
-                setSelectedTool((prev) =>
-                  prev === "genomicQueryBuilder" ? null : "genomicQueryBuilder"
-                )
-              }
-              selected={selectedTool === "genomicQueryBuilder"}
+        { extraFilter && (
+          <FilterTermsExtra />
+        )}
+        { selectedFilter.length>0 && (
+          <QueryFilter />
+        )}
+        <Box sx={{ mt: 5, display: "flex", gap: 2, flexWrap: "wrap", justifyContent: "space-between" }}>
+          <Box
+            sx={{ 
+              display: "flex", 
+              gap: 2
+            }}
+            >
+            {hasGenomic && (
+              <GenomicQueryBuilderButton
+                onClick={() =>
+                  setSelectedTool((prev) =>
+                    prev === "genomicQueryBuilder" ? null : "genomicQueryBuilder"
+                  )
+                }
+                selected={selectedTool === "genomicQueryBuilder"}
+              />
+            )}
+            <AllFilteringTermsButton
+              onClick={handleAllFilteringClick}
+              selected={selectedTool === "allFilteringTerms"}
             />
-          )}
-          <AllFilteringTermsButton
-            onClick={handleAllFilteringClick}
-            selected={selectedTool === "allFilteringTerms"}
-          />
+          </Box>
+          <Box>
+            <SearchButton />
+          </Box>
         </Box>
       </Box>
     </>
