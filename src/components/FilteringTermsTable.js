@@ -48,7 +48,6 @@ export default function FilteringTermsTable({ filteringTerms, defaultScope }) {
 
     setSelectedScopes(defaults);
   }, [filteringTerms, defaultScope]);
-  console.log(defaultScope);
 
   const bgPrimary = lighten(config.ui.colors.primary, 0.8);
   const primary = config.ui.colors.primary;

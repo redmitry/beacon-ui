@@ -28,7 +28,7 @@ export default function Search({
 }) {
   const { entryTypes, setEntryTypes } = useSelectedEntry();
   const { selectedFilter, setSelectedFilter } = useSelectedEntry();
-  const { extraFilter } = useSelectedEntry();
+  const { extraFilter, hasSearchResults } = useSelectedEntry();
   const [loading, setLoading] = useState(true);
   const [activeInput, setActiveInput] = useState(null);
   const [searchInput, setSearchInput] = useState("");
@@ -58,14 +58,16 @@ export default function Search({
   useEffect(() => {
     const fetchEntryTypes = async () => {
       try {
-        const res = await fetch(`${config.apiUrl}/map`);
+        const res = await fetch(`${config.apiUrlNetwork}/map`);
         // const res = await fetch("/api.json");
         const data = await res.json();
         const endpointSets = data.response.endpointSets || {};
 
-        const entries = Object.entries(endpointSets).map(([key, value]) => {
-          const pathSegment = value.rootUrl?.split("/").pop();
-          return { id: key, pathSegment };
+        const entries = Object.entries(endpointSets)
+          .filter(([key, value]) =>  !key.includes('Endpoints') && !key.includes('genomicVariation'))
+          .map(([key, value]) => {
+            const pathSegment = value.rootUrl?.split("/").pop();
+            return { id: key, pathSegment };
         });
 
         const sorted = sortEntries(entries);
@@ -282,7 +284,7 @@ export default function Search({
       <Box
         ref={searchRef}
         sx={{
-          mazWidth: "1056px",
+          maxWidth: "1056px",
           mb: 6,
           borderRadius: "10px",
           backgroundColor: "#FFFFFF",
@@ -467,7 +469,7 @@ export default function Search({
         { extraFilter && (
           <FilterTermsExtra />
         )}
-        { selectedFilter.length>0 && (
+        { !hasSearchResults && selectedFilter.length>0 && (
           <QueryFilter />
         )}
         <Box sx={{ mt: 5, display: "flex", gap: 2, flexWrap: "wrap", justifyContent: "space-between" }}>

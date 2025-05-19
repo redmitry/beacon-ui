@@ -10,7 +10,7 @@ function TabPanel(props) {
   return (
     <div
       role="tabpanel"
-      class="tabpanel"
+      className="tabpanel"
       hidden={value !== index}
       id={`filter-tabpanel-${index}`}
       aria-labelledby={`filter-tab-${index}`}

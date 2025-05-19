@@ -41,7 +41,6 @@ export default function CommonFilters() {
   };
 
   const handleCommonFilterChange = (item) => {
-    console.log("item: ", item)
     if(item.type === "alphanumeric") {
       setExtraFilter(item);
     } else {

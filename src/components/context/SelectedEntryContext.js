@@ -9,6 +9,7 @@ export const SelectedEntryProvider = ({ children }) => {
   const [extraFilter, setExtraFilter] = useState(null);
   const [loadingData, setLoadingData] = useState(false);
   const [resultData, setResultData] = useState([]);
+  const [hasSearchResults, setHasSearchResult] = useState(false);
 
   return (
     <SelectedEntryContext.Provider
@@ -24,7 +25,9 @@ export const SelectedEntryProvider = ({ children }) => {
         loadingData,
         setLoadingData,
         resultData,
-        setResultData
+        setResultData,
+        hasSearchResults,
+        setHasSearchResult
       }}
     >
       {children}

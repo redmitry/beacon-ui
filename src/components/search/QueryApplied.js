@@ -6,6 +6,7 @@ import {
 import { useSelectedEntry } from "../context/SelectedEntryContext";
 import FilterLabelRemovable from "../styling/FilterLabelRemovable";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import QueryAppliedItems from "./QueryAppliedItems";
 import config from '../../config/config.json';
 
 
@@ -60,21 +61,7 @@ export default function QueryApplied() {
               </Button>
             </Box>
           </Box>
-          <Box
-            sx={{
-              display: "flex",
-              gap: 2,
-              flexWrap: "wrap" 
-            }}>
-            { selectedFilter.map((filter) => (
-              <FilterLabelRemovable
-                key={filter.label}
-                label={filter.label}
-                onClick={() => handleFilterRemove(filter) }
-                bgColor="filter"
-              />
-            ))}
-          </Box>
+          <QueryAppliedItems />
         </Box>
     </Box>
   )
