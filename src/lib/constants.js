@@ -36,8 +36,7 @@ export const BEACON_NETWORK_COLUMNS = [
 ];
 
 export const BEACON_NETWORK_COLUMNS_EXPANDED = {
-  'beacon_dataset': '10%',
-  'beacon_dataset_name': '60%',
+  'beacon_dataset_name': '70%',
   'beacon_dataset_response': '10%',
   'beacon_dataset_detail': '10%',
   'beacon_dataset_contact': '10%'

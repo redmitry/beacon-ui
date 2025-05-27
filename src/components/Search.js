@@ -284,7 +284,6 @@ export default function Search({
       <Box
         ref={searchRef}
         sx={{
-          maxWidth: "1056px",
           mb: 6,
           borderRadius: "10px",
           backgroundColor: "#FFFFFF",

@@ -14,7 +14,7 @@ import { useSelectedEntry } from "./context/SelectedEntryContext";
 export default function CommonFilters() {
   const filterCategories = config.ui.commonFilters.filterCategories;
   const filterLabels = config.ui.commonFilters.filterLabels;
-  const { selectedFilter, setSelectedFilter, setExtraFilter } = useSelectedEntry();
+  const { selectedFilter, setSelectedFilter, setExtraFilter, setLoadingData, setResultData, setHasSearchResult } = useSelectedEntry();
 
   const getValidLabels = (topic) =>
     filterLabels[topic]?.filter(
@@ -41,6 +41,10 @@ export default function CommonFilters() {
   };
 
   const handleCommonFilterChange = (item) => {
+    setLoadingData(false);
+    setResultData([]);
+    setHasSearchResult(false);
+
     if(item.type === "alphanumeric") {
       setExtraFilter(item);
     } else {

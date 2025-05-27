@@ -2,6 +2,7 @@ import { Box } from "@mui/material";
 import { useSelectedEntry } from "../context/SelectedEntryContext";
 import Loader from '../common/Loader';
 import ResultsBox from "./ResultsBox";
+import ResultsEmpty from "./ResultsEmpty";
 
 export default function ResultsContainer() {
   const { loadingData, resultData, hasSearchResults } = useSelectedEntry();
@@ -24,7 +25,9 @@ export default function ResultsContainer() {
             }
 
             {(!loadingData && hasSearchResults && resultData.length == 0) &&
-              <p>We have DONT have results</p>
+              <>
+                <ResultsEmpty />
+              </>
             }
             {(!loadingData && hasSearchResults && resultData.length>0) && (
               <>

@@ -40,7 +40,6 @@ export default function HomePage({ selectedTool, setSelectedTool }) {
             width: { xs: "100%", md: "338px" },
             maxWidth: "338px",
             flexShrink: 0,
-            position: { md: "sticky" },
             top: { md: "122px" },
             mt: { xs: "0px", md: "30px" },
             mb: { xs: "50px", md: "40px", lg: "0px" },

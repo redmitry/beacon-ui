@@ -1,5 +1,5 @@
 import { BEACON_NETWORK_COLUMNS } from '../../lib/constants';
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import {
   Box,
   Paper,
@@ -8,7 +8,8 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow
+  TableRow,
+  Button
 } from "@mui/material";
 import CalendarViewMonthIcon from '@mui/icons-material/CalendarViewMonth';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -19,10 +20,13 @@ import { useSelectedEntry } from "../context/SelectedEntryContext";
 import { lighten } from "@mui/system";
 import { useState } from 'react';
 import ResultsTableRow from './ResultsTableRow';
+const ResultsTableRowModal = lazy(() => import('./ResultsTableRowModal'));
+
 
 export default function ResultsTable() {
   const { resultData } = useSelectedEntry();
   const [expandedRow, setExpandedRow] = useState(null);
+  const [selectedSubRow, setSelectedSubRow] = useState(null);
 
   const headerCellStyle = {
     backgroundColor: config.ui.colors.primary,
@@ -39,6 +43,10 @@ export default function ResultsTable() {
   };
 
   const selectedBgColor = lighten(config.ui.colors.primary, 0.9);
+
+  const handleRowClicked = (item) => {
+    setSelectedSubRow(item);
+  }
 
   return (
     <Box>
@@ -101,7 +109,16 @@ export default function ResultsTable() {
                     <TableCell sx={{ fontWeight: "bold"  }} style={{ width: BEACON_NETWORK_COLUMNS[1].width }}>{item.exists ? "Production Beacon" : "Development"}</TableCell>
                     <TableCell sx={{ fontWeight: "bold"  }} style={{ width: BEACON_NETWORK_COLUMNS[2].width }}>{item.items.length>0 ?  item.items.length + " Datasets" : "-"}</TableCell>
                     <TableCell sx={{ fontWeight: "bold"  }} style={{ width: BEACON_NETWORK_COLUMNS[3].width }}>{item.totalResultsCount>0 ?  item.totalResultsCount : "-"}</TableCell>
-                    <TableCell sx={{ fontWeight: "bold"  }} style={{ width: BEACON_NETWORK_COLUMNS[4].width }}>{item.items.length>0 ? <CalendarViewMonthIcon /> : ''}</TableCell>
+                    <TableCell sx={{ fontWeight: "bold"  }} style={{ width: BEACON_NETWORK_COLUMNS[4].width }}>
+                      {item.items.length>0 ? 
+                        <Button 
+                            variant="text"
+                            sx={{
+                              color: "gray"
+                          }}>
+                            <CalendarViewMonthIcon /> 
+                        </Button>: ''}
+                    </TableCell>
                     <TableCell sx={{ fontWeight: "bold"  }} style={{ width: BEACON_NETWORK_COLUMNS[5].width }}>
                       <img
                         src={MailIcon}
@@ -116,7 +133,10 @@ export default function ResultsTable() {
                   </TableRow>
 
                   {expandedRow && expandedRow.beaconId === item.beaconId && (
-                    <ResultsTableRow item={expandedRow} />
+                    <ResultsTableRow 
+                      item={expandedRow} 
+                      handleRowClicked={handleRowClicked}  
+                    />
                   )}
                 </React.Fragment>
               ))}
@@ -124,6 +144,15 @@ export default function ResultsTable() {
           </Table>
         </TableContainer>
       </Paper>
+      {selectedSubRow && (
+        <Suspense fallback={<div>Loading...</div>}>
+          <ResultsTableRowModal
+            subRow={selectedSubRow}
+            handleRowClicked={handleRowClicked}
+            onClose={() => setSelectedSubRow(null)}
+          />
+        </Suspense>
+      )}
     </Box>
   )
 }
