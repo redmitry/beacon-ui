@@ -7,41 +7,19 @@ import {
 } from "@mui/material";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { useState } from "react";
-import config from "../../config/config.json";
-import FilterLabel from "./../styling/FilterLabel";
+import config from "../config/config.json";
+import FilterLabel from "./styling/FilterLabel";
+import { useSelectedEntry } from "./context/SelectedEntryContext";
 
-export default function GenomicAnnotations() {
-  const allGenomicCategories = [
-    "SNP Examples",
-    "CNV Examples",
-    "Protein Examples",
-    "Molecular Effect",
-  ];
+export default function CommonFilters() {
+  const filterCategories = config.ui.commonFilters.filterCategories;
+  const filterLabels = config.ui.commonFilters.filterLabels;
+  const { selectedFilter, setSelectedFilter, setExtraFilter, setLoadingData, setResultData, setHasSearchResult } = useSelectedEntry();
 
-  const genomicVisibleCategories =
-    config.ui.genomicAnnotations?.visibleGenomicCategories || [];
-
-  const filterCategories = allGenomicCategories.filter((cat) =>
-    genomicVisibleCategories.includes(cat)
-  );
-
-  const filterLabels = {
-    "SNP Examples": ["TP53 : 7661960T>C", "NC_000023.10 : 33038255C>A"],
-    "CNV Examples": [
-      "NC_000001.11 : 1234del",
-      "MSK1 : 7572837_7578461del",
-      "NC_000001.11 : [5000, 7676], [7669, 10000]del",
-    ],
-    "Protein Examples": ["TP53 : p.Trp285Cys", "NP_003997.1:p.Trp24Cys"],
-    "Molecular Effect": [
-      "Missense Variant",
-      "Frameshift Variant",
-      "Stop gained",
-      "Gain of function",
-      "Loss of function",
-      "Null mutation",
-    ],
-  };
+  const getValidLabels = (topic) =>
+    filterLabels[topic]?.filter(
+      (item) => (item.label).trim() !== "" && !/^(item.label)\d*$/i.test((item.label).trim())
+    ) ?? [];
 
   const [expanded, setExpanded] = useState(() => {
     const initialState = {};
