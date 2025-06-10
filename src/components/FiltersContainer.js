@@ -10,6 +10,7 @@ function TabPanel(props) {
   return (
     <div
       role="tabpanel"
+      className="tabpanel"
       hidden={value !== index}
       id={`filter-tabpanel-${index}`}
       aria-labelledby={`filter-tab-${index}`}
@@ -76,10 +77,17 @@ export default function FiltersContainer() {
         value={tabValue}
         onChange={handleChange}
         aria-label="Filter tabs"
+        centered
         sx={{
           minHeight: "32px",
-          borderBottom: "1px solid #E0E0E0",
-          mb: 0,
+          backgroundColor: "#F5F5F5",
+          borderRadius: "0px",
+          padding: "4px",
+          minHeight: "unset",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+
           "& .MuiTabs-indicator": {
             display: "none",
           },
@@ -89,38 +97,63 @@ export default function FiltersContainer() {
           <Tab
             key={tab.label}
             label={tab.label}
+            disableRipple
             sx={{
               textTransform: "none",
-              fontSize: "14px",
+              fontSize: "13px",
+              borderRadius: "8px",
+              borderBottomLeftRadius: "0px",
+              borderBottomRightRadius: "0px",
               fontWeight: tabValue === i ? "bold" : "normal",
-              color: tabValue === i ? "black" : "#9E9E9E",
-              p: 0,
-              mr: i === 0 ? 3 : 0,
-              minHeight: "32px",
-              minWidth: "unset",
-              "&.Mui-selected": { color: "black" },
+              minHeight: "unset",
+              minWidth: "auto",
+              color: tabValue === i ? "#000" : "#9E9E9E",
+              marginRight: i !== tabs.length - 1 ? 1.5 : 0,
+              backgroundColor: tabValue === i ? "#fff" : "transparent",
+              boxShadow:
+                tabValue === i ? "0px 1px 3px rgba(0,0,0,0.1)" : "none",
+              "&:hover": {
+                backgroundColor: tabValue === i ? "#fff" : "#e0e0e0",
+              },
+              "&.Mui-selected": {
+                color: "#000",
+              },
             }}
           />
         ))}
       </Tabs>
-
-      {tabs.map((tab, i) => (
-        <TabPanel value={tabValue} index={i} key={tab.label}>
-          <Typography
-            variant="body1"
-            sx={{
-              fontWeight: "bold",
-              fontSize: "14px",
-              lineHeight: "19px",
-              mb: 0.5,
-              color: "black",
-            }}
-          >
-            {tab.title}
-          </Typography>
-          {tab.component}
-        </TabPanel>
-      ))}
+      <Box
+        sx={{
+          boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.05)",
+          borderTopLeftRadius: "8px",
+          borderTopRightRadius: "8px",
+          borderBottomLeftRadius: "8px",
+          borderBottomRightRadius: "8px",
+          backgroundColor: "white",
+          mt: "-4px",
+          overflow: "hidden",
+        }}
+      >
+        {tabs.map((tab, i) => (
+          <TabPanel value={tabValue} index={i} key={tab.label}>
+            <Box sx={{ padding: "20px" }}>
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: "bold",
+                  fontSize: "14px",
+                  lineHeight: "19px",
+                  mb: 0.5,
+                  color: "black",
+                }}
+              >
+                {tab.title}
+              </Typography>
+              {tab.component}
+            </Box>
+          </TabPanel>
+        ))}
+      </Box>
     </Box>
   );
 }

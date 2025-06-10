@@ -1,5 +1,5 @@
 import { Chip } from "@mui/material";
-import { alpha } from "@mui/system";
+import { alpha, lighten } from "@mui/system";
 import config from "../../config/config.json";
 
 export default function FilterLabel({ label, onClick, bgColor }) {
@@ -13,6 +13,8 @@ export default function FilterLabel({ label, onClick, bgColor }) {
     backgroundColor = alpha(config.ui.colors.secondary, 0.4);
     hoverColor = config.ui.colors.secondary;
   }
+
+  const selectedBgColor = lighten(config.ui.colors.primary, 0.9);
 
   return (
     <Chip
@@ -30,7 +32,7 @@ export default function FilterLabel({ label, onClick, bgColor }) {
         fontWeight: 400,
         transition: "background-color 0.2s ease",
         "&.MuiChip-clickable:hover": {
-          backgroundColor: hoverColor,
+          backgroundColor: "hoverColor",
         },
         "&.Mui-selected": {
           backgroundColor: hoverColor,
