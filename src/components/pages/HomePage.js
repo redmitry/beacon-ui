@@ -53,7 +53,7 @@ export default function HomePage({ selectedTool, setSelectedTool }) {
             gap: 2,
           }}
         >
-          <FiltersContainer />
+          <FiltersContainer searchHeight={searchHeight} />
         </Box>
         {selectedTool === "allFilteringTerms" && (
           <Box

@@ -37,12 +37,23 @@ export default function Search({
 
   const searchRef = useRef(null);
 
+  // useEffect(() => {
+  //   if (searchRef.current && onHeightChange) {
+  //     const height = searchRef.current.offsetHeight;
+  //     onHeightChange(height);
+  //   }
+  // }, []);
+
   useEffect(() => {
     if (searchRef.current && onHeightChange) {
-      const height = searchRef.current.offsetHeight;
-      onHeightChange(height);
+      const observer = new ResizeObserver(() => {
+        onHeightChange(searchRef.current.offsetHeight);
+      });
+      observer.observe(searchRef.current);
+
+      return () => observer.disconnect();
     }
-  }, []);
+  }, [onHeightChange]);
 
   const configuredOrder = config.ui.entryTypesOrder;
   const sortEntries = (entries) =>

@@ -12,11 +12,15 @@ import {
 import { useEffect, useState } from "react";
 import { alpha, lighten } from "@mui/material/styles";
 import config from "../config/config.json";
+import { useSelectedEntry } from "./context/SelectedEntryContext";
+import Loader from "../components/common/Loader";
+import CommonMessage from "../components/common/CommonMessage";
 
 export default function FilteringTermsTable({ filteringTerms, defaultScope }) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [selectedScopes, setSelectedScopes] = useState({});
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     if (!filteringTerms?.response?.filteringTerms || !defaultScope) return;
@@ -50,11 +54,9 @@ export default function FilteringTermsTable({ filteringTerms, defaultScope }) {
   }, [filteringTerms, defaultScope]);
 
   const bgPrimary = lighten(config.ui.colors.primary, 0.8);
-  const primary = config.ui.colors.primary;
 
   const headerCellStyle = {
     backgroundColor: bgPrimary,
-    // backgroundColor: primary,
     fontWeight: 700,
   };
 
@@ -79,83 +81,142 @@ export default function FilteringTermsTable({ filteringTerms, defaultScope }) {
     }));
   };
 
+  const { setExtraFilter, setSelectedFilter } = useSelectedEntry();
+
+  const isLoading =
+    !filteringTerms?.response?.filteringTerms ||
+    filteringTerms.response.filteringTerms.length === 0;
+
+  if (isLoading) {
+    return <Loader message="Loading filtering terms..." />;
+  }
+
   return (
-    <Paper
-      sx={{
-        width: "100%",
-        overflow: "hidden",
-        boxShadow: "none",
-        borderRadius: 0,
-      }}
-    >
-      <TableContainer sx={{ maxHeight: 440 }}>
-        <Table stickyHeader aria-label="filtering terms table">
-          <TableHead>
-            <TableRow>
-              <TableCell sx={headerCellStyle}>ID</TableCell>
-              <TableCell sx={headerCellStyle}>Label</TableCell>
-              <TableCell sx={headerCellStyle}>Scope</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {allFilteringTerms
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((term, index) => (
-                <TableRow key={index}>
-                  <TableCell>{term.id}</TableCell>
-                  <TableCell>{term.label || ""}</TableCell>
-                  <TableCell>
-                    {term.scopes?.map((scope, i) => {
-                      const isSelected = selectedScopes[term.id] === scope;
-                      return (
-                        <Box
-                          key={i}
-                          component="span"
-                          onClick={() => handleScopeClick(term.id, scope)}
-                          sx={{
-                            display: "inline-block",
-                            backgroundColor: isSelected
-                              ? config.ui.colors.primary
-                              : "#fff",
-                            color: isSelected
-                              ? "#fff"
-                              : config.ui.colors.darkPrimary,
-                            border: `1px solid ${
-                              isSelected
+    <>
+      {message && (
+        <Box sx={{ mb: 2 }}>
+          <CommonMessage text={message} type="error" />
+        </Box>
+      )}
+
+      <Paper
+        sx={{
+          width: "100%",
+          overflow: "hidden",
+          boxShadow: "none",
+          borderRadius: 0,
+        }}
+      >
+        <TableContainer sx={{ maxHeight: 440 }}>
+          <Table stickyHeader aria-label="filtering terms table">
+            <TableHead>
+              <TableRow>
+                <TableCell sx={headerCellStyle}>ID</TableCell>
+                <TableCell sx={headerCellStyle}>Label</TableCell>
+                <TableCell sx={headerCellStyle}>Scope</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {allFilteringTerms
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((term, index) => (
+                  <TableRow
+                    key={index}
+                    onClick={() => {
+                      const item = {
+                        key: term.id,
+                        label: term.label || term.id,
+                        type: term.type,
+                        scope: selectedScopes[term.id],
+                      };
+
+                      if (item.type === "alphanumeric") {
+                        setExtraFilter(item);
+                        return;
+                      }
+
+                      setSelectedFilter((prev) => {
+                        const isDuplicate = prev.some(
+                          (f) => f.key === item.key
+                        );
+                        if (isDuplicate) {
+                          setMessage(
+                            "This filter is already in use. Choose another one to continue."
+                          );
+                          setTimeout(() => setMessage(null), 4000);
+                          return prev;
+                        }
+
+                        return [...prev, item];
+                      });
+                    }}
+                    sx={{
+                      cursor: "pointer",
+                      "&:hover td": {
+                        backgroundColor: bgPrimary,
+                      },
+                      transition: "background-color 0.2s ease-in-out",
+                    }}
+                  >
+                    <TableCell>{term.id}</TableCell>
+                    {/* <TableCell>{term.label || ""}</TableCell> */}
+                    {/* This is just for the moment */}
+                    <TableCell>
+                      {(term.label || "") + ` (${term.type})`}
+                    </TableCell>
+                    <TableCell>
+                      {term.scopes?.map((scope, i) => {
+                        const isSelected = selectedScopes[term.id] === scope;
+                        return (
+                          <Box
+                            key={i}
+                            component="span"
+                            onClick={() => handleScopeClick(term.id, scope)}
+                            sx={{
+                              display: "inline-block",
+                              backgroundColor: isSelected
                                 ? config.ui.colors.primary
-                                : config.ui.colors.darkPrimary
-                            }`,
-                            borderRadius: "7px",
-                            fontSize: "12px",
-                            px: 1.5,
-                            py: 0.3,
-                            mr: 1,
-                            mb: 0.5,
-                            fontFamily: '"Open Sans", sans-serif',
-                            textTransform: "capitalize",
-                            cursor: "pointer",
-                            transition: "all 0.2s ease-in-out",
-                          }}
-                        >
-                          {capitalize(scope)}
-                        </Box>
-                      );
-                    })}
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 20]}
-        component="div"
-        count={allFilteringTerms.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </Paper>
+                                : "#fff",
+                              color: isSelected
+                                ? "#fff"
+                                : config.ui.colors.darkPrimary,
+                              border: `1px solid ${
+                                isSelected
+                                  ? config.ui.colors.primary
+                                  : config.ui.colors.darkPrimary
+                              }`,
+                              borderRadius: "7px",
+                              fontSize: "12px",
+                              px: 1.5,
+                              py: 0.3,
+                              mr: 1,
+                              mb: 0.5,
+                              fontFamily: '"Open Sans", sans-serif',
+                              textTransform: "capitalize",
+                              cursor: "pointer",
+                              transition: "all 0.2s ease-in-out",
+                            }}
+                          >
+                            {capitalize(scope)}
+                          </Box>
+                        );
+                      })}
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 20]}
+          component="div"
+          count={allFilteringTerms.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Paper>
+    </>
   );
 }
