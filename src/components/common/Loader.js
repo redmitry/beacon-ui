@@ -9,23 +9,21 @@ export default function Loader({ message }) {
       <div className="loader-wrapper">
         <Box className="loader-message">
           <Typography
-              translate="no"
-              sx={{ fontStyle: "italic", fontSize: "17px" }}
-            >
-            { message }
+            translate="no"
+            sx={{ fontStyle: "italic", fontSize: "17px" }}
+          >
+            {message}
           </Typography>
         </Box>
         <Box
           sx={{
             pt: "50px",
-            minHeight:"40px"
-          }}>
-          <div 
-            className="loader"
-            style={{ color: loaderColor }}>
-          </div>
+            minHeight: "40px",
+          }}
+        >
+          <div className="loader" style={{ color: loaderColor }}></div>
         </Box>
       </div>
     </div>
-  )
+  );
 }

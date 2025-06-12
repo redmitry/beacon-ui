@@ -10,49 +10,40 @@ import {
   TableRow,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { alpha, lighten } from "@mui/material/styles";
-import config from "../config/config.json";
-import { useSelectedEntry } from "./context/SelectedEntryContext";
-import Loader from "../components/common/Loader";
-import CommonMessage from "../components/common/CommonMessage";
+import { lighten } from "@mui/material/styles";
+import config from "../../config/config.json";
+import { useSelectedEntry } from "../context/SelectedEntryContext";
+import Loader from "../common/Loader";
+import CommonMessage from "../common/CommonMessage";
+import { FILTERING_TERMS_COLUMNS } from "../../lib/constants";
+import { capitalize } from "../common/textFormatting";
+import { assignDefaultScopesToTerms } from "../common/filteringTermsHelpers";
 
 export default function FilteringTermsTable({ filteringTerms, defaultScope }) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [selectedScopes, setSelectedScopes] = useState({});
   const [message, setMessage] = useState(null);
+  const { setExtraFilter, setSelectedFilter } = useSelectedEntry();
+
+  const scopeAlias = {
+    individuals: "individual",
+    biosamples: "biosample",
+    analyses: "analysis",
+    cohorts: "cohort",
+    datasets: "dataset",
+    g_variants: "Genomic Variation",
+    genomicVariations: "Genomic Variation",
+  };
 
   useEffect(() => {
-    if (!filteringTerms?.response?.filteringTerms || !defaultScope) return;
-
-    const terms = filteringTerms.response.filteringTerms;
-    const scopeAlias = {
-      individuals: "individual",
-      biosamples: "biosample",
-      analyses: "analysis",
-      cohorts: "cohort",
-      datasets: "dataset",
-      g_variants: "genomic",
-    };
-
-    const normalized = scopeAlias[defaultScope] || defaultScope;
-    const defaults = {};
-
-    terms.forEach((term) => {
-      const match = term.scopes?.find(
-        (scope) => scope.toLowerCase() === normalized.toLowerCase()
-      );
-
-      if (match) {
-        defaults[term.id] = match;
-      } else if (term.scopes?.length > 0) {
-        defaults[term.id] = term.scopes[0];
-      }
-    });
-
+    const defaults = assignDefaultScopesToTerms(
+      filteringTerms?.response?.filteringTerms ?? [],
+      defaultScope,
+      scopeAlias
+    );
     setSelectedScopes(defaults);
   }, [filteringTerms, defaultScope]);
-
   const bgPrimary = lighten(config.ui.colors.primary, 0.8);
 
   const headerCellStyle = {
@@ -60,19 +51,7 @@ export default function FilteringTermsTable({ filteringTerms, defaultScope }) {
     fontWeight: 700,
   };
 
-  const capitalize = (word) =>
-    word?.charAt(0).toUpperCase() + word?.slice(1).toLowerCase();
-
   const allFilteringTerms = filteringTerms?.response?.filteringTerms ?? [];
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
 
   const handleScopeClick = (termId, scope) => {
     setSelectedScopes((prev) => ({
@@ -81,24 +60,23 @@ export default function FilteringTermsTable({ filteringTerms, defaultScope }) {
     }));
   };
 
-  const { setExtraFilter, setSelectedFilter } = useSelectedEntry();
-
-  const isLoading =
-    !filteringTerms?.response?.filteringTerms ||
-    filteringTerms.response.filteringTerms.length === 0;
-
-  if (isLoading) {
-    return <Loader message="Loading filtering terms..." />;
-  }
+  /* MUI settings for pagination */
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
 
   return (
     <>
+      {/* Renders error message if needed */}
       {message && (
         <Box sx={{ mb: 2 }}>
           <CommonMessage text={message} type="error" />
         </Box>
       )}
-
       <Paper
         sx={{
           width: "100%",
@@ -111,17 +89,26 @@ export default function FilteringTermsTable({ filteringTerms, defaultScope }) {
           <Table stickyHeader aria-label="filtering terms table">
             <TableHead>
               <TableRow>
-                <TableCell sx={headerCellStyle}>ID</TableCell>
-                <TableCell sx={headerCellStyle}>Label</TableCell>
-                <TableCell sx={headerCellStyle}>Scope</TableCell>
+                {FILTERING_TERMS_COLUMNS.map((col) => (
+                  <TableCell
+                    key={col.id}
+                    sx={{
+                      ...headerCellStyle,
+                      width: col.width,
+                      textAlign: col.align,
+                    }}
+                  >
+                    {col.label}
+                  </TableCell>
+                ))}
               </TableRow>
             </TableHead>
             <TableBody>
               {allFilteringTerms
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((term, index) => (
+                .map((term) => (
                   <TableRow
-                    key={index}
+                    key={term.id}
                     onClick={() => {
                       const item = {
                         key: term.id,
@@ -159,8 +146,6 @@ export default function FilteringTermsTable({ filteringTerms, defaultScope }) {
                     }}
                   >
                     <TableCell>{term.id}</TableCell>
-                    {/* <TableCell>{term.label || ""}</TableCell> */}
-                    {/* This is just for the moment */}
                     <TableCell>
                       {(term.label || "") + ` (${term.type})`}
                     </TableCell>
@@ -197,7 +182,7 @@ export default function FilteringTermsTable({ filteringTerms, defaultScope }) {
                               transition: "all 0.2s ease-in-out",
                             }}
                           >
-                            {capitalize(scope)}
+                            {capitalize(scopeAlias[scope] || scope)}
                           </Box>
                         );
                       })}

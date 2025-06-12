@@ -7,10 +7,10 @@ import {
 } from "@mui/material";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { useState } from "react";
-import config from "../config/config.json";
-import FilterLabel from "./styling/FilterLabel";
-import { useSelectedEntry } from "./context/SelectedEntryContext";
-import CommonMessage from "../components/common/CommonMessage";
+import config from "../../config/config.json";
+import FilterLabel from "./../styling/FilterLabel";
+import { useSelectedEntry } from "./../context/SelectedEntryContext";
+import CommonMessage from "../../components/common/CommonMessage";
 
 export default function CommonFilters() {
   const filterCategories = config.ui.commonFilters.filterCategories;

@@ -1,19 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Paper,
-  List,
-  ListItem,
-  ListItemText,
-  Box,
-  CircularProgress,
-} from "@mui/material";
-import Fuse from "fuse.js";
-import config from "../config/config.json";
+import { Paper, List, ListItem, Box } from "@mui/material";
+import config from "../../config/config.json";
+import { useSelectedEntry } from "../context/SelectedEntryContext";
+import CommonMessage from "../common/CommonMessage";
+import useFilteringTerms from "../../hooks/useFilteringTerms";
+import Loader from "../common/Loader";
+import { searchFilteringTerms } from "../common/filteringTermsHelpers";
 
 const FilteringTermsDropdownResults = ({ searchInput, onCloseDropdown }) => {
-  const [allTerms, setAllTerms] = useState([]);
+  const { setExtraFilter, setSelectedFilter } = useSelectedEntry();
   const [filteredTerms, setFilteredTerms] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const { filteringTerms, loading } = useFilteringTerms();
   const containerRef = useRef();
 
   useEffect(() => {
@@ -34,41 +31,14 @@ const FilteringTermsDropdownResults = ({ searchInput, onCloseDropdown }) => {
 
   const primaryDarkColor = config.ui.colors.darkPrimary;
 
-  console.log("👀 Component Rendered. searchInput:", searchInput);
-
   useEffect(() => {
-    const fetchFilteringTerms = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(`${config.apiUrlNetwork}/filtering_terms`);
-        const data = await response.json();
-        console.log("✅ API Response:", data);
-        setAllTerms(data.response?.filteringTerms || []);
-      } catch (err) {
-        console.error("Error fetching terms:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (searchInput.length > 0 && allTerms.length === 0) {
-      fetchFilteringTerms();
-    }
-  }, [searchInput, allTerms.length]);
-
-  useEffect(() => {
-    if (searchInput.length > 0 && allTerms.length > 0) {
-      const fuse = new Fuse(allTerms, {
-        keys: ["label", "id"],
-        threshold: 0.3,
-      });
-      const results = fuse.search(searchInput).map((r) => r.item);
-      console.log("🧠 Filtered Results:", results);
+    if (searchInput.length > 0 && filteringTerms.length > 0) {
+      const results = searchFilteringTerms(filteringTerms, searchInput);
       setFilteredTerms(results);
     } else {
       setFilteredTerms([]);
     }
-  }, [searchInput, allTerms]);
+  }, [searchInput, filteringTerms]);
 
   if (searchInput.length === 0) return null;
 
@@ -86,7 +56,7 @@ const FilteringTermsDropdownResults = ({ searchInput, onCloseDropdown }) => {
     >
       {loading ? (
         <Box sx={{ p: 1 }}>
-          <CircularProgress size={20} />
+          <Loader message="Loading filtering terms..." />
         </Box>
       ) : (
         filteredTerms.length > 0 && (
@@ -106,6 +76,28 @@ const FilteringTermsDropdownResults = ({ searchInput, onCloseDropdown }) => {
                 <ListItem
                   key={term.id}
                   button
+                  onClick={() => {
+                    const item = {
+                      key: term.id,
+                      label: term.label || term.id,
+                      type: term.type,
+                      scope: term.scopes?.[0],
+                    };
+
+                    if (item.type === "alphanumeric") {
+                      setExtraFilter(item);
+                      return;
+                    }
+
+                    setSelectedFilter((prev) => {
+                      const alreadyExists = prev.some(
+                        (f) => f.key === item.key
+                      );
+                      if (alreadyExists) return prev;
+                      return [...prev, item];
+                    });
+                    onCloseDropdown();
+                  }}
                   sx={{
                     display: "flex",
                     justifyContent: "space-between",
