@@ -5,12 +5,21 @@ import { useSelectedEntry } from "../context/SelectedEntryContext";
 import CommonMessage from "../common/CommonMessage";
 import useFilteringTerms from "../../hooks/useFilteringTerms";
 import Loader from "../common/Loader";
-import { searchFilteringTerms } from "../common/filteringTermsHelpers";
+import {
+  searchFilteringTerms,
+  handleFilterSelection,
+} from "../common/filteringTermsHelpers";
 
 const FilteringTermsDropdownResults = ({ searchInput, onCloseDropdown }) => {
   const { setExtraFilter, setSelectedFilter } = useSelectedEntry();
+  const [message, setMessage] = useState(null);
   const [filteredTerms, setFilteredTerms] = useState([]);
+  const [filtering, setFiltering] = useState(false);
+  // const [_, setFiltering] = useState(false);
+  // const filtering = true;
+
   const { filteringTerms, loading } = useFilteringTerms();
+
   const containerRef = useRef();
 
   useEffect(() => {
@@ -33,18 +42,23 @@ const FilteringTermsDropdownResults = ({ searchInput, onCloseDropdown }) => {
 
   useEffect(() => {
     if (searchInput.length > 0 && filteringTerms.length > 0) {
-      const results = searchFilteringTerms(filteringTerms, searchInput);
-      setFilteredTerms(results);
+      setFiltering(true);
+      const timeout = setTimeout(() => {
+        const results = searchFilteringTerms(filteringTerms, searchInput);
+        setFilteredTerms(results);
+        setFiltering(false);
+      }, 300); // adjust this if needed
+
+      return () => clearTimeout(timeout);
     } else {
       setFilteredTerms([]);
     }
   }, [searchInput, filteringTerms]);
 
-  if (searchInput.length === 0) return null;
+  if (searchInput.length === 0 && !loading) return null;
 
   return (
     <Box
-      fullWidth
       ref={containerRef}
       sx={{
         position: "absolute",
@@ -55,27 +69,36 @@ const FilteringTermsDropdownResults = ({ searchInput, onCloseDropdown }) => {
       }}
     >
       {loading ? (
-        <Box sx={{ p: 1 }}>
+        <Box sx={{ p: 2 }}>
           <Loader message="Loading filtering terms..." />
         </Box>
       ) : (
-        filteredTerms.length > 0 && (
-          <Paper
-            sx={{
-              maxHeight: 200,
-              overflowY: "auto",
-              mt: 1,
-              borderRadius: "21px",
-              backgroundColor: "white",
-              boxShadow: "none",
-              border: `1px solid ${primaryDarkColor}`,
-            }}
-          >
-            <List disablePadding>
-              {filteredTerms.map((term, index) => (
+        <Paper
+          sx={{
+            maxHeight: 200,
+            overflowY: "auto",
+            mt: 1,
+            borderRadius: "21px",
+            backgroundColor: "white",
+            boxShadow: "none",
+            border: `1px solid ${primaryDarkColor}`,
+          }}
+        >
+          {message && (
+            <Box sx={{ mb: 2, mt: 2 }}>
+              <CommonMessage text={message} type="error" />
+            </Box>
+          )}
+          <List disablePadding>
+            {filtering ? (
+              <Box sx={{ p: 2 }}>
+                <Loader message="Filtering results..." variant="inline" />
+              </Box>
+            ) : filteredTerms.length > 0 ? (
+              filteredTerms.map((term, index) => (
                 <ListItem
                   key={term.id}
-                  button
+                  button={true}
                   onClick={() => {
                     const item = {
                       key: term.id,
@@ -89,14 +112,14 @@ const FilteringTermsDropdownResults = ({ searchInput, onCloseDropdown }) => {
                       return;
                     }
 
-                    setSelectedFilter((prev) => {
-                      const alreadyExists = prev.some(
-                        (f) => f.key === item.key
-                      );
-                      if (alreadyExists) return prev;
-                      return [...prev, item];
-                    });
-                    onCloseDropdown();
+                    setSelectedFilter((prev) =>
+                      handleFilterSelection({
+                        item,
+                        prevFilters: prev,
+                        setMessage,
+                        onSuccess: onCloseDropdown,
+                      })
+                    );
                   }}
                   sx={{
                     display: "flex",
@@ -129,10 +152,17 @@ const FilteringTermsDropdownResults = ({ searchInput, onCloseDropdown }) => {
                     {term.id}
                   </Box>
                 </ListItem>
-              ))}
-            </List>
-          </Paper>
-        )
+              ))
+            ) : (
+              <Box sx={{ p: 2 }}>
+                <CommonMessage
+                  text="No match found – try a different filter."
+                  type="error"
+                />
+              </Box>
+            )}
+          </List>
+        </Paper>
       )}
     </Box>
   );

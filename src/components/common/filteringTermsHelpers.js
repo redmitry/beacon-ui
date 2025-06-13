@@ -35,3 +35,23 @@ export function searchFilteringTerms(terms, searchInput) {
 
   return fuse.search(searchInput).map((r) => r.item);
 }
+
+export function handleFilterSelection({
+  item,
+  prevFilters,
+  setMessage,
+  onSuccess = () => {},
+}) {
+  const isDuplicate = prevFilters.some((f) => f.key === item.key);
+
+  if (isDuplicate) {
+    setMessage(
+      "This filter is already in use. Choose another one to continue."
+    );
+    setTimeout(() => setMessage(null), 3000);
+    return prevFilters;
+  }
+
+  onSuccess();
+  return [...prevFilters, item];
+}

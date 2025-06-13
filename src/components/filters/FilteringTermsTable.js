@@ -17,7 +17,10 @@ import Loader from "../common/Loader";
 import CommonMessage from "../common/CommonMessage";
 import { FILTERING_TERMS_COLUMNS } from "../../lib/constants";
 import { capitalize } from "../common/textFormatting";
-import { assignDefaultScopesToTerms } from "../common/filteringTermsHelpers";
+import {
+  assignDefaultScopesToTerms,
+  handleFilterSelection,
+} from "../common/filteringTermsHelpers";
 
 export default function FilteringTermsTable({ filteringTerms, defaultScope }) {
   const [page, setPage] = useState(0);
@@ -104,91 +107,95 @@ export default function FilteringTermsTable({ filteringTerms, defaultScope }) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {allFilteringTerms
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((term) => (
-                  <TableRow
-                    key={term.id}
-                    onClick={() => {
-                      const item = {
-                        key: term.id,
-                        label: term.label || term.id,
-                        type: term.type,
-                        scope: selectedScopes[term.id],
-                      };
+              {allFilteringTerms.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={3} align="center">
+                    <CommonMessage
+                      text="No match found. Try another filter."
+                      type="error"
+                    />
+                  </TableCell>
+                </TableRow>
+              ) : (
+                allFilteringTerms
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((term) => (
+                    <TableRow
+                      key={term.id}
+                      onClick={() => {
+                        const item = {
+                          key: term.id,
+                          label: term.label || term.id,
+                          type: term.type,
+                          scope: selectedScopes[term.id],
+                        };
 
-                      if (item.type === "alphanumeric") {
-                        setExtraFilter(item);
-                        return;
-                      }
-
-                      setSelectedFilter((prev) => {
-                        const isDuplicate = prev.some(
-                          (f) => f.key === item.key
-                        );
-                        if (isDuplicate) {
-                          setMessage(
-                            "This filter is already in use. Choose another one to continue."
-                          );
-                          setTimeout(() => setMessage(null), 4000);
-                          return prev;
+                        if (item.type === "alphanumeric") {
+                          setExtraFilter(item);
+                          return;
                         }
 
-                        return [...prev, item];
-                      });
-                    }}
-                    sx={{
-                      cursor: "pointer",
-                      "&:hover td": {
-                        backgroundColor: bgPrimary,
-                      },
-                      transition: "background-color 0.2s ease-in-out",
-                    }}
-                  >
-                    <TableCell>{term.id}</TableCell>
-                    <TableCell>
-                      {(term.label || "") + ` (${term.type})`}
-                    </TableCell>
-                    <TableCell>
-                      {term.scopes?.map((scope, i) => {
-                        const isSelected = selectedScopes[term.id] === scope;
-                        return (
-                          <Box
-                            key={i}
-                            component="span"
-                            onClick={() => handleScopeClick(term.id, scope)}
-                            sx={{
-                              display: "inline-block",
-                              backgroundColor: isSelected
-                                ? config.ui.colors.primary
-                                : "#fff",
-                              color: isSelected
-                                ? "#fff"
-                                : config.ui.colors.darkPrimary,
-                              border: `1px solid ${
-                                isSelected
-                                  ? config.ui.colors.primary
-                                  : config.ui.colors.darkPrimary
-                              }`,
-                              borderRadius: "7px",
-                              fontSize: "12px",
-                              px: 1.5,
-                              py: 0.3,
-                              mr: 1,
-                              mb: 0.5,
-                              fontFamily: '"Open Sans", sans-serif',
-                              textTransform: "capitalize",
-                              cursor: "pointer",
-                              transition: "all 0.2s ease-in-out",
-                            }}
-                          >
-                            {capitalize(scopeAlias[scope] || scope)}
-                          </Box>
+                        setSelectedFilter((prev) =>
+                          handleFilterSelection({
+                            item,
+                            prevFilters: prev,
+                            setMessage,
+                          })
                         );
-                      })}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      }}
+                      sx={{
+                        cursor: "pointer",
+                        "&:hover td": {
+                          backgroundColor: bgPrimary,
+                        },
+                        transition: "background-color 0.2s ease-in-out",
+                      }}
+                    >
+                      <TableCell>{term.id}</TableCell>
+                      <TableCell>
+                        {(term.label || "") + ` (${term.type})`}
+                      </TableCell>
+                      <TableCell>
+                        {term.scopes?.map((scope, i) => {
+                          const isSelected = selectedScopes[term.id] === scope;
+                          return (
+                            <Box
+                              key={i}
+                              component="span"
+                              onClick={() => handleScopeClick(term.id, scope)}
+                              sx={{
+                                display: "inline-block",
+                                backgroundColor: isSelected
+                                  ? config.ui.colors.primary
+                                  : "#fff",
+                                color: isSelected
+                                  ? "#fff"
+                                  : config.ui.colors.darkPrimary,
+                                border: `1px solid ${
+                                  isSelected
+                                    ? config.ui.colors.primary
+                                    : config.ui.colors.darkPrimary
+                                }`,
+                                borderRadius: "7px",
+                                fontSize: "12px",
+                                px: 1.5,
+                                py: 0.3,
+                                mr: 1,
+                                mb: 0.5,
+                                fontFamily: '"Open Sans", sans-serif',
+                                textTransform: "capitalize",
+                                cursor: "pointer",
+                                transition: "all 0.2s ease-in-out",
+                              }}
+                            >
+                              {capitalize(scopeAlias[scope] || scope)}
+                            </Box>
+                          );
+                        })}
+                      </TableCell>
+                    </TableRow>
+                  ))
+              )}
             </TableBody>
           </Table>
         </TableContainer>
