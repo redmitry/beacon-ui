@@ -149,13 +149,32 @@ export default function Search({
   const selectedBgColor = lighten(primaryDarkColor, 0.9);
 
   const entryTypeDescriptions = {
-    analyses: "Text for analysis",
+    analyses: (
+      <>
+        query analysis metadata (e.g. <strong>analysis</strong> pipelines,
+        methods).
+      </>
+    ),
     biosamples: "query biosample data (e.g. histological samples).",
-    cohorts: "Text for cohort",
-    datasets: "Text for dataset",
+    cohorts: "query cohort-level data (e.g. shared traits, study groups).",
+    datasets: (
+      <>
+        query <strong>datasets-level data</strong> (e.g. <strong>name</strong>,{" "}
+        <strong>description</strong>).
+      </>
+    ),
     g_variants: "query genomic variants across individuals.",
-    individuals: "query individual-level data (e.g. phenotypes, ancestry).",
-    runs: "Text for run",
+    individuals: (
+      <>
+        query individual-level data (e.g. <strong>phenotypes</strong>,{" "}
+        <strong>treatment</strong>).
+      </>
+    ),
+    runs: (
+      <>
+        query sequencing run details (e.g. <strong>platform</strong>, run date).
+      </>
+    ),
   };
 
   const handleAllFilteringClick = () => {

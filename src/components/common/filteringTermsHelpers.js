@@ -1,4 +1,5 @@
 import Fuse from "fuse.js";
+import { COMMON_MESSAGES } from "../common/CommonMessage";
 
 export function assignDefaultScopesToTerms(
   terms,
@@ -45,9 +46,7 @@ export function handleFilterSelection({
   const isDuplicate = prevFilters.some((f) => f.key === item.key);
 
   if (isDuplicate) {
-    setMessage(
-      "This filter is already in use. Choose another one to continue."
-    );
+    setMessage(COMMON_MESSAGES.doubleFilter);
     setTimeout(() => setMessage(null), 3000);
     return prevFilters;
   }

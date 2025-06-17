@@ -14,7 +14,7 @@ import { lighten } from "@mui/material/styles";
 import config from "../../config/config.json";
 import { useSelectedEntry } from "../context/SelectedEntryContext";
 import Loader from "../common/Loader";
-import CommonMessage from "../common/CommonMessage";
+import CommonMessage, { COMMON_MESSAGES } from "../common/CommonMessage";
 import { FILTERING_TERMS_COLUMNS } from "../../lib/constants";
 import { capitalize } from "../common/textFormatting";
 import {
@@ -22,7 +22,12 @@ import {
   handleFilterSelection,
 } from "../common/filteringTermsHelpers";
 
-export default function FilteringTermsTable({ filteringTerms, defaultScope }) {
+export default function FilteringTermsTable({
+  filteringTerms,
+  defaultScope,
+  searchWasPerformed,
+  loading,
+}) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [selectedScopes, setSelectedScopes] = useState({});
@@ -72,6 +77,14 @@ export default function FilteringTermsTable({ filteringTerms, defaultScope }) {
     setPage(0);
   };
 
+  if (loading) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Loader message={COMMON_MESSAGES.loadingTerms} />
+      </Box>
+    );
+  }
+
   return (
     <>
       {/* Renders error message if needed */}
@@ -107,11 +120,11 @@ export default function FilteringTermsTable({ filteringTerms, defaultScope }) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {allFilteringTerms.length === 0 ? (
+              {allFilteringTerms.length === 0 && searchWasPerformed ? (
                 <TableRow>
                   <TableCell colSpan={3} align="center">
                     <CommonMessage
-                      text="No match found. Try another filter."
+                      text={COMMON_MESSAGES.noMatch}
                       type="error"
                     />
                   </TableCell>

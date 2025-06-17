@@ -2,6 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
+.nav-items-box {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  text-align: center;
+  gap: 16px;
+}
+
+@media (max-width: 937px) and (min-width: 900px) {
+  .nav-items-box {
+    gap: 5px;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 957px) and (min-width: 900px) {
+  .logo-small {
+    width: 125px;
+    height: auto;
+  }
+}
+
+@media (max-width: 488px) {
+  .logo-small {
+    width: 112px;
+    height: auto;
+  }
+}
+
+@media (max-width: 410px) {
+  .logo-small {
+    width: 105px;
+    height: auto;
+  }
+}
+
+@media (max-width: 390px) {
+  .logo-small {
+    display: none;
+  }
+}
+
 .tabpanel {
   /* height: 485px; */
   min-height: 360px;

@@ -10,7 +10,9 @@ import { useState } from "react";
 import config from "../../config/config.json";
 import FilterLabel from "./../styling/FilterLabel";
 import { useSelectedEntry } from "./../context/SelectedEntryContext";
-import CommonMessage from "../../components/common/CommonMessage";
+import CommonMessage, {
+  COMMON_MESSAGES,
+} from "../../components/common/CommonMessage";
 
 export default function CommonFilters() {
   const filterCategories = config.ui.commonFilters.filterCategories;
@@ -62,9 +64,7 @@ export default function CommonFilters() {
           (filter) => filter.key === item.key
         );
         if (isDuplicate) {
-          setMessage(
-            "This filter is already in use. Choose another one to continue."
-          );
+          setMessage(COMMON_MESSAGES.doubleFilter);
           setTimeout(() => setMessage(null), 5000);
           return prevFilters;
         }
@@ -92,10 +92,7 @@ export default function CommonFilters() {
     <>
       {message && (
         <Box sx={{ mt: 2 }}>
-          <CommonMessage
-            text="This filter is already in use. Choose another one to continue."
-            type="error"
-          />
+          <CommonMessage text={COMMON_MESSAGES.doubleFilter} type="error" />
         </Box>
       )}
       <Box>

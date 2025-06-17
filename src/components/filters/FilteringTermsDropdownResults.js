@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Paper, List, ListItem, Box } from "@mui/material";
 import config from "../../config/config.json";
 import { useSelectedEntry } from "../context/SelectedEntryContext";
-import CommonMessage from "../common/CommonMessage";
+import CommonMessage, { COMMON_MESSAGES } from "../common/CommonMessage";
 import useFilteringTerms from "../../hooks/useFilteringTerms";
 import Loader from "../common/Loader";
 import {
@@ -15,10 +15,8 @@ const FilteringTermsDropdownResults = ({ searchInput, onCloseDropdown }) => {
   const [message, setMessage] = useState(null);
   const [filteredTerms, setFilteredTerms] = useState([]);
   const [filtering, setFiltering] = useState(false);
-  // const [_, setFiltering] = useState(false);
-  // const filtering = true;
 
-  const { filteringTerms, loading } = useFilteringTerms();
+  const { filteringTerms } = useFilteringTerms();
 
   const containerRef = useRef();
 
@@ -47,7 +45,7 @@ const FilteringTermsDropdownResults = ({ searchInput, onCloseDropdown }) => {
         const results = searchFilteringTerms(filteringTerms, searchInput);
         setFilteredTerms(results);
         setFiltering(false);
-      }, 300); // adjust this if needed
+      }, 300);
 
       return () => clearTimeout(timeout);
     } else {
@@ -55,7 +53,8 @@ const FilteringTermsDropdownResults = ({ searchInput, onCloseDropdown }) => {
     }
   }, [searchInput, filteringTerms]);
 
-  if (searchInput.length === 0 && !loading) return null;
+  // Waiting for the user's input before rendering
+  if (searchInput.trim().length === 0) return null;
 
   return (
     <Box
@@ -68,102 +67,96 @@ const FilteringTermsDropdownResults = ({ searchInput, onCloseDropdown }) => {
         zIndex: 5,
       }}
     >
-      {loading ? (
-        <Box sx={{ p: 2 }}>
-          <Loader message="Loading filtering terms..." />
-        </Box>
-      ) : (
-        <Paper
-          sx={{
-            maxHeight: 200,
-            overflowY: "auto",
-            mt: 1,
-            borderRadius: "21px",
-            backgroundColor: "white",
-            boxShadow: "none",
-            border: `1px solid ${primaryDarkColor}`,
-          }}
-        >
-          {message && (
-            <Box sx={{ mb: 2, mt: 2 }}>
-              <CommonMessage text={message} type="error" />
+      <Paper
+        sx={{
+          maxHeight: 200,
+          overflowY: "auto",
+          mt: 1,
+          borderRadius: "21px",
+          backgroundColor: "white",
+          boxShadow: "none",
+          border: `1px solid ${primaryDarkColor}`,
+        }}
+      >
+        {message && (
+          <Box sx={{ mb: 2, mt: 2 }}>
+            <CommonMessage text={message} type="error" />
+          </Box>
+        )}
+        <List disablePadding>
+          {filtering ? (
+            <Box sx={{ p: 3, pt: 0 }}>
+              <Loader
+                message={COMMON_MESSAGES.filteringResults}
+                variant="inline"
+              />
             </Box>
-          )}
-          <List disablePadding>
-            {filtering ? (
-              <Box sx={{ p: 2 }}>
-                <Loader message="Filtering results..." variant="inline" />
-              </Box>
-            ) : filteredTerms.length > 0 ? (
-              filteredTerms.map((term, index) => (
-                <ListItem
-                  key={term.id}
-                  button={true}
-                  onClick={() => {
-                    const item = {
-                      key: term.id,
-                      label: term.label || term.id,
-                      type: term.type,
-                      scope: term.scopes?.[0],
-                    };
+          ) : filteredTerms.length > 0 ? (
+            filteredTerms.map((term, index) => (
+              <ListItem
+                key={term.id}
+                button={true}
+                onClick={() => {
+                  const item = {
+                    key: term.id,
+                    label: term.label || term.id,
+                    type: term.type,
+                    scope: term.scopes?.[0],
+                  };
 
-                    if (item.type === "alphanumeric") {
-                      setExtraFilter(item);
-                      return;
-                    }
+                  if (item.type === "alphanumeric") {
+                    setExtraFilter(item);
+                    return;
+                  }
 
-                    setSelectedFilter((prev) =>
-                      handleFilterSelection({
-                        item,
-                        prevFilters: prev,
-                        setMessage,
-                        onSuccess: onCloseDropdown,
-                      })
-                    );
-                  }}
+                  setSelectedFilter((prev) =>
+                    handleFilterSelection({
+                      item,
+                      prevFilters: prev,
+                      setMessage,
+                      onSuccess: onCloseDropdown,
+                    })
+                  );
+                }}
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  borderBottom:
+                    index !== filteredTerms.length - 1
+                      ? "1px solid #E0E0E0"
+                      : "none",
+                  px: 2,
+                  py: 1,
+                }}
+              >
+                <Box
                   sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    borderBottom:
-                      index !== filteredTerms.length - 1
-                        ? "1px solid #E0E0E0"
-                        : "none",
-                    px: 2,
-                    py: 1,
+                    fontSize: "12px",
+                    fontFamily: '"Open Sans", sans-serif',
+                    color: "#000",
                   }}
                 >
-                  <Box
-                    sx={{
-                      fontSize: "12px",
-                      fontFamily: '"Open Sans", sans-serif',
-                      color: "#000",
-                    }}
-                  >
-                    {term.label}
-                  </Box>
-                  <Box
-                    sx={{
-                      fontSize: "12px",
-                      fontFamily: '"Open Sans", sans-serif',
-                      color: "#666",
-                    }}
-                  >
-                    {term.id}
-                  </Box>
-                </ListItem>
-              ))
-            ) : (
-              <Box sx={{ p: 2 }}>
-                <CommonMessage
-                  text="No match found – try a different filter."
-                  type="error"
-                />
-              </Box>
-            )}
-          </List>
-        </Paper>
-      )}
+                  {term.label}
+                </Box>
+                <Box
+                  sx={{
+                    fontSize: "12px",
+                    fontFamily: '"Open Sans", sans-serif',
+                    color: "#666",
+                  }}
+                >
+                  {term.id}
+                </Box>
+              </ListItem>
+            ))
+          ) : (
+            <Box sx={{ p: 2 }}>
+              <CommonMessage text={COMMON_MESSAGES.noMatch} type="error" />
+            </Box>
+          )}
+        </List>
+      </Paper>
     </Box>
   );
 };

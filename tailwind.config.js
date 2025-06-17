@@ -9,6 +9,7 @@ module.exports = {
       },
       spacing: {
         "logo-w": "132px",
+        "logo-w-sm": "120px",
         "logo-h": "38px",
       },
       colors: {

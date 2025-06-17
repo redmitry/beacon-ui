@@ -25,6 +25,9 @@ export default function Navbar({ title, main, navItems }) {
     lineHeight: "100%",
     letterSpacing: "0%",
     color: "white",
+    "@media (max-width: 1080px)": {
+      fontSize: "14px",
+    },
   };
 
   return (
@@ -35,17 +38,49 @@ export default function Navbar({ title, main, navItems }) {
         sx={{
           backgroundColor: config.ui.colors.primary,
           color: "white",
-          px: 4,
-          minHeight: "68x",
+          px: 1,
+          minHeight: "68px",
         }}
       >
-        <Toolbar sx={{ justifyContent: "space-between" }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <img
-              src={main}
-              alt="Logo"
-              className="w-logo-w h-logo-h object-contain"
-            />
+        <Toolbar
+          sx={{
+            justifyContent: "space-between",
+            gap: 2,
+            px: "9px",
+            minHeight: "68px",
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              minWidth: "fit-content",
+              flexShrink: 0,
+              "@media (min-width: 768px)": {
+                gap: 2.5,
+              },
+            }}
+          >
+            {/* 👇 Logo in Navbar only if width >= 386px */}
+            <Box
+              component="span"
+              sx={{
+                display: {
+                  xs: "block",
+                },
+                "@media (max-width: 385px)": {
+                  display: "none",
+                },
+              }}
+            >
+              <img
+                src={main}
+                alt="Logo"
+                className="w-logo-w h-logo-h object-contain logo-small"
+              />
+            </Box>
+
             <Typography
               className="font-sans"
               component={Link}
@@ -54,27 +89,51 @@ export default function Navbar({ title, main, navItems }) {
                 fontWeight: "bold",
                 fontFamily: '"Open Sans", sans-serif',
                 color: "white",
-                textDecoration: "none",
                 cursor: "pointer",
+                fontSize: "15px",
+                whiteSpace: "nowrap",
+                "@media (max-width: 410px)": {
+                  fontSize: "14px",
+                },
+                "@media (min-width: 768px)": {
+                  fontSize: "16px",
+                },
+                "@media (max-width: 930px) and (min-width: 900px)": {
+                  fontSize: "15.7px",
+                },
               }}
             >
               {title}
             </Typography>
           </Box>
 
-          <Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
             <IconButton
               color="inherit"
               edge="start"
               onClick={() => setMobileOpen(!mobileOpen)}
               sx={{
-                mr: 2,
-                display: { sm: "none" },
+                display: { md: "none" },
+                flexShrink: 0,
               }}
             >
               <MenuIcon />
             </IconButton>
-            <Box sx={{ display: { xs: "none", sm: "flex" }, gap: 2 }}>
+
+            <Box
+              className="nav-items-box"
+              sx={{
+                display: {
+                  xs: "none",
+                  sm: "none",
+                  md: "flex",
+                },
+                gap: 2,
+                "@media (max-width: 968px) and (min-width: 900px)": {
+                  gap: 0,
+                },
+              }}
+            >
               {navItems
                 .filter((item) => item.label && item.label.trim() !== "")
                 .map((item) =>
@@ -113,7 +172,7 @@ export default function Navbar({ title, main, navItems }) {
       <Drawer
         open={mobileOpen}
         onClose={() => setMobileOpen(false)}
-        sx={{ display: { sm: "none" } }}
+        sx={{ display: { md: "none" } }}
       >
         <List sx={{ width: 240, pt: 3 }}>
           <ListItem
@@ -130,6 +189,7 @@ export default function Navbar({ title, main, navItems }) {
           >
             {title}
           </ListItem>
+
           {navItems
             .filter((item) => item.label && item.label.trim() !== "")
             .map((item) => (
