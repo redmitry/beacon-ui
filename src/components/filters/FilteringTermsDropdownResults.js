@@ -95,7 +95,7 @@ const FilteringTermsDropdownResults = ({ searchInput, onCloseDropdown }) => {
             filteredTerms.map((term, index) => (
               <ListItem
                 key={term.id}
-                button={true}
+                // button={true}
                 onClick={() => {
                   const item = {
                     key: term.id,
