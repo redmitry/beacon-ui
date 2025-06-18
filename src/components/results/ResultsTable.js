@@ -15,7 +15,6 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import IconButton from '@mui/material/IconButton';
-import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 import CalendarViewMonthIcon from '@mui/icons-material/CalendarViewMonth';
 import Tooltip from '@mui/material/Tooltip';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
@@ -70,13 +69,21 @@ export default function ResultsTable() {
   }
 
   const findBeaconIcon = (beaconId) => {
-    const beacon = beaconsInfo.find((item) => item.meta?.beaconId === beaconId);
-    return beacon.response?.organization?.logoUrl ?? null;
+    const beacon = beaconsInfo.find((item) => {
+      const id = item.meta?.beaconId || item.id;
+      return id === beaconId;
+    });
+    const logo = beacon.response ? beacon.response?.organization?.logoUrl : beacon.organization?.logoUrl;
+    return logo ?? null;
   };
 
   const findBeaconEmail = (beaconId) => {
-    const beacon = beaconsInfo.find((item) => item.meta?.beaconId === beaconId);
-    return beacon.response?.organization?.contactUrl ?? null;
+    const beacon = beaconsInfo.find((item) => {
+      const id = item.meta?.beaconId || item.id;
+      return id === beaconId;
+    });
+    const email = beacon.response ? beacon.response?.organization?.contactUrl : beacon.organization?.contactUrl;
+    return email?? null;
   }
 
   const handleEmail = (email) => {

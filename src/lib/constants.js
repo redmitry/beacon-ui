@@ -78,6 +78,27 @@ export const BEACON_NETWORK_COLUMNS_EXPANDED = {
   }
 }
 
+export const FILTERING_TERMS_COLUMNS = [
+  {
+    id: "id",
+    label: "ID",
+    width: "30%",
+    align: "left",
+  },
+  {
+    id: "label",
+    label: "Label",
+    width: "45%",
+    align: "left",
+  },
+  {
+    id: "scope",
+    label: "Scope",
+    width: "25%",
+    align: "left",
+  },
+];
+
 export const DATASET_TABLE = [
   {
     column: 'id',

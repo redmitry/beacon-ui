@@ -7,8 +7,8 @@ import {
 } from "@mui/material";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { useState } from "react";
-import config from "../config/config.json";
-import FilterLabel from "./styling/FilterLabel";
+import config from "../../config/config.json";
+import FilterLabel from "../styling/FilterLabel";
 
 export default function GenomicAnnotations() {
   const allGenomicCategories = [
@@ -50,10 +50,6 @@ export default function GenomicAnnotations() {
       const validLabels = filterLabels[topic]?.filter(
         (label) => label.trim() !== ""
       );
-    allGenomicCategories.forEach((topic) => {
-      const validLabels = filterLabels[topic]?.filter(
-        (label) => label.trim() !== ""
-      );
       if (validLabels.length > 0 && !firstSet) {
         initialState[topic] = true;
         firstSet = true;
@@ -85,9 +81,6 @@ export default function GenomicAnnotations() {
   return (
     <Box>
       {filterCategories.map((topic) => {
-        const validLabels = filterLabels[topic]?.filter(
-          (label) => label.trim() !== ""
-        );
         if (!validLabels || validLabels.length === 0) return null;
         const validLabels = filterLabels[topic]?.filter(
           (label) => label.trim() !== ""
@@ -123,12 +116,7 @@ export default function GenomicAnnotations() {
             <AccordionDetails sx={{ px: 0, pt: 0 }}>
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
                 {validLabels.map((label) => (
-                {validLabels.map((label) => (
                   <FilterLabel
-                    key={label}
-                    label={label}
-                    onClick={() => console.log(label)}
-                    bgColor="genomic"
                     key={label}
                     label={label}
                     onClick={() => console.log(label)}

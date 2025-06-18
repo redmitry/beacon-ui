@@ -29,7 +29,6 @@ export default function Search({
   const { 
     entryTypes, 
     setEntryTypes,
-    beaconsInfo,
     setBeaconsInfo  
   } = useSelectedEntry();
   const { selectedFilter, setSelectedFilter } = useSelectedEntry();
@@ -118,7 +117,18 @@ export default function Search({
       let url = `${config.apiUrl}/info`;
       let response = await fetch(url);
       const data = await response.json();
-      setBeaconsInfo(data.responses);
+      let normalizedData = [];
+      if (Array.isArray(data.responses)) {
+        normalizedData = data.responses;
+      }
+      else if (data.response) {
+        if (Array.isArray(data.response)) {
+          normalizedData = data.response;
+        } else if (typeof data.response === 'object' && data.response !== null) {
+          normalizedData = [data.response];
+        }
+      }
+      setBeaconsInfo(normalizedData);
     } catch (error) {
       // TODO
       console.error("Search failed", error);
