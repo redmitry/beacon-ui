@@ -9,14 +9,14 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Button
+  Button,
+  Tooltip,
+  IconButton
 } from "@mui/material";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
-import IconButton from '@mui/material/IconButton';
 import CalendarViewMonthIcon from '@mui/icons-material/CalendarViewMonth';
-import Tooltip from '@mui/material/Tooltip';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import config from '../../config/config.json';
 import { useSelectedEntry } from "../context/SelectedEntryContext";
@@ -36,7 +36,11 @@ export default function ResultsTable() {
   const headerCellStyle = {
     backgroundColor: config.ui.colors.primary,
     fontWeight: 700,
-    color: "white"
+    color: "white",
+    transition: "background-color 0.3s ease",
+    '&:hover': {
+      backgroundColor: lighten(config.ui.colors.primary, 0.1)
+    }
   };
 
   const handleRowClick = (item) => {
@@ -107,10 +111,12 @@ export default function ResultsTable() {
                 {tableColumns.map((column) => (
                   <TableCell
                     key={column.id}
-                    style={{ width: column.width }}
                     align={column.align}
-                    sx={headerCellStyle}
-                  >
+                    sx={{
+                        ...headerCellStyle,
+                        width: column.width
+                      }}
+                    >
                     {column.label}
                   </TableCell>
                 ))}
@@ -125,7 +131,6 @@ export default function ResultsTable() {
                   <React.Fragment key={index}>
                     <TableRow
                       key={index}
-                      hover
                       onClick={() => handleRowClick(item)}
                       sx={{
                         cursor: 'pointer',
@@ -178,22 +183,24 @@ export default function ResultsTable() {
                           >
                             <Button 
                               variant="text"
-                              onClick={ () => handleOpenModal(item) }
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEmail(itemEmail);
+                              }}
                               sx={{
                                 textTransform: "none",
                                 fontSize: "14px",
                                 fontWeight: 400,
                                 fontFamily: '"Open Sans", sans-serif',
-                                backgroundColor: "white",
                                 color: "gray",
                                 width: "50px",
                                 height: "30px",
                                 minWidth: "30px",
                                 minHeight: "30px",
+                                backgroundColor: 'transparent',
                                 padding: 0,
                                 "&:hover": {
                                   color: config.ui.colors.primary,
-                                  backgroundColor: bgColor
                                 },
                               }}>
                               <CalendarViewMonthIcon />
@@ -210,29 +217,35 @@ export default function ResultsTable() {
                         }
                         >
                           { itemEmail && (
-                            <Button 
-                              variant="text"
-                              onClick={ () => handleEmail(itemEmail)}
-                              sx={{
-                                textTransform: "none",
-                                fontSize: "14px",
-                                fontWeight: 400,
-                                fontFamily: '"Open Sans", sans-serif',
-                                backgroundColor: "white",
-                                color: "gray",
-                                width: "50px",
-                                height: "30px",
-                                minWidth: "30px",
-                                minHeight: "30px",
-                                padding: 0,
-                                "&:hover": {
-                                  color: config.ui.colors.primary,
-                                  backgroundColor: bgColor
-                                },
-                              }}
-                            >
-                              <MailOutlineIcon />
-                            </Button>
+                            <Tooltip title="Contact this beacon" arrow>
+                              <Button 
+                                variant="text"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleEmail(itemEmail);
+                                }}
+                                sx={{
+                                  textTransform: "none",
+                                  fontSize: "14px",
+                                  fontWeight: 400,
+                                  fontFamily: '"Open Sans", sans-serif',
+                                  backgroundColor: "transparent",
+                                  color: "gray",
+                                  width: "50px",
+                                  height: "30px",
+                                  minWidth: "30px",
+                                  minHeight: "30px",
+                                  padding: 0,
+                                  transition: 'all 0.3s ease',
+                                  "&:hover": {
+                                    color: config.ui.colors.primary,
+                                    transform: 'scale(1.1)'
+                                  },
+                                }}
+                                >
+                                  <MailOutlineIcon />
+                              </Button>
+                            </Tooltip>
                           )}
                         </TableCell>
                     </TableRow>

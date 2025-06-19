@@ -10,16 +10,16 @@ export default function ResultsBox() {
   return (
     <Box
         sx={{
-          p: "20px" 
+          p: "32px" 
         }}>
       <Box
         sx={{
-          p: "20px" 
+          pb: "5px",
         }}>
         <Typography
           sx={{
               color: "black",
-              fontSize: "16px",
+              fontSize: "17px",
               fontFamily: '"Open Sans", sans-serif',
               minWidth: "80px",
               fontWeight: "bold",

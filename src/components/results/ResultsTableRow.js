@@ -7,7 +7,8 @@ import {
   Table,
   TableBody,
   Typography,
-  Button
+  Button,
+  Tooltip
 } from "@mui/material";
 import { lighten } from "@mui/system";
 import { BEACON_NETWORK_COLUMNS_EXPANDED } from '../../lib/constants';
@@ -15,8 +16,6 @@ import CalendarViewMonthIcon from '@mui/icons-material/CalendarViewMonth';
 import config from '../../config/config.json';
 
 export default function ResultsTableRow({ item, handleOpenModal }) {
-  const bgColor = lighten(config.ui.colors.primary, 0.95);
-
   return (
     <>
       <TableRow>
@@ -51,28 +50,32 @@ export default function ResultsTableRow({ item, handleOpenModal }) {
                             BEACON_NETWORK_COLUMNS_EXPANDED.beacon_dataset_detail.float 
                           }
                           >
-                          <Button 
-                            variant="text"
-                            onClick={ () => handleOpenModal(item) }
-                            sx={{
-                              textTransform: "none",
-                              fontSize: "14px",
-                              fontWeight: 400,
-                              fontFamily: '"Open Sans", sans-serif',
-                              backgroundColor: "white",
-                              color: "gray",
-                              width: "50px",
-                              height: "30px",
-                              minWidth: "30px",
-                              minHeight: "30px",
-                              padding: 0,
-                              "&:hover": {
-                                color: config.ui.colors.primary,
-                                backgroundColor: bgColor
-                              },
-                            }}>
-                            <CalendarViewMonthIcon />
-                          </Button>
+                          <Tooltip title="View dataset details" arrow>
+                            <Button 
+                              variant="text"
+                              onClick={ () => handleOpenModal(item) }
+                              sx={{
+                                textTransform: "none",
+                                fontSize: "14px",
+                                fontWeight: 400,
+                                fontFamily: '"Open Sans", sans-serif',
+                                backgroundColor: "transparent",
+                                color: "gray",
+                                width: "50px",
+                                height: "30px",
+                                minWidth: "30px",
+                                minHeight: "30px",
+                                padding: "0",
+                                marginRight: "5px",
+                                transition: 'all 0.3s ease',
+                                "&:hover": {
+                                  color: config.ui.colors.primary,
+                                  transform: 'scale(1.1)'
+                                },
+                              }}>
+                              <CalendarViewMonthIcon />
+                            </Button>
+                          </Tooltip>
                         </TableCell>
                       </TableRow>
                     </React.Fragment>

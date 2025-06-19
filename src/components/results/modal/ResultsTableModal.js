@@ -70,6 +70,29 @@ const ResultsTableRowModal = ({ open, subRow, onClose }) => {
       }
     }
 
+    /*
+    let filterTest = {
+      "meta": {
+        "apiVersion": "2.0"
+      },
+      "query": {
+        "filters": [
+          {
+            "id": "NCIT:C16576",
+            "includeDescendantTerms": false
+          }
+        ],
+        "includeResultsetResponses": "HIT",
+        "pagination": {
+          "skip": 10,
+          "limit": 10
+        },
+        "testMode": false,
+        "requestedGranularity": "record"
+      }
+    }
+    */    
+
     let filterData = selectedFilter.map((item) => item.id);
     filter.query.filters = filterData;
     return filter;
@@ -79,34 +102,32 @@ const ResultsTableRowModal = ({ open, subRow, onClose }) => {
     const fetchTableItems = async () => {
       try {
         setLoading(true);
-        let url = `${config.apiUrl}/${tableType}/${subRow.id}/${selectedPathSegment}`;
-        let response;
-        if(selectedFilter.length > 0) {
-          let query = queryBuilder(page);
-          const requestOptions = {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              query
-            })
-          };
-          response = await fetch(url, requestOptions);
-          const data = await response.json();
-          const results = data.response?.resultSets;
-          const beacon = results.find((item) => {
-            const id = subRow.beaconId || subRow.id;
-            const itemId = item.beaconId || item.id;
-            return id === itemId;
-          });
+        const url = `${config.apiUrl}/${tableType}/${subRow.id}/${selectedPathSegment}`;
+        let query = queryBuilder(page);
 
-          let totalDatasetsPages = Math.ceil(beacon.resultsCount / rowsPerPage);
-          setTotalPages (totalDatasetsPages)
-          setDataTable(beacon.results);
-        } else {
-          response = await fetch(url);
-        }
+        const requestOptions = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            query
+          })
+        };
+
+        const response = await fetch(url, requestOptions);
+        const data = await response.json();
+        const results = data.response?.resultSets;
+
+        const beacon = results.find((item) => {
+          const id = subRow.beaconId || subRow.id;
+          const itemId = item.beaconId || item.id;
+          return id === itemId;
+        });
+        const totalDatasetsPages = Math.ceil(beacon.resultsCount / rowsPerPage);
+        
+        setTotalPages (totalDatasetsPages)
+        setDataTable(beacon.results);
       } catch (err) {
         console.error("Failed to fetch modal table", err);
       } finally {

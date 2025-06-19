@@ -25,6 +25,8 @@ export default function SearchButton() {
       if(selectedFilter.length > 0) {
         let query = queryBuilder(selectedFilter);
 
+        console.log("query: " , query);
+
         const requestOptions = {
           method: 'POST',
           headers: {
@@ -105,10 +107,22 @@ export default function SearchButton() {
       "requestedGranularity": "record"
     }
 
-    let filterData = params.map((item) =>  ({
-      id: item.key,
-      scope: selectedPathSegment
-    }));
+    let filterData = params.map((item) =>  
+      {
+        if(item.operator) {
+          return {
+            id: item.field,
+            operator: item.operator,
+            value: item.value
+          }
+        } else {
+          return {
+            id: item.key,
+            scope: selectedPathSegment
+          }
+        }
+      }
+    );
 
     filter.query.filters = filterData;    
     return filter;

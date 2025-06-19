@@ -114,7 +114,8 @@ export default function GenomicAnnotations() {
               </Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ px: 0, pt: 0 }}>
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+              <Box 
+                sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
                 {validLabels.map((label) => (
                   <FilterLabel
                     key={label}
