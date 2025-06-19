@@ -9,7 +9,8 @@ import ResultsTableModalBody from './ResultsTableModalBody';
 import config from '../../../config/config.json';
 import CloseIcon from "@mui/icons-material/Close";
 import { InputAdornment, IconButton } from "@mui/material";
-
+import { useSelectedEntry } from "../../context/SelectedEntryContext";
+import Loader from "../../common/Loader";
 
 const style = {
   position: 'absolute',
@@ -23,8 +24,99 @@ const style = {
   p: 4,
 };
 
-
 const ResultsTableRowModal = ({ open, subRow, onClose }) => {
+  const { selectedPathSegment, selectedFilter } = useSelectedEntry();
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [dataTable, setDataTable] = useState([]);
+
+
+  const parseType = (item) => {
+    switch(item) {
+      case 'dataset':
+        return 'datasets';
+      default:
+        return null;
+    }
+  }
+
+  const tableType = parseType(subRow.setType);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage)
+  }
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+  }
+
+  const queryBuilder = (page) => {
+    let skipItems = page * rowsPerPage;
+    let filter = {
+      "meta": {
+        "apiVersion": "2.0"
+      },
+      "query": {
+        "filters": [],
+        "includeResultsetResponses": "HIT",
+        "testMode": false,
+        "requestedGranularity": "record",
+        "pagination": {
+          "skip": parseInt(`${(skipItems)}`),
+          "limit": parseInt(`${(rowsPerPage)}`)
+        },
+      }
+    }
+
+    let filterData = selectedFilter.map((item) => item.id);
+    filter.query.filters = filterData;
+    return filter;
+  }
+
+  useEffect(() => {
+    const fetchTableItems = async () => {
+      try {
+        setLoading(true);
+        let url = `${config.apiUrl}/${tableType}/${subRow.id}/${selectedPathSegment}`;
+        let response;
+        if(selectedFilter.length > 0) {
+          let query = queryBuilder(page);
+          const requestOptions = {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              query
+            })
+          };
+          response = await fetch(url, requestOptions);
+          const data = await response.json();
+          const results = data.response?.resultSets;
+          const beacon = results.find((item) => {
+            const id = subRow.beaconId || subRow.id;
+            const itemId = item.beaconId || item.id;
+            return id === itemId;
+          });
+
+          let totalDatasetsPages = Math.ceil(beacon.resultsCount / rowsPerPage);
+          setTotalPages (totalDatasetsPages)
+          setDataTable(beacon.results);
+        } else {
+          response = await fetch(url);
+        }
+      } catch (err) {
+        console.error("Failed to fetch modal table", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchTableItems();
+  }, [page, rowsPerPage]);
+
   return (
     <Modal
         open={open}
@@ -114,7 +206,20 @@ const ResultsTableRowModal = ({ open, subRow, onClose }) => {
               </Box>
             </Box>
             <Box>
-              <ResultsTableModalBody baseItem={subRow} primary={ config.ui.colors.primary }/>
+              { loading && (<Loader message="Loading data..." />)}
+              { !loading && dataTable.length>0 && (
+                <>
+                  <ResultsTableModalBody 
+                    dataTable={dataTable}
+                    page={page}
+                    rowsPerPage={rowsPerPage}
+                    totalPages={totalPages}
+                    handleChangePage={handleChangePage}
+                    handleChangeRowsPerPage={handleChangeRowsPerPage}
+                    primary={ config.ui.colors.primary }
+                  />
+                </>
+              )}
             </Box>
             <Box>
             </Box>

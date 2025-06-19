@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from 'react';
+import { useState, Fragment } from 'react';
 import {
   Box,
   Paper,
@@ -9,7 +9,9 @@ import {
   TableHead,
   TableRow,
   CircularProgress,
-  tableCellClasses
+  tableCellClasses,
+  Pagination,
+  TablePagination
 } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -17,23 +19,9 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import config from '../../../config/config.json';
 import { DATASET_TABLE_INDIVIDUAL } from '../../../lib/constants';
 import ResultsTableModalRow from './ResultsTableModalRow';
-import { useSelectedEntry } from "../../context/SelectedEntryContext";
-import Loader from "../../common/Loader";
 
-const parseType = (item) => {
-  switch(item) {
-    case 'dataset':
-      return 'datasets';
-    default:
-      return null;
-  }
-}
-
-const ResultsTableModalBody = ({ baseItem }) => {
-  const [dataTable, setDataTable] = useState([]);
-  const [loading, setLoading] = useState(false);
+const ResultsTableModalBody = ({ dataTable, page, totalPages, rowsPerPage, handleChangePage, handleChangeRowsPerPage }) => {
   const [expandedRow, setExpandedRow] = useState(null);
-  const { selectedPathSegment } = useSelectedEntry();
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -77,28 +65,6 @@ const ResultsTableModalBody = ({ baseItem }) => {
 
   const getSex = (row) => row ? `${row.id}-${row.label}` : "-";
 
-  let tableType = parseType(baseItem.setType);
-
-  useEffect(() => {
-    if (!tableType) return; 
-
-    const fetchTableItems = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch(`${config.apiUrl}/${tableType}/${baseItem.id}/${selectedPathSegment}`);
-        const data = await res.json();
-        let dataFiltered = data.response?.resultSets?.find((item) => item.id === baseItem.id);
-        setDataTable(dataFiltered.results);
-      } catch (err) {
-        console.error("Failed to fetch modal table", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchTableItems();
-  }, []);
-
   const handleRowClick = (item) => {
     if(expandedRow && expandedRow.id === item.id) {
       setExpandedRow(null);
@@ -106,7 +72,7 @@ const ResultsTableModalBody = ({ baseItem }) => {
       setExpandedRow(item);
     }
   };
-
+  
   return (
     <Box>
       <Paper
@@ -117,8 +83,7 @@ const ResultsTableModalBody = ({ baseItem }) => {
           borderRadius: 0,
         }}
       >
-        { loading && (<Loader message="Loading data..." />)}
-        { !loading && dataTable && (
+        <>
           <TableContainer sx={{ maxHeight: 540 }}>
             <Table stickyHeader aria-label="Results table">
               <TableHead>
@@ -186,7 +151,15 @@ const ResultsTableModalBody = ({ baseItem }) => {
               </TableBody>
             </Table>
           </TableContainer>
-        )}
+          <TablePagination
+            component="div"
+            count={totalPages}
+            page={page}
+            onPageChange={handleChangePage}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </>
       </Paper>
     </Box>
   )

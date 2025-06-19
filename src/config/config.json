@@ -44,31 +44,37 @@
         "Demographics": [
           {
             "key": "female",
+            "id": "NCIT:C16576",
             "label": "Female",
             "type": "ontology"
           },
           {
             "key": "male",
+            "id": "NCIT:C20197",
             "label": "Male",
             "type": "ontology"
           },
           {
             "key": "age_of_onset",
+            "id": "age_of_onset",
             "label": "Age Of Onset",
             "type": "alphanumeric"
           },
           {
             "key": "weight",
+            "id": "weight",
             "label": "Weight",
             "type": "alphanumeric"
           },
           {
             "key": "height",
+            "id": "height",
             "label": "Height",
             "type": "alphanumeric"
           },
           {
             "key": "label6",
+            "id": "label6",
             "label": "label6",
             "type": "ontology"
           }
