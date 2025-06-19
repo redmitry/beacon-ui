@@ -1,10 +1,10 @@
 const Joi = require("joi");
 
+// This defines the hexColor vaild string
 const hexColor = Joi.string().pattern(/^#[0-9A-Fa-f]{6}$/);
-url: Joi.string()
-  .pattern(/^https:\/\/.+/)
-  .required();
 
+// This defines which ones are the allowed entry types
+// Might need to re-think it because of the free text entryTypes
 const allowedEntryTypes = [
   "analyses",
   "biosamples",
@@ -37,7 +37,7 @@ const schema = Joi.object({
     }),
 
   ui: Joi.object({
-    showExternalNavBarLink: Joi.boolean().required(),
+    showExternalNavBarLink: Joi.boolean().optional(),
 
     externalNavBarLink: Joi.alternatives().conditional(
       "showExternalNavBarLink",
@@ -105,9 +105,17 @@ const schema = Joi.object({
           .items(
             Joi.object({
               key: Joi.string().min(1).max(100).required(),
-              label: Joi.string().min(1).max(100).optional(),
-              type: Joi.string().valid("ontology", "alphanumeric").required(),
+              type: Joi.string()
+                .valid(
+                  "ontology",
+                  "alphanumeric",
+                  "ontologyTerm",
+                  "customTerm",
+                  "custom"
+                )
+                .required(),
               id: Joi.string().min(1).required(),
+              label: Joi.string().min(1).max(100).optional(),
             })
           )
           .max(6)
@@ -117,7 +125,8 @@ const schema = Joi.object({
 
   // This is also optional
   // This field directs the user into choosing at least one of the following strings
-  // This filed might need further development (TODO)
+  // If the user does not fill anything related to the genomicAnnotations
+  // This field might need further development (TODO)
   genomicAnnotations: Joi.object({
     visibleGenomicCategories: Joi.array()
       .items(

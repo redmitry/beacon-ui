@@ -62,7 +62,7 @@ export default function Navbar({ title, main, navItems }) {
               },
             }}
           >
-            {/* 👇 Logo in Navbar only if width >= 386px */}
+            {/* Logo in Navbar only if width >= 386px */}
             <Box
               component="span"
               sx={{
