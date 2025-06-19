@@ -8,7 +8,7 @@ import {
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { useState } from "react";
 import config from "../../config/config.json";
-import FilterLabel from "./../styling/FilterLabel";
+import FilterLabel from "../styling/FilterLabel";
 
 export default function GenomicAnnotations() {
   const allGenomicCategories = [
@@ -81,6 +81,7 @@ export default function GenomicAnnotations() {
   return (
     <Box>
       {filterCategories.map((topic) => {
+        if (!validLabels || validLabels.length === 0) return null;
         const validLabels = filterLabels[topic]?.filter(
           (label) => label.trim() !== ""
         );
@@ -108,6 +109,7 @@ export default function GenomicAnnotations() {
                 translate="no"
                 sx={{ fontStyle: "italic", fontSize: "14px" }}
               >
+                {topic}
                 {topic}
               </Typography>
             </AccordionSummary>

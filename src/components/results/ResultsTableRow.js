@@ -11,11 +11,10 @@ import {
 } from "@mui/material";
 import { lighten } from "@mui/system";
 import { BEACON_NETWORK_COLUMNS_EXPANDED } from '../../lib/constants';
-import MailIcon from "../../assets/logos/mail.png";
 import CalendarViewMonthIcon from '@mui/icons-material/CalendarViewMonth';
 import config from '../../config/config.json';
 
-export default function ResultsTableRow({ item, handleRowClicked }) {
+export default function ResultsTableRow({ item, handleOpenModal }) {
   const bgColor = lighten(config.ui.colors.primary, 0.95);
 
   return (
@@ -32,7 +31,7 @@ export default function ResultsTableRow({ item, handleRowClicked }) {
                 <TableBody>
                   { item.items.map((dataset, i) => (
                     <React.Fragment key={i}>
-                      <TableRow>
+                      <TableRow key={i}>
                         <TableCell style={{ width: BEACON_NETWORK_COLUMNS_EXPANDED.beacon_dataset }}></TableCell>
                         <TableCell style={{ width: BEACON_NETWORK_COLUMNS_EXPANDED.beacon_dataset_name }}>
                           <Box sx={{ display: 'flex'}}>
@@ -43,10 +42,18 @@ export default function ResultsTableRow({ item, handleRowClicked }) {
                         <TableCell sx={{ fontWeight: "bold"  }}  style={{ width: BEACON_NETWORK_COLUMNS_EXPANDED.beacon_dataset_response }}>
                           { dataset.results.length > 0 ? dataset.results.length : '-' }
                         </TableCell>
-                        <TableCell style={{ width: BEACON_NETWORK_COLUMNS_EXPANDED.beacon_dataset_detail }}>
+                        <TableCell 
+                          style={{ 
+                            width: BEACON_NETWORK_COLUMNS_EXPANDED.beacon_dataset_detail.width,
+                            paddingRight: '0px'
+                          }}
+                          align={ 
+                            BEACON_NETWORK_COLUMNS_EXPANDED.beacon_dataset_detail.float 
+                          }
+                          >
                           <Button 
                             variant="text"
-                            onClick={ () => handleRowClicked(item) }
+                            onClick={ () => handleOpenModal(item) }
                             sx={{
                               textTransform: "none",
                               fontSize: "14px",
@@ -66,17 +73,6 @@ export default function ResultsTableRow({ item, handleRowClicked }) {
                             }}>
                             <CalendarViewMonthIcon />
                           </Button>
-                        </TableCell>
-                        <TableCell style={{ width: BEACON_NETWORK_COLUMNS_EXPANDED.beacon_dataset_contact }}>
-                          <img
-                            src={MailIcon}
-                            alt="Contact"
-                            style={{
-                              width: '24px',
-                              height: '24px',
-                              cursor: 'pointer'
-                            }}
-                          />
                         </TableCell>
                       </TableRow>
                     </React.Fragment>

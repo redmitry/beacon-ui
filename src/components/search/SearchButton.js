@@ -1,47 +1,74 @@
 import {
   Button
 } from "@mui/material";
-import { useEffect, useState } from "react";
 import config from '../../config/config.json';
 import SearchIcon from "@mui/icons-material/Search";
 import { useSelectedEntry } from "../context/SelectedEntryContext";
-import { info } from "autoprefixer";
 
 export default function SearchButton() {
-  const { 
-    selectedFilter, 
+  const {
     selectedPathSegment, 
     setLoadingData,
     setResultData,
-    setHasSearchResult 
+    setHasSearchResult,
+    selectedFilter
   } = useSelectedEntry();
 
   const handleSearch = async () => {
-     setLoadingData(true);
-     setResultData([]);
+    setLoadingData(true);
+    setResultData([]);
+
     try {
-      // TODO filters itemss
-      const response = await fetch(`${config.apiUrlNetwork}/${selectedPathSegment}`);
+      // TODO filters items
+      let url = `${config.apiUrl}/${selectedPathSegment}`;
+      let response;
+      if(selectedFilter.length > 0) {
+        let query = queryBuilder(selectedFilter);
+
+        const requestOptions = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            query
+          })
+        };
+        response = await fetch(url, requestOptions);
+      } else {
+        response = await fetch(url);
+      }
+
+      if(!response.ok) {
+        // TODO show error!
+      }
+      
       const data = await response.json();
 
       // group beacons
       const groupedArray = Object.values(
         Object.values(data.response.resultSets).reduce((acc, item) => {
-          if (!acc[item.beaconId]) {
-            acc[item.beaconId] = {
-              beaconId: item.beaconId,
+          const isBeaconNetwork = !!item.beaconId;
+          const key = isBeaconNetwork ? item.beaconId : item.id;
+
+          if (!acc[key]) {
+            acc[key] = {
+              ...(isBeaconNetwork
+                ? { beaconId: item.beaconId, id: item.id }
+                : { id: item.id }),
               exists: item.exists,
-              info: item.info,
+              info: item.info || null,
               totalResultsCount: 0,
+              setType: item.setType,
               items: []
             };
           }
 
           const count = Number(item.resultsCount) || 0;
-          acc[item.beaconId].totalResultsCount += count;
+          acc[key].totalResultsCount += count;
 
           if (Array.isArray(item.results)) {
-            acc[item.beaconId].items.push({
+            acc[key].items.push({
               dataset: item.id,
               results: item.results
             });
@@ -60,7 +87,33 @@ export default function SearchButton() {
       setLoadingData(false);
     }
   }
-  
+
+  const queryBuilder = (params) => {
+    let filter = {
+      "meta": {
+        "apiVersion": "2.0"
+      },
+      "query": {
+        "filters": []
+      },
+      "includeResultsetResponses": "HIT",
+        "pagination": {
+          "skip": 0,
+          "limit": 10
+      },
+      "testMode": false,
+      "requestedGranularity": "record"
+    }
+
+    let filterData = params.map((item) =>  ({
+      id: item.key,
+      scope: selectedPathSegment
+    }));
+
+    filter.query.filters = filterData;    
+    return filter;
+  }
+
   return (
     <Button
       variant="contained"
