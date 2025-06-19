@@ -26,7 +26,11 @@ export default function Search({
   selectedTool,
   setSelectedTool,
 }) {
-  const { entryTypes, setEntryTypes } = useSelectedEntry();
+  const { 
+    entryTypes, 
+    setEntryTypes,
+    setBeaconsInfo  
+  } = useSelectedEntry();
   const { selectedFilter, setSelectedFilter } = useSelectedEntry();
   const { extraFilter, hasSearchResults } = useSelectedEntry();
   const [loading, setLoading] = useState(true);
@@ -68,8 +72,7 @@ export default function Search({
   useEffect(() => {
     const fetchEntryTypes = async () => {
       try {
-        const res = await fetch(`${config.apiUrlNetwork}/map`);
-        // const res = await fetch("/api.json");
+        const res = await fetch(`${config.apiUrl}/map`);
         const data = await res.json();
         const endpointSets = data.response.endpointSets || {};
 
@@ -90,13 +93,15 @@ export default function Search({
               pathSegment: normalizedSegment,
               originalPathSegment: originalSegment,
             };
-          });
+        });
+
         const sorted = sortEntries(entries);
         setEntryTypes(sorted);
 
         if (sorted.length > 0) {
           setSelectedPathSegment(sorted[0].pathSegment);
         }
+        await handleBeaconsInfo();
       } catch (err) {
         console.error("Error fetching entry types:", err);
       } finally {
@@ -106,6 +111,29 @@ export default function Search({
 
     fetchEntryTypes();
   }, []);
+
+  const handleBeaconsInfo = async () => {
+    try {
+      let url = `${config.apiUrl}/info`;
+      let response = await fetch(url);
+      const data = await response.json();
+      let normalizedData = [];
+      if (Array.isArray(data.responses)) {
+        normalizedData = data.responses;
+      }
+      else if (data.response) {
+        if (Array.isArray(data.response)) {
+          normalizedData = data.response;
+        } else if (typeof data.response === 'object' && data.response !== null) {
+          normalizedData = [data.response];
+        }
+      }
+      setBeaconsInfo(normalizedData);
+    } catch (error) {
+      // TODO
+      console.error("Search failed", error);
+    }
+  }
 
   useEffect(() => {
     setActiveInput(selectedPathSegment === "g_variants" ? "genomic" : "filter");
