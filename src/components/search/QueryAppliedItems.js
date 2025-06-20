@@ -5,6 +5,8 @@ import { useSelectedEntry } from "../context/SelectedEntryContext";
 export default function QueryAppliedItems({ handleFilterRemove }) {
   const { selectedFilter } = useSelectedEntry();
 
+  console.log("selectedFilter", selectedFilter);
+
   return (
     <Box
       sx={{
@@ -17,6 +19,8 @@ export default function QueryAppliedItems({ handleFilterRemove }) {
         <FilterLabelRemovable
           key={filter.label}
           label={filter.label}
+          scope={filter.scope}
+          scopes={filter.scopes}
           onDelete={() => handleFilterRemove(filter)}
           bgColor="filter"
         />

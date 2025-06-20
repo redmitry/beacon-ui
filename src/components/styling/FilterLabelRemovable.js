@@ -3,7 +3,13 @@ import { alpha } from "@mui/system";
 import ClearIcon from "@mui/icons-material/Clear";
 import config from "../../config/config.json";
 
-export default function FilterLabelRemovable({ label, onDelete, bgColor }) {
+export default function FilterLabelRemovable({
+  scope,
+  scopes = [],
+  label,
+  onDelete,
+  bgColor,
+}) {
   let backgroundColor = "";
   let hoverColor = "";
 
@@ -15,9 +21,13 @@ export default function FilterLabelRemovable({ label, onDelete, bgColor }) {
     hoverColor = config.ui.colors.secondary;
   }
 
+  // Show scope in the label or not
+  const labelToShow =
+    scopes.length > 1 && scope ? `${label} | ${scope}` : label;
+
   return (
     <Chip
-      label={label}
+      label={labelToShow}
       component="div"
       clickable
       variant="outlined"

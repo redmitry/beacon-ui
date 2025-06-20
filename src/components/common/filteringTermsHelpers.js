@@ -54,3 +54,52 @@ export function handleFilterSelection({
   onSuccess();
   return [...prevFilters, item];
 }
+
+export function getDisplayLabelAndScope(term, selectedEntryType) {
+  const scopes = term.scopes || [];
+
+  const aliasMap = {
+    individuals: "individual",
+    biosamples: "biosample",
+    cohorts: "cohort",
+    datasets: "dataset",
+    runs: "run",
+    analyses: "analysis",
+    g_variants: "genomic_variant",
+  };
+
+  const normalizedEntryType =
+    aliasMap[selectedEntryType.toLowerCase()] ||
+    selectedEntryType.toLowerCase();
+  console.log("normalizedEntryType", normalizedEntryType);
+
+  if (scopes.length === 0) {
+    return {
+      displayLabel: term.label,
+      selectedScope: null,
+      allScopes: [],
+      needsSelection: false,
+    };
+  }
+
+  if (scopes.length === 1) {
+    return {
+      displayLabel: term.label,
+      selectedScope: scopes[0],
+      allScopes: scopes,
+      needsSelection: false,
+    };
+  }
+
+  const preselected =
+    scopes.find(
+      (scope) => scope.toLowerCase() === normalizedEntryType.toLowerCase()
+    ) || scopes[0];
+
+  return {
+    displayLabel: term.label,
+    selectedScope: preselected,
+    allScopes: scopes,
+    needsSelection: true,
+  };
+}

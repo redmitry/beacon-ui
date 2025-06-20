@@ -81,7 +81,6 @@ export default function GenomicAnnotations() {
   return (
     <Box>
       {filterCategories.map((topic) => {
-        if (!validLabels || validLabels.length === 0) return null;
         const validLabels = filterLabels[topic]?.filter(
           (label) => label.trim() !== ""
         );
@@ -90,7 +89,6 @@ export default function GenomicAnnotations() {
         return (
           <Accordion
             key={topic}
-            // expanded={expanded[topic]}
             expanded={!!expanded[topic]}
             onChange={handleChange(topic)}
             disableGutters
@@ -109,7 +107,6 @@ export default function GenomicAnnotations() {
                 translate="no"
                 sx={{ fontStyle: "italic", fontSize: "14px" }}
               >
-                {topic}
                 {topic}
               </Typography>
             </AccordionSummary>
