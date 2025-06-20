@@ -70,29 +70,6 @@ const ResultsTableRowModal = ({ open, subRow, onClose }) => {
       }
     }
 
-    /*
-    let filterTest = {
-      "meta": {
-        "apiVersion": "2.0"
-      },
-      "query": {
-        "filters": [
-          {
-            "id": "NCIT:C16576",
-            "includeDescendantTerms": false
-          }
-        ],
-        "includeResultsetResponses": "HIT",
-        "pagination": {
-          "skip": 10,
-          "limit": 10
-        },
-        "testMode": false,
-        "requestedGranularity": "record"
-      }
-    }
-    */    
-
     let filterData = selectedFilter.map((item) => item.id);
     filter.query.filters = filterData;
     return filter;
