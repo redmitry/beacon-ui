@@ -22,7 +22,9 @@ export default function QueryAppliedItems({ handleFilterRemove }) {
           scope={filter.scope}
           scopes={filter.scopes}
           onDelete={() => handleFilterRemove(filter)}
-          bgColor="filter"
+          onScopeChange={(newScope) => handleScopeChange(filter.key, newScope)}
+          keyValue={filter.key}
+          bgColor="common"
         />
       ))}
     </Box>

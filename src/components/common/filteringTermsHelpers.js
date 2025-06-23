@@ -71,7 +71,6 @@ export function getDisplayLabelAndScope(term, selectedEntryType) {
   const normalizedEntryType =
     aliasMap[selectedEntryType.toLowerCase()] ||
     selectedEntryType.toLowerCase();
-  console.log("normalizedEntryType", normalizedEntryType);
 
   if (scopes.length === 0) {
     return {

@@ -7,40 +7,43 @@ import {
   Button,
   FormControl,
 } from "@mui/material";
-import AddIcon from '@mui/icons-material/Add';
-import { useState } from 'react';
+import AddIcon from "@mui/icons-material/Add";
+import { useState } from "react";
 import { useSelectedEntry } from "../context/SelectedEntryContext";
-import CommonMessage from '../common/CommonMessage';
-import config from '../../config/config.json';
+import CommonMessage from "../common/CommonMessage";
+import config from "../../config/config.json";
 
 export default function FilterTermsExtra() {
   const { extraFilter, setExtraFilter, setSelectedFilter } = useSelectedEntry();
   const [selectedOperator, setSelectedOperator] = useState(">");
-  const [selectedValue, setSelectedValue] = useState('');
-  const [error, setError] = useState('');
+  const [selectedValue, setSelectedValue] = useState("");
+  const [error, setError] = useState("");
 
   const handleAddFilter = () => {
-    setError('');
-    if(!selectedValue) {
+    setError("");
+    if (!selectedValue) {
       setError("Please fill in all the fields");
     } else {
       setSelectedFilter((prevFilters) => {
-        if (prevFilters.some(filter => filter.key === extraFilter.key)) {
+        if (prevFilters.some((filter) => filter.key === extraFilter.key)) {
           return prevFilters;
         }
         const extraFilterCustom = {
           field: extraFilter.key,
           operator: selectedOperator,
           value: selectedValue,
-          label: `${extraFilter.label} ${selectedOperator} ${selectedValue}`
+          label: `${extraFilter.label} ${selectedOperator} ${selectedValue}`,
+          scope: extraFilter.scope || null,
+          scopes: extraFilter.scopes || [],
+          type: extraFilter.type || "alphanumeric",
         };
         setExtraFilter(null);
         setSelectedOperator(">");
-        setSelectedValue('');
+        setSelectedValue("");
         return [...prevFilters, extraFilterCustom];
       });
     }
-  }
+  };
 
   return (
     <Box
@@ -50,8 +53,9 @@ export default function FilterTermsExtra() {
         pt: 2,
         justifyContent: "center",
         alignItems: "center",
-        flexWrap: "wrap" 
-      }}>
+        flexWrap: "wrap",
+      }}
+    >
       <Box>
         <Typography
           sx={{
@@ -61,20 +65,20 @@ export default function FilterTermsExtra() {
             minWidth: "80px",
           }}
         >
-        Insert value:
+          Insert value:
         </Typography>
       </Box>
       <Box>
-        <FormControl 
-          sx={{ 
+        <FormControl
+          sx={{
             minWidth: 60,
             border: `1px solid ${config.ui.colors.primary}`,
             borderRadius: "10px",
             transition: "flex 0.3s ease",
-            '& .MuiOutlinedInput-notchedOutline': {
-              border: 'none',
+            "& .MuiOutlinedInput-notchedOutline": {
+              border: "none",
             },
-            '& .MuiSelect-select': {
+            "& .MuiSelect-select": {
               padding: "5px 12px",
             },
           }}
@@ -87,19 +91,19 @@ export default function FilterTermsExtra() {
             displayEmpty
             onChange={(e) => setSelectedOperator(e.target.value)}
             sx={{
-              '& .MuiInputBase-root': {
-                border: 'none',
+              "& .MuiInputBase-root": {
+                border: "none",
               },
-              '& fieldset': {
-                border: 'none',
+              "& fieldset": {
+                border: "none",
               },
-              p: 0
+              p: 0,
             }}
           >
-            <MenuItem value=">">{'>'}</MenuItem>
-            <MenuItem value="=">{'='}</MenuItem>
-            <MenuItem value="<">{'<'}</MenuItem>
-        </Select>
+            <MenuItem value=">">{">"}</MenuItem>
+            <MenuItem value="=">{"="}</MenuItem>
+            <MenuItem value="<">{"<"}</MenuItem>
+          </Select>
         </FormControl>
       </Box>
       <Box
@@ -112,8 +116,9 @@ export default function FilterTermsExtra() {
           transition: "flex 0.3s ease",
           fontFamily: '"Open Sans", sans-serif',
           padding: "1px 12px",
-          minWidth: "100px"
-        }}>
+          minWidth: "100px",
+        }}
+      >
         <InputBase
           placeholder="Value"
           value={selectedValue}
@@ -130,9 +135,9 @@ export default function FilterTermsExtra() {
           alignItems: "center",
           fontFamily: '"Open Sans", sans-serif',
           padding: "0px",
-          maxWidth: "30px"
+          maxWidth: "30px",
         }}
-        >
+      >
         <Button
           variant="outlined"
           onClick={handleAddFilter}
@@ -152,19 +157,14 @@ export default function FilterTermsExtra() {
             padding: 0,
             "&:hover": {
               backgroundColor: config.ui.colors.primary,
-              color: "white"
+              color: "white",
             },
           }}
-          >
-            <AddIcon fontSize="small" />
+        >
+          <AddIcon fontSize="small" />
         </Button>
       </Box>
-      { error && 
-        <CommonMessage 
-          text={error}
-          type="error"
-        />
-      }
+      {error && <CommonMessage text={error} type="error" />}
     </Box>
-  )
+  );
 }

@@ -103,7 +103,8 @@
             "key": "Chemotherapy",
             "label": "Chemotherapy",
             "type": "ontology",
-            "id": "NCIT:C15632"
+            "id": "NCIT:C15632",
+            "scope": ["runs", "individual", "cohort"]
           },
           {
             "key": "Tumor stage I",

@@ -5,6 +5,7 @@ const hexColor = Joi.string().pattern(/^#[0-9A-Fa-f]{6}$/);
 
 // This defines which ones are the allowed entry types
 // Might need to re-think it because of the free text entryTypes
+// TODO
 const allowedEntryTypes = [
   "analyses",
   "biosamples",

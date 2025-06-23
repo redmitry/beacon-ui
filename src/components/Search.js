@@ -17,7 +17,7 @@ import { useSelectedEntry } from "./context/SelectedEntryContext";
 import GenomicQueryBuilderButton from "./genomic/GenomicQueryBuilderButton";
 import AllFilteringTermsButton from "./filters/AllFilteringTermsButton";
 import FilteringTermsDropdownResults from "./filters/FilteringTermsDropdownResults";
-import QueryFilter from "./search/QueryApplied";
+import QueryApplied from "./search/QueryApplied";
 import SearchButton from "./search/SearchButton";
 import FilterTermsExtra from "./search/FilterTemsExtra";
 
@@ -26,11 +26,7 @@ export default function Search({
   selectedTool,
   setSelectedTool,
 }) {
-  const { 
-    entryTypes, 
-    setEntryTypes,
-    setBeaconsInfo  
-  } = useSelectedEntry();
+  const { entryTypes, setEntryTypes, setBeaconsInfo } = useSelectedEntry();
   const { selectedFilter, setSelectedFilter } = useSelectedEntry();
   const { extraFilter, hasSearchResults } = useSelectedEntry();
   const [loading, setLoading] = useState(true);
@@ -93,7 +89,7 @@ export default function Search({
               pathSegment: normalizedSegment,
               originalPathSegment: originalSegment,
             };
-        });
+          });
 
         const sorted = sortEntries(entries);
         setEntryTypes(sorted);
@@ -120,11 +116,13 @@ export default function Search({
       let normalizedData = [];
       if (Array.isArray(data.responses)) {
         normalizedData = data.responses;
-      }
-      else if (data.response) {
+      } else if (data.response) {
         if (Array.isArray(data.response)) {
           normalizedData = data.response;
-        } else if (typeof data.response === 'object' && data.response !== null) {
+        } else if (
+          typeof data.response === "object" &&
+          data.response !== null
+        ) {
           normalizedData = [data.response];
         }
       }
@@ -133,7 +131,7 @@ export default function Search({
       // TODO
       console.error("Search failed", error);
     }
-  }
+  };
 
   useEffect(() => {
     setActiveInput(selectedPathSegment === "g_variants" ? "genomic" : "filter");
@@ -515,7 +513,7 @@ export default function Search({
           )}
         </Box>
         {extraFilter && <FilterTermsExtra />}
-        {!hasSearchResults && selectedFilter.length > 0 && <QueryFilter />}
+        {!hasSearchResults && selectedFilter.length > 0 && <QueryApplied />}
         <Box
           sx={{
             mt: 5,
