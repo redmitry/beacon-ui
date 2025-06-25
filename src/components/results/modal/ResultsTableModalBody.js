@@ -20,7 +20,7 @@ import config from '../../../config/config.json';
 import { DATASET_TABLE_INDIVIDUAL } from '../../../lib/constants';
 import ResultsTableModalRow from './ResultsTableModalRow';
 
-const ResultsTableModalBody = ({ dataTable, page, totalPages, rowsPerPage, handleChangePage, handleChangeRowsPerPage }) => {
+const ResultsTableModalBody = ({ dataTable, totalItems, page, totalPages, rowsPerPage, handleChangePage, handleChangeRowsPerPage }) => {
   const [expandedRow, setExpandedRow] = useState(null);
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -72,6 +72,19 @@ const ResultsTableModalBody = ({ dataTable, page, totalPages, rowsPerPage, handl
       setExpandedRow(item);
     }
   };
+
+  const cleanAndParseInfo = (infoString) => {
+    try {
+      if (typeof infoString !== "string") return null;
+
+      const cleaned = infoString.replace(/"|"/g, '"');
+      const parsed = JSON.parse(cleaned);
+      return parsed;
+    } catch (error) {
+      console.log("Failed to parse item.info:", error);
+      return null;
+    }
+  };
   
   return (
     <Box>
@@ -100,13 +113,20 @@ const ResultsTableModalBody = ({ dataTable, page, totalPages, rowsPerPage, handl
                 </StyledTableRow>
               </TableHead>
               <TableBody>
-                { dataTable.map((item) => {
+                { dataTable.map((item, index) => {
                   const isExpanded = expandedRow?.id === item.id;
-                  
+                  let id = item.id;
+                  const parsedInfo = cleanAndParseInfo(item.info);
+                  if (parsedInfo?.sampleID) {
+                    id += `_${parsedInfo.sampleID}`;
+                  } else {
+                    id += `_${index}`;
+                  }
+
                   return (
-                    <Fragment key={ item.id }>
+                    <Fragment key={ id }>
                       <StyledTableRow
-                        key={`row-${item.id}`}
+                        key={`row-${id}`}
                         hover
                         sx={{
                           '&.MuiTableRow-root': {
@@ -141,7 +161,7 @@ const ResultsTableModalBody = ({ dataTable, page, totalPages, rowsPerPage, handl
 
                       { isExpanded && (
                         <ResultsTableModalRow
-                          key={`expanded-${item.id}`}
+                          key={`expanded-${id}`}
                           item={expandedRow} 
                         />
                       )}
@@ -153,7 +173,7 @@ const ResultsTableModalBody = ({ dataTable, page, totalPages, rowsPerPage, handl
           </TableContainer>
           <TablePagination
             component="div"
-            count={totalPages}
+            count={totalItems}
             page={page}
             onPageChange={handleChangePage}
             rowsPerPage={rowsPerPage}

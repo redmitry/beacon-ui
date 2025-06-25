@@ -25,8 +25,6 @@ export default function SearchButton() {
       if(selectedFilter.length > 0) {
         let query = queryBuilder(selectedFilter);
 
-        console.log("query: " , query);
-
         const requestOptions = {
           method: 'POST',
           headers: {

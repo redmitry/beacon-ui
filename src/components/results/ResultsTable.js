@@ -32,7 +32,6 @@ export default function ResultsTable() {
   const [selectedSubRow, setSelectedSubRow] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  const bgColor = lighten(config.ui.colors.primary, 0.95);
   const headerCellStyle = {
     backgroundColor: config.ui.colors.primary,
     fontWeight: 700,
@@ -73,19 +72,30 @@ export default function ResultsTable() {
   }
 
   const findBeaconIcon = (beaconId) => {
-    const beacon = beaconsInfo.find((item) => {
-      const id = item.meta?.beaconId || item.id;
-      return id === beaconId;
-    });
+    let beacon = {};
+    if(config.beaconType === 'singleBeacon') {
+      beacon = beaconsInfo[0];
+    } else {
+      beacon = beaconsInfo.find((item) => {
+        const id = item.meta?.beaconId || item.id;
+        return id === beaconId;
+      });
+    }
+
     const logo = beacon.response ? beacon.response?.organization?.logoUrl : beacon.organization?.logoUrl;
     return logo ?? null;
   };
 
   const findBeaconEmail = (beaconId) => {
-    const beacon = beaconsInfo.find((item) => {
-      const id = item.meta?.beaconId || item.id;
-      return id === beaconId;
-    });
+    let beacon = {};
+    if(config.beaconType === 'singleBeacon') {
+      beacon = beaconsInfo[0];
+    } else {
+      beacon = beaconsInfo.find((item) => {
+        const id = item.meta?.beaconId || item.id;
+        return id === beaconId;
+      });
+    }
     const email = beacon.response ? beacon.response?.organization?.contactUrl : beacon.organization?.contactUrl;
     return email?? null;
   }
@@ -185,7 +195,7 @@ export default function ResultsTable() {
                               variant="text"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleEmail(itemEmail);
+                                handleOpenModal(item);
                               }}
                               sx={{
                                 textTransform: "none",
