@@ -1,11 +1,23 @@
 import { Box } from "@mui/material";
 import FilterLabelRemovable from "../styling/FilterLabelRemovable";
 import { useSelectedEntry } from "../context/SelectedEntryContext";
+import { useState } from "react";
 
 export default function QueryAppliedItems({ handleFilterRemove }) {
-  const { selectedFilter } = useSelectedEntry();
+  const { selectedFilter, setSelectedFilter } = useSelectedEntry();
+
+  const [expandedKey, setExpandedKey] = useState(false);
 
   console.log("selectedFilter", selectedFilter);
+
+  const handleScopeChange = (keyValue, newScope) => {
+    setSelectedFilter((prevFilters) =>
+      prevFilters.map((f) =>
+        f.key === keyValue ? { ...f, scope: newScope } : f
+      )
+    );
+    setExpandedKey(null);
+  };
 
   return (
     <Box
@@ -15,18 +27,24 @@ export default function QueryAppliedItems({ handleFilterRemove }) {
         flexWrap: "wrap",
       }}
     >
-      {selectedFilter.map((filter) => (
-        <FilterLabelRemovable
-          key={filter.label}
-          label={filter.label}
-          scope={filter.scope}
-          scopes={filter.scopes}
-          onDelete={() => handleFilterRemove(filter)}
-          onScopeChange={(newScope) => handleScopeChange(filter.key, newScope)}
-          keyValue={filter.key}
-          bgColor="common"
-        />
-      ))}
+      {selectedFilter.map((filter) => {
+        const keyValue = filter.key;
+
+        return (
+          <FilterLabelRemovable
+            key={keyValue}
+            keyValue={keyValue}
+            label={filter.label}
+            scope={filter.scope}
+            scopes={filter.scopes}
+            onDelete={() => handleFilterRemove(filter)}
+            onScopeChange={handleScopeChange}
+            bgColor="common"
+            expandedKey={expandedKey}
+            setExpandedKey={setExpandedKey}
+          />
+        );
+      })}
     </Box>
   );
 }
