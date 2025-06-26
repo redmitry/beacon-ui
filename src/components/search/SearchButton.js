@@ -115,14 +115,15 @@ export default function SearchButton() {
           }
         } else {
           return {
-            id: item.key,
+            id: item.key ?? item.id,
             scope: selectedPathSegment
           }
         }
       }
     );
 
-    filter.query.filters = filterData;    
+    filter.query.filters = filterData;
+
     return filter;
   }
 

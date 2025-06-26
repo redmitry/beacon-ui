@@ -18,6 +18,7 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 1200,
+  height: 750,
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
@@ -109,6 +110,7 @@ const ResultsTableModal = ({ open, subRow, onClose }) => {
           const itemId = item.beaconId || item.id;
           return id === itemId;
         });
+
         const totalDatasetsPages = Math.ceil(beacon.resultsCount / rowsPerPage);
         
         setTotalItems(beacon.resultsCount);
