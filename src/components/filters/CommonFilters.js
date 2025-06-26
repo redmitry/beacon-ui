@@ -13,6 +13,7 @@ import { useSelectedEntry } from "./../context/SelectedEntryContext";
 import CommonMessage, {
   COMMON_MESSAGES,
 } from "../../components/common/CommonMessage";
+import { getDisplayLabelAndScope } from "../common/filteringTermsHelpers";
 
 export default function CommonFilters() {
   const filterCategories = config.ui.commonFilters.filterCategories;
@@ -24,14 +25,21 @@ export default function CommonFilters() {
     setLoadingData,
     setResultData,
     setHasSearchResult,
+    selectedPathSegment,
   } = useSelectedEntry();
 
   const getValidLabels = (topic) =>
-    filterLabels[topic]?.filter(
-      (item) =>
-        item.label.trim() !== "" &&
-        !/^(item.label)\d*$/i.test(item.label.trim())
-    ) ?? [];
+    (filterLabels[topic] ?? []).filter((item) => {
+      const label = item.label?.trim();
+      if (!label || /^(item.label)\d*$/i.test(label)) return false;
+
+      const { selectedScope } = getDisplayLabelAndScope(
+        item,
+        selectedPathSegment
+      );
+      return selectedScope !== null || !item.scopes || item.scopes.length === 0;
+    });
+
   const [message, setMessage] = useState(null);
   const [expanded, setExpanded] = useState(() => {
     const initialState = {};

@@ -77,7 +77,8 @@
             "key": "label6",
             "id": "label6",
             "label": "label6",
-            "type": "ontology"
+            "type": "ontology",
+            "scopes": ["individuals", "biosamples", "cohorts"]
           }
         ],
         "Cancer": [
@@ -85,19 +86,22 @@
             "key": "Colon adenocarcinoma",
             "label": "Colon adenocarcinoma",
             "type": "ontology",
-            "id": "NCIT:C4910"
+            "id": "NCIT:C4910",
+            "scopes": ["individuals", "biosamples", "cohorts"]
           },
           {
             "key": "Breast Cancer",
             "label": "Breast Cancer",
             "type": "ontology",
-            "id": "NCIT:C4872"
+            "id": "NCIT:C4872",
+            "scopes": ["individuals", "biosamples", "cohorts"]
           },
           {
             "key": "Radiation therapy",
             "label": "Radiation therapy",
             "type": "ontology",
-            "id": "NCIT:C15313"
+            "id": "NCIT:C15313",
+            "scopes": ["cohorts"]
           },
           {
             "key": "Chemotherapy",

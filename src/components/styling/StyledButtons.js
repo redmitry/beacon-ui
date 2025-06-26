@@ -29,6 +29,7 @@ export default function AllFilteringTerms({
           selected ? primaryDarkColor : unselectedBorderColor
         }`,
         color: primaryDarkColor,
+
         "&:hover": {
           backgroundColor: selected ? selectedBg : lighten("#fff", 0.05),
           border: `1px solid ${primaryDarkColor}`,

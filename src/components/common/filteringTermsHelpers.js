@@ -58,6 +58,8 @@ export function handleFilterSelection({
 export function getDisplayLabelAndScope(term, selectedEntryType) {
   const scopes = term.scopes || [];
 
+  if (!selectedEntryType) selectedEntryType = "";
+
   const aliasMap = {
     individuals: "individual",
     biosamples: "biosample",

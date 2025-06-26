@@ -109,8 +109,6 @@ const FilteringTermsDropdownResults = ({ searchInput, onCloseDropdown }) => {
                 <ListItem
                   key={term.id}
                   onClick={() => {
-                    console.log("Selected filtering term:", { item });
-
                     if (item.type === "alphanumeric") {
                       setExtraFilter(item);
                       onCloseDropdown();

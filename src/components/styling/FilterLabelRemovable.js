@@ -3,6 +3,8 @@ import { alpha } from "@mui/material/styles";
 import ClearIcon from "@mui/icons-material/Clear";
 import config from "../../config/config.json";
 import { capitalize } from "../common/textFormatting";
+import { useEffect, useRef } from "react";
+import { getSelectableScopeStyles } from "../styling/selectableScopeStyles";
 
 export default function FilterLabelRemovable({
   scope,
@@ -17,6 +19,24 @@ export default function FilterLabelRemovable({
   onScopeChange,
 }) {
   const isExpanded = expandedKey === keyValue;
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target) &&
+        isExpanded
+      ) {
+        setExpandedKey(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isExpanded, setExpandedKey]);
 
   const backgroundColor =
     bgColor === "common"
@@ -41,6 +61,7 @@ export default function FilterLabelRemovable({
 
   return (
     <Box
+      ref={containerRef}
       sx={{
         borderRadius: "8px",
         border: "1px solid black",
@@ -125,33 +146,7 @@ export default function FilterLabelRemovable({
                   key={s}
                   variant={isSelected ? "contained" : "outlined"}
                   onClick={() => handleScopeChange(s)}
-                  sx={{
-                    borderRadius: "8px",
-                    fontWeight: 400,
-                    textTransform: "none",
-                    fontSize: "12px",
-                    minHeight: "28px",
-                    boxShadow: "none",
-                    display: "inline-block",
-                    backgroundColor: isSelected
-                      ? config.ui.colors.primary
-                      : "#fff",
-                    color: isSelected ? "#fff" : config.ui.colors.darkPrimary,
-                    border: `1px solid ${
-                      isSelected
-                        ? config.ui.colors.primary
-                        : config.ui.colors.darkPrimary
-                    }`,
-                    borderRadius: "7px",
-                    fontSize: "12px",
-                    px: 1.5,
-                    py: 0.3,
-                    mr: 1,
-                    mb: 0.5,
-                    fontFamily: '"Open Sans", sans-serif',
-                    cursor: "pointer",
-                    transition: "all 0.2s ease-in-out",
-                  }}
+                  sx={getSelectableScopeStyles(isSelected)}
                 >
                   {capitalize(s)}
                 </Button>

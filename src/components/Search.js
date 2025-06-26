@@ -336,6 +336,8 @@ export default function Search({
           backgroundColor: "#FFFFFF",
           boxShadow: "0px 8px 11px 0px #9BA0AB24",
           p: "24px 32px",
+          // width: "73%",
+          // backgroundColor: "magenta",
         }}
       >
         <Typography

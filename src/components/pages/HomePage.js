@@ -57,7 +57,6 @@ export default function HomePage({ selectedTool, setSelectedTool }) {
               mb: { xs: "50px", md: "40px", lg: "0px" },
               alignSelf: "flex-start",
               height: `${searchHeight}px`,
-
               p: 0,
               borderRadius: "12px",
               display: "flex",
