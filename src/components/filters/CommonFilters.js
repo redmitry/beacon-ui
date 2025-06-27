@@ -141,14 +141,25 @@ export default function CommonFilters() {
                     gap: 1,
                   }}
                 >
-                  {validLabels.map((item) => (
-                    <FilterLabel
-                      key={item.label}
-                      label={item.label}
-                      onClick={() => handleCommonFilterChange(item)}
-                      bgColor="common"
-                    />
-                  ))}
+                  {validLabels.map((item) => {
+                    const { selectedScope, allScopes } =
+                      getDisplayLabelAndScope(item, selectedPathSegment);
+
+                    return (
+                      <FilterLabel
+                        key={item.label}
+                        label={item.label}
+                        onClick={() =>
+                          handleCommonFilterChange({
+                            ...item,
+                            scope: selectedScope || allScopes?.[0] || null,
+                            scopes: allScopes ?? [],
+                          })
+                        }
+                        bgColor="common"
+                      />
+                    );
+                  })}
                 </Box>
               </AccordionDetails>
             </Accordion>

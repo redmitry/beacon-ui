@@ -37,13 +37,33 @@ export function searchFilteringTerms(terms, searchInput) {
   return fuse.search(searchInput).map((r) => r.item);
 }
 
+// export function handleFilterSelection({
+//   item,
+//   prevFilters,
+//   setMessage,
+//   onSuccess = () => {},
+// }) {
+//   const isDuplicate = prevFilters.some((f) => f.key === item.key);
+
+//   if (isDuplicate) {
+//     setMessage(COMMON_MESSAGES.doubleFilter);
+//     setTimeout(() => setMessage(null), 3000);
+//     return prevFilters;
+//   }
+
+//   onSuccess();
+//   return [...prevFilters, item];
+// }
+
 export function handleFilterSelection({
   item,
   prevFilters,
   setMessage,
   onSuccess = () => {},
 }) {
-  const isDuplicate = prevFilters.some((f) => f.key === item.key);
+  const isDuplicate = prevFilters.some(
+    (f) => f.key === item.key && f.scope === item.scope
+  );
 
   if (isDuplicate) {
     setMessage(COMMON_MESSAGES.doubleFilter);

@@ -28,6 +28,8 @@ export default function QueryAppliedItems({ handleFilterRemove }) {
       }}
     >
       {selectedFilter.map((filter) => {
+        console.log("filter", filter);
+        console.log("expandedKey", expandedKey);
         const keyValue = filter.key;
 
         return (

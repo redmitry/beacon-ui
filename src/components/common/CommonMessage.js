@@ -8,6 +8,7 @@ export const COMMON_MESSAGES = {
   doubleFilter:
     "This filter is already in use. Choose another one to continue.",
   loadingData: "Loading data...",
+  fillFields: "Please fill in all the fields",
 };
 
 export default function CommonMessage({ text, type }) {

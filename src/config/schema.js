@@ -117,6 +117,10 @@ const schema = Joi.object({
                 .required(),
               id: Joi.string().min(1).required(),
               label: Joi.string().min(1).max(100).optional(),
+              scopes: Joi.array().items(Joi.string()).optional(), // TO DISCUSS BEACON TEAM - scopes as free text
+              // scopes: Joi.array()
+              //   .items(Joi.string().valid(...allowedEntryTypes))
+              //   .optional(), // TO DISCUSS BEACON TEAM - scopes entryTypes
             })
           )
           .max(6)

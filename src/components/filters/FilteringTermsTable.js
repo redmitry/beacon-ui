@@ -137,13 +137,19 @@ export default function FilteringTermsTable({
                     const { displayLabel, selectedScope, allScopes } =
                       getDisplayLabelAndScope(term, selectedEntryType);
 
+                    const activeScope =
+                      selectedScopes[term.id] ||
+                      selectedScope ||
+                      allScopes?.[0] ||
+                      null;
+
                     const item = {
                       key: term.id,
                       label: displayLabel?.trim()
                         ? displayLabel
                         : term.label || term.id,
                       type: term.type,
-                      scope: selectedScope || null,
+                      scope: activeScope,
                       scopes: allScopes || [],
                     };
 

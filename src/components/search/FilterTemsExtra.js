@@ -10,7 +10,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import { useState } from "react";
 import { useSelectedEntry } from "../context/SelectedEntryContext";
-import CommonMessage from "../common/CommonMessage";
+import CommonMessage, { COMMON_MESSAGES } from "../common/CommonMessage";
 import config from "../../config/config.json";
 
 export default function FilterTermsExtra() {
@@ -22,7 +22,7 @@ export default function FilterTermsExtra() {
   const handleAddFilter = () => {
     setError("");
     if (!selectedValue) {
-      setError("Please fill in all the fields");
+      setError(COMMON_MESSAGES.fillFields);
     } else {
       setSelectedFilter((prevFilters) => {
         if (prevFilters.some((filter) => filter.key === extraFilter.key)) {
