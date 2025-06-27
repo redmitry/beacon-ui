@@ -16,8 +16,6 @@ export default function HomePage({ selectedTool, setSelectedTool }) {
           display: "flex",
           flexDirection: { xs: "column", md: "row" },
           gap: 4,
-          flexWrap: "wrap",
-          flexGrow: 1,
         }}
       >
         <Box

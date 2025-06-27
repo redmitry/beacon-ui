@@ -16,7 +16,6 @@ export default function CommonFilters() {
   const filterCategories = config.ui.commonFilters.filterCategories;
   const filterLabels = config.ui.commonFilters.filterLabels;
   const {
-    selectedFilter,
     setSelectedFilter,
     setExtraFilter,
     setLoadingData,
@@ -106,7 +105,6 @@ export default function CommonFilters() {
           return (
             <Accordion
               key={topic}
-              // expanded={expanded[topic]}
               expanded={!!expanded[topic]}
               onChange={handleChange(topic)}
               disableGutters
