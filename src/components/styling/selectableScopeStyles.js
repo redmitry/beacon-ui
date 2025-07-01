@@ -1,5 +1,5 @@
 import config from "../../config/config.json";
-import { alpha, darken } from "@mui/material/styles";
+import { alpha } from "@mui/material/styles";
 
 const hoverColor = alpha(config.ui.colors.primary, 0.05);
 

@@ -30,7 +30,7 @@ export const SelectedEntryProvider = ({ children }) => {
         hasSearchResults,
         setHasSearchResult,
         beaconsInfo,
-        setBeaconsInfo
+        setBeaconsInfo,
       }}
     >
       {children}

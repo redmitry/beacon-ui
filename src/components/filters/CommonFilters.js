@@ -64,16 +64,18 @@ export default function CommonFilters() {
     setLoadingData(false);
     setResultData([]);
     setHasSearchResult(false);
+
     if (item.type === "alphanumeric") {
       setExtraFilter(item);
     } else {
       setSelectedFilter((prevFilters) => {
         const isDuplicate = prevFilters.some(
-          (filter) => filter.key === item.key
+          (filter) => filter.key === item.key && filter.scope === item.scope
         );
+
         if (isDuplicate) {
           setMessage(COMMON_MESSAGES.doubleFilter);
-          setTimeout(() => setMessage(null), 5000);
+          setTimeout(() => setMessage(null), 3000);
           return prevFilters;
         }
 

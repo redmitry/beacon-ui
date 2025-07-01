@@ -37,12 +37,7 @@ export default function Search({
 
   const searchRef = useRef(null);
 
-  // useEffect(() => {
-  //   if (searchRef.current && onHeightChange) {
-  //     const height = searchRef.current.offsetHeight;
-  //     onHeightChange(height);
-  //   }
-  // }, []);
+  console.log("selectedFilter", selectedFilter);
 
   useEffect(() => {
     if (searchRef.current && onHeightChange) {

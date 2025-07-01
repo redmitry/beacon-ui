@@ -1,5 +1,5 @@
 import { Chip } from "@mui/material";
-import { alpha, lighten } from "@mui/system";
+import { alpha } from "@mui/system";
 import config from "../../config/config.json";
 
 export default function FilterLabel({
@@ -42,7 +42,7 @@ export default function FilterLabel({
           backgroundColor: hoverColor,
         },
         "&.Mui-selected": {
-          backgroundColor: hoverColor,
+          backgroundColor: " hoverColor",
         },
       }}
     />
