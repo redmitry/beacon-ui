@@ -20,7 +20,7 @@ import CalendarViewMonthIcon from '@mui/icons-material/CalendarViewMonth';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import config from '../../config/config.json';
 import { useSelectedEntry } from "../context/SelectedEntryContext";
-import { lighten } from "@mui/system";
+import { lighten, textAlign } from "@mui/system";
 import { useState } from 'react';
 import ResultsTableRow from './ResultsTableRow';
 const ResultsTableModal = lazy(() => import('./modal/ResultsTableModal'));
@@ -37,6 +37,7 @@ export default function ResultsTable() {
     fontWeight: 700,
     color: "white",
     transition: "background-color 0.3s ease",
+    textAlign: "left",
     '&:hover': {
       backgroundColor: lighten(config.ui.colors.primary, 0.1)
     }
@@ -154,10 +155,11 @@ export default function ResultsTable() {
                           borderBottom: '1px solid rgba(224, 224, 224, 1)',
                           py: 1.5,
                         },
-                        fontWeight: "bold" 
+                        fontWeight: "bold",
+                        textAlign: "left"
                       }}>
                       <TableCell sx={{ fontWeight: "bold"  }} style={{ width: BEACON_NETWORK_COLUMNS[0].width }}>
-                        <Box display="flex" alignItems="center" gap={1}>
+                        <Box display="flex" alignItems="left" gap={1}>
                           { item.info &&
                             <Tooltip title={ getErrors(item.info) }>
                               <IconButton>
