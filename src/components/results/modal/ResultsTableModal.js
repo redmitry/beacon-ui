@@ -23,6 +23,7 @@ const style = {
   border: '2px solid #000',
   boxShadow: 24,
   p: 4,
+  pt: '15px',
 };
 
 const ResultsTableModal = ({ open, subRow, onClose }) => {
@@ -79,8 +80,25 @@ const ResultsTableModal = ({ open, subRow, onClose }) => {
       }
     }
 
-    let filterData = selectedFilter.map((item) => item.id);
-    filter.query.filters = filterData;
+    if(selectedFilter.length > 0) {
+      let filterData = selectedFilter.map((item) =>
+      {
+          if(item.operator) {
+            return {
+              id: item.field,
+              operator: item.operator,
+              value: item.value
+            }
+          } else {
+            return {
+              id: item.key ?? item.id,
+              scope: selectedPathSegment
+            }
+          }
+        }
+      );
+      filter.query.filters = filterData;
+    }
     return filter;
   }
 

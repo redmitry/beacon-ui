@@ -20,7 +20,7 @@ import CalendarViewMonthIcon from '@mui/icons-material/CalendarViewMonth';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import config from '../../config/config.json';
 import { useSelectedEntry } from "../context/SelectedEntryContext";
-import { lighten, textAlign } from "@mui/system";
+import { lighten } from "@mui/system";
 import { useState } from 'react';
 import ResultsTableRow from './ResultsTableRow';
 const ResultsTableModal = lazy(() => import('./modal/ResultsTableModal'));

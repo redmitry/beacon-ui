@@ -13,7 +13,6 @@ import {
 } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import config from '../../../config/config.json';
-import { DATASET_TABLE_NETWORK } from '../../../lib/constants';
 import ResultsTableModalRow from './ResultsTableModalRow';
 
 const ResultsTableModalBody = ({ dataTable, totalItems, page, rowsPerPage, handleChangePage, handleChangeRowsPerPage }) => {
@@ -48,32 +47,10 @@ const ResultsTableModalBody = ({ dataTable, totalItems, page, rowsPerPage, handl
     color: "white"
   };
 
-  const getDiseases = (row) => {
-    if (row) {
-      return row.map(el => `${el.diseaseCode.id}-${el.diseaseCode.label}`).join(", ");
-    }
-    return "-";
-  };
-
-  const getGeographicOrigin = (row) => row ? `${row.id}-${row.label}` : "-";
-
-  const getPhenotypic = (row) => row ? row.map(el => `${el.featureType.id}-${el.featureType.label}`).join(", ") : "-";
-
-  const getSex = (row) => row ? `${row.id}-${row.label}` : "-";
-
-  const handleRowClick = (item) => {
-    if(expandedRow && expandedRow.id === item.id) {
-      setExpandedRow(null);
-    } else {
-      setExpandedRow(item);
-    }
-  };
-
   function formatHeaderName(header) {
     const withSpaces = header.replace(/([A-Z])/g, ' $1');
     return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
   }
-
 
   const cleanAndParseInfo = (infoString) => {
     try {
