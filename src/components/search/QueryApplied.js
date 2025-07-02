@@ -4,7 +4,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import QueryAppliedItems from "./QueryAppliedItems";
 import config from "../../config/config.json";
 
-export default function QueryApplied() {
+export default function QueryApplied({ variant }) {
   const {
     setSelectedFilter,
     setLoadingData,
@@ -75,7 +75,10 @@ export default function QueryApplied() {
             </Button>
           </Box>
         </Box>
-        <QueryAppliedItems handleFilterRemove={handleFilterRemove} />
+        <QueryAppliedItems
+          handleFilterRemove={handleFilterRemove}
+          variant={variant}
+        />
       </Box>
     </Box>
   );

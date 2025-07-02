@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import QueryAppliedItems from '../search/QueryAppliedItems';
+import QueryAppliedItems from "../search/QueryAppliedItems";
 import { useSelectedEntry } from "../context/SelectedEntryContext";
 
 export default function ResultsFilters() {
@@ -7,7 +7,7 @@ export default function ResultsFilters() {
     setSelectedFilter,
     setLoadingData,
     setResultData,
-    setHasSearchResult 
+    setHasSearchResult,
   } = useSelectedEntry();
 
   const handleFilterRemove = (item) => {
@@ -19,15 +19,19 @@ export default function ResultsFilters() {
     setSelectedFilter((prevFilters) =>
       prevFilters.filter((filter) => filter.key !== item.key)
     );
-  }
+  };
 
   return (
     <Box
       sx={{
         pt: "5px",
-        pb: "30px"
-      }}>
-      <QueryAppliedItems handleFilterRemove={handleFilterRemove} />
+        pb: "30px",
+      }}
+    >
+      <QueryAppliedItems
+        handleFilterRemove={handleFilterRemove}
+        variant="readonly"
+      />
     </Box>
-  )
+  );
 }

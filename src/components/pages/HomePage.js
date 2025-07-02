@@ -28,6 +28,8 @@ export default function HomePage({ selectedTool, setSelectedTool }) {
           display: "flex",
           flexDirection: { xs: "column", md: "row" },
           gap: 4,
+          flexWrap: "wrap",
+          flexGrow: 1,
         }}
       >
         <Box
@@ -78,6 +80,7 @@ export default function HomePage({ selectedTool, setSelectedTool }) {
               width: "100%",
               marginTop: "-40px",
               marginBottom: "40px",
+              backgroundColor: "palegreen",
             }}
           >
             <AllFilteringTermsComponent />

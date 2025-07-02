@@ -6,7 +6,10 @@ import CommonMessage, {
   COMMON_MESSAGES,
 } from "../../components/common/CommonMessage";
 
-export default function QueryAppliedItems({ handleFilterRemove }) {
+export default function QueryAppliedItems({
+  handleFilterRemove,
+  variant = "removable",
+}) {
   const { selectedFilter, setSelectedFilter } = useSelectedEntry();
 
   const [expandedKey, setExpandedKey] = useState(false);
@@ -52,19 +55,25 @@ export default function QueryAppliedItems({ handleFilterRemove }) {
       >
         {selectedFilter.map((filter) => {
           const keyValue = `${filter.key}__${filter.scope}`;
+          const bgColor = filter.bgColor === "genomic" ? "genomic" : "common";
 
           return (
             <FilterLabelRemovable
-              key={keyValue}
+              key={
+                filter.key
+                  ? `${filter.key}__${filter.scope}`
+                  : `${filter.id}__${filter.label}__genomic`
+              }
               keyValue={keyValue}
               label={filter.label}
               scope={filter.scope}
               scopes={filter.scopes}
               onDelete={() => handleFilterRemove(filter)}
               onScopeChange={handleScopeChange}
-              bgColor="common"
+              bgColor={filter.bgColor || "common"}
               expandedKey={expandedKey}
               setExpandedKey={setExpandedKey}
+              variant={variant}
             />
           );
         })}
