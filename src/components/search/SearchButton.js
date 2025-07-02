@@ -1,20 +1,19 @@
-import {
-  Button
-} from "@mui/material";
-import config from '../../config/config.json';
+import { Button } from "@mui/material";
+import config from "../../config/config.json";
 import SearchIcon from "@mui/icons-material/Search";
 import { useSelectedEntry } from "../context/SelectedEntryContext";
 
-export default function SearchButton() {
+export default function SearchButton({ setSelectedTool }) {
   const {
-    selectedPathSegment, 
+    selectedPathSegment,
     setLoadingData,
     setResultData,
     setHasSearchResult,
-    selectedFilter
+    selectedFilter,
   } = useSelectedEntry();
 
   const handleSearch = async () => {
+    setSelectedTool(null);
     setLoadingData(true);
     setResultData([]);
 
@@ -22,27 +21,27 @@ export default function SearchButton() {
       // TODO filters items
       let url = `${config.apiUrl}/${selectedPathSegment}`;
       let response;
-      if(selectedFilter.length > 0) {
+      if (selectedFilter.length > 0) {
         let query = queryBuilder(selectedFilter);
 
         const requestOptions = {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            query
-          })
+            query,
+          }),
         };
         response = await fetch(url, requestOptions);
       } else {
         response = await fetch(url);
       }
 
-      if(!response.ok) {
+      if (!response.ok) {
         // TODO show error!
       }
-      
+
       const data = await response.json();
 
       // group beacons
@@ -60,7 +59,7 @@ export default function SearchButton() {
               info: item.info || null,
               totalResultsCount: 0,
               setType: item.setType,
-              items: []
+              items: [],
             };
           }
 
@@ -70,7 +69,7 @@ export default function SearchButton() {
           if (Array.isArray(item.results)) {
             acc[key].items.push({
               dataset: item.id,
-              results: item.results
+              results: item.results,
             });
           }
 
@@ -83,36 +82,36 @@ export default function SearchButton() {
       // TODO show msg to user!
       console.error("Search failed", error);
     } finally {
-      setHasSearchResult(true)
+      setHasSearchResult(true);
       setLoadingData(false);
     }
-  }
+  };
 
   const queryBuilder = (params) => {
     let filter = {
-      "meta": {
-        "apiVersion": "2.0"
+      meta: {
+        apiVersion: "2.0",
       },
-      "query": {
-        "filters": []
+      query: {
+        filters: [],
       },
-      "includeResultsetResponses": "HIT",
-        "pagination": {
-          "skip": 0,
-          "limit": 10
+      includeResultsetResponses: "HIT",
+      pagination: {
+        skip: 0,
+        limit: 10,
       },
-      "testMode": false,
-      "requestedGranularity": "record"
-    }
+      testMode: false,
+      requestedGranularity: "record",
+    };
 
-    let filterData = params.map((item) =>  ({
+    let filterData = params.map((item) => ({
       id: item.key,
-      scope: selectedPathSegment
+      scope: selectedPathSegment,
     }));
 
-    filter.query.filters = filterData;    
+    filter.query.filters = filterData;
     return filter;
-  }
+  };
 
   return (
     <Button
@@ -125,17 +124,17 @@ export default function SearchButton() {
         ml: 2,
         backgroundColor: config.ui.colors.primary,
         border: `1px solid ${config.ui.colors.primary}`,
-        boxShadow: 'none',
+        boxShadow: "none",
         "&:hover": {
-          backgroundColor: 'white',
+          backgroundColor: "white",
           border: `1px solid ${config.ui.colors.primary}`,
-          color: config.ui.colors.primary
+          color: config.ui.colors.primary,
         },
       }}
-      startIcon={ <SearchIcon /> }
-      onClick={ handleSearch }
+      startIcon={<SearchIcon />}
+      onClick={handleSearch}
     >
       Search
     </Button>
-  )
+  );
 }

@@ -251,38 +251,6 @@ export default function Search({
     }
 
     return (
-      // <Box>
-      // <Box
-      //   onClick={() => setActiveInput(type)}
-      //   sx={{
-      //     flex: activeInput === type ? 1 : 0.3,
-      //     display: "flex",
-      //     alignItems: "center",
-      //     border: `1.5px solid ${primaryDarkColor}`,
-      //     borderRadius: "999px",
-      //     px: 2,
-      //     py: 1,
-      //     cursor: "text",
-      //     backgroundColor: "#fff",
-      //     transition: "flex 0.3s ease",
-      //   }}
-      // >
-      //   <SearchIcon sx={{ color: primaryDarkColor, mr: 1 }} />
-      //   <InputBase
-      //     placeholder="Search by Filtering Terms"
-      //     fullWidth
-      //     value={searchInput}
-      //     onChange={(e) => setSearchInput(e.target.value)}
-      //     sx={{
-      //       fontFamily: '"Open Sans", sans-serif',
-      //       fontSize: "14px",
-      //     }}
-      //   />
-      //   <FilteringTermsDropdownResults searchInput={searchInput} />
-      // </Box>
-
-      // </Box>
-
       <Box
         onClick={() => setActiveInput(type)}
         sx={{
@@ -510,7 +478,8 @@ export default function Search({
           )}
         </Box>
         {extraFilter && <FilterTermsExtra />}
-        {!hasSearchResults && selectedFilter.length > 0 && <QueryApplied />}
+        {/* {!hasSearchResults && selectedFilter.length > 0 && <QueryApplied />} */}
+        {selectedFilter.length > 0 && <QueryApplied />}
         <Box
           sx={{
             mt: 5,
@@ -544,7 +513,7 @@ export default function Search({
             />
           </Box>
           <Box>
-            <SearchButton />
+            <SearchButton setSelectedTool={setSelectedTool} />
           </Box>
         </Box>
       </Box>
