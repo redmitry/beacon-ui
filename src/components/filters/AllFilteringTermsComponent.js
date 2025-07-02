@@ -5,6 +5,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { alpha } from "@mui/material/styles";
 import FilteringTermsTable from "./FilteringTermsTable";
 import { useSelectedEntry } from "../context/SelectedEntryContext";
+
 import { InputAdornment, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -25,8 +26,8 @@ export default function AllFilteringTermsComponent() {
   useEffect(() => {
     const fetchFilteringTerms = async () => {
       try {
-        const res = await fetch(`${config.apiUrl}/filtering_terms`);
-        // const res = await fetch("/api.json");
+        // const res = await fetch(`${config.apiUrl}/filtering_terms`);
+        const res = await fetch("/api.json");
         const data = await res.json();
         setFilteringTerms(data);
       } catch (err) {
@@ -137,6 +138,8 @@ export default function AllFilteringTermsComponent() {
         <FilteringTermsTable
           filteringTerms={{ response: { filteringTerms: filteredTerms } }}
           defaultScope={selectedPathSegment}
+          searchWasPerformed={searchQuery.trim().length > 0}
+          loading={loading}
         />
       </Box>
     </Box>

@@ -4,7 +4,13 @@ import config from "../../config/config.json";
 import { lighten } from "@mui/system";
 import { alpha } from "@mui/material/styles";
 
-export default function AllFilteringTerms({ icon, label, selected, onClick }) {
+export default function AllFilteringTerms({
+  scope,
+  icon,
+  label,
+  selected,
+  onClick,
+}) {
   return (
     <Button
       variant="outlined"
@@ -23,6 +29,7 @@ export default function AllFilteringTerms({ icon, label, selected, onClick }) {
           selected ? primaryDarkColor : unselectedBorderColor
         }`,
         color: primaryDarkColor,
+
         "&:hover": {
           backgroundColor: selected ? selectedBg : lighten("#fff", 0.05),
           border: `1px solid ${primaryDarkColor}`,

@@ -3,6 +3,7 @@ import { useSelectedEntry } from "../context/SelectedEntryContext";
 import Loader from "../common/Loader";
 import ResultsBox from "./ResultsBox";
 import ResultsEmpty from "./ResultsEmpty";
+import { COMMON_MESSAGES } from "../common/CommonMessage";
 
 export default function ResultsContainer() {
   const { loadingData, resultData, hasSearchResults } = useSelectedEntry();
@@ -19,7 +20,7 @@ export default function ResultsContainer() {
             paddingBottom: "30px",
           }}
         >
-          {loadingData && <Loader message="Loading data..." />}
+          {loadingData && <Loader message={COMMON_MESSAGES.loadingData} />}
 
           {!loadingData && hasSearchResults && resultData.length == 0 && (
             <>

@@ -2,12 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { Paper, List, ListItem, Box } from "@mui/material";
 import config from "../../config/config.json";
 import { useSelectedEntry } from "../context/SelectedEntryContext";
-import CommonMessage from "../common/CommonMessage";
+import CommonMessage, { COMMON_MESSAGES } from "../common/CommonMessage";
 import useFilteringTerms from "../../hooks/useFilteringTerms";
 import Loader from "../common/Loader";
 import {
   searchFilteringTerms,
   handleFilterSelection,
+  getDisplayLabelAndScope,
 } from "../common/filteringTermsHelpers";
 
 const FilteringTermsDropdownResults = ({ searchInput, onCloseDropdown }) => {
@@ -15,10 +16,9 @@ const FilteringTermsDropdownResults = ({ searchInput, onCloseDropdown }) => {
   const [message, setMessage] = useState(null);
   const [filteredTerms, setFilteredTerms] = useState([]);
   const [filtering, setFiltering] = useState(false);
-  // const [_, setFiltering] = useState(false);
-  // const filtering = true;
 
-  const { filteringTerms, loading } = useFilteringTerms();
+  const { filteringTerms } = useFilteringTerms();
+  const { selectedPathSegment: selectedEntryType } = useSelectedEntry();
 
   const containerRef = useRef();
 
@@ -47,7 +47,7 @@ const FilteringTermsDropdownResults = ({ searchInput, onCloseDropdown }) => {
         const results = searchFilteringTerms(filteringTerms, searchInput);
         setFilteredTerms(results);
         setFiltering(false);
-      }, 300); // adjust this if needed
+      }, 300);
 
       return () => clearTimeout(timeout);
     } else {
@@ -55,7 +55,7 @@ const FilteringTermsDropdownResults = ({ searchInput, onCloseDropdown }) => {
     }
   }, [searchInput, filteringTerms]);
 
-  if (searchInput.length === 0 && !loading) return null;
+  if (searchInput.trim().length === 0) return null;
 
   return (
     <Box
@@ -68,47 +68,50 @@ const FilteringTermsDropdownResults = ({ searchInput, onCloseDropdown }) => {
         zIndex: 5,
       }}
     >
-      {loading ? (
-        <Box sx={{ p: 2 }}>
-          <Loader message="Loading filtering terms..." />
-        </Box>
-      ) : (
-        <Paper
-          sx={{
-            maxHeight: 200,
-            overflowY: "auto",
-            mt: 1,
-            borderRadius: "21px",
-            backgroundColor: "white",
-            boxShadow: "none",
-            border: `1px solid ${primaryDarkColor}`,
-          }}
-        >
-          {message && (
-            <Box sx={{ mb: 2, mt: 2 }}>
-              <CommonMessage text={message} type="error" />
+      <Paper
+        sx={{
+          maxHeight: 200,
+          overflowY: "auto",
+          mt: 1,
+          borderRadius: "21px",
+          backgroundColor: "white",
+          boxShadow: "none",
+          border: `1px solid ${primaryDarkColor}`,
+        }}
+      >
+        {message && (
+          <Box sx={{ mb: 2, mt: 2 }}>
+            <CommonMessage text={message} type="error" />
+          </Box>
+        )}
+        <List disablePadding>
+          {filtering ? (
+            <Box sx={{ p: 3, pt: 0 }}>
+              <Loader
+                message={COMMON_MESSAGES.filteringResults}
+                variant="inline"
+              />
             </Box>
-          )}
-          <List disablePadding>
-            {filtering ? (
-              <Box sx={{ p: 2 }}>
-                <Loader message="Filtering results..." variant="inline" />
-              </Box>
-            ) : filteredTerms.length > 0 ? (
-              filteredTerms.map((term, index) => (
+          ) : filteredTerms.length > 0 ? (
+            filteredTerms.map((term, index) => {
+              const { displayLabel, selectedScope, allScopes } =
+                getDisplayLabelAndScope(term, selectedEntryType);
+
+              const item = {
+                key: term.id,
+                label: displayLabel?.trim() ? displayLabel : term.id,
+                type: term.type,
+                scope: selectedScope || null,
+                scopes: allScopes || [],
+              };
+
+              return (
                 <ListItem
                   key={term.id}
-                  button={true}
                   onClick={() => {
-                    const item = {
-                      key: term.id,
-                      label: term.label || term.id,
-                      type: term.type,
-                      scope: term.scopes?.[0],
-                    };
-
                     if (item.type === "alphanumeric") {
                       setExtraFilter(item);
+                      onCloseDropdown();
                       return;
                     }
 
@@ -140,7 +143,7 @@ const FilteringTermsDropdownResults = ({ searchInput, onCloseDropdown }) => {
                       color: "#000",
                     }}
                   >
-                    {term.label}
+                    {displayLabel}
                   </Box>
                   <Box
                     sx={{
@@ -152,18 +155,15 @@ const FilteringTermsDropdownResults = ({ searchInput, onCloseDropdown }) => {
                     {term.id}
                   </Box>
                 </ListItem>
-              ))
-            ) : (
-              <Box sx={{ p: 2 }}>
-                <CommonMessage
-                  text="No match found – try a different filter."
-                  type="error"
-                />
-              </Box>
-            )}
-          </List>
-        </Paper>
-      )}
+              );
+            })
+          ) : (
+            <Box sx={{ p: 2 }}>
+              <CommonMessage text={COMMON_MESSAGES.noMatch} type="error" />
+            </Box>
+          )}
+        </List>
+      </Paper>
     </Box>
   );
 };

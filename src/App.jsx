@@ -33,9 +33,13 @@ export default function App() {
       ? baseNavItems.filter((item) => item.label !== "Network Members")
       : baseNavItems;
 
-  const cleanedExternalLinks = (config.ui.externalNavBarLink || []).filter(
-    (link) => link.label && link.label.trim() !== ""
-  );
+  const cleanedExternalLinks =
+    config.ui.showExternalNavBarLink &&
+    Array.isArray(config.ui.externalNavBarLink)
+      ? config.ui.externalNavBarLink.filter(
+          (link) => link.label && link.label.trim() !== ""
+        )
+      : [];
 
   const navItems = [...cleanedExternalLinks, ...filteredBaseItems];
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Box, Tabs, Tab, Typography } from "@mui/material";
 import CommonFilters from "./CommonFilters";
 import GenomicAnnotations from "../genomic/GenomicAnnotations";
+import config from "../../config/config.json";
 import { useSelectedEntry } from "../context/SelectedEntryContext";
 
 function TabPanel(props) {
@@ -21,7 +22,11 @@ function TabPanel(props) {
   );
 }
 
-export default function FiltersContainer({ searchHeight }) {
+export default function FiltersContainer({
+  searchHeight,
+  hasGenomicAnnotationsConfig,
+  hasCommonFiltersConfig,
+}) {
   const { selectedPathSegment, entryTypes } = useSelectedEntry();
   const [tabValue, setTabValue] = useState(0);
 
@@ -42,27 +47,37 @@ export default function FiltersContainer({ searchHeight }) {
 
   if (hasGenomic && isGenomicSelected) {
     tabs = [
-      {
-        label: "Genomic Annotations",
-        component: <GenomicAnnotations />,
-        title: "Genomic Annotations",
-      },
-      {
-        label: "Common Filters",
-        component: <CommonFilters />,
-        title: "Most Common Filters",
-      },
+      ...(hasGenomicAnnotationsConfig
+        ? [
+            {
+              label: "Genomic Annotations",
+              component: <GenomicAnnotations />,
+              title: "Genomic Annotations",
+            },
+          ]
+        : []),
+      ...(hasCommonFiltersConfig
+        ? [
+            {
+              label: "Common Filters",
+              component: <CommonFilters />,
+              title: "Most Common Filters",
+            },
+          ]
+        : []),
     ];
   } else {
-    tabs = [
-      {
+    tabs = [];
+
+    if (hasCommonFiltersConfig) {
+      tabs.push({
         label: "Common Filters",
         component: <CommonFilters />,
         title: "Most Common Filters",
-      },
-    ];
+      });
+    }
 
-    if (hasGenomic) {
+    if (hasGenomic && hasGenomicAnnotationsConfig) {
       tabs.push({
         label: "Genomic Annotations",
         component: <GenomicAnnotations />,
@@ -70,6 +85,7 @@ export default function FiltersContainer({ searchHeight }) {
       });
     }
   }
+  if (tabs.length === 0) return null;
 
   return (
     <Box>

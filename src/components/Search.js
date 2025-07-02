@@ -17,7 +17,7 @@ import { useSelectedEntry } from "./context/SelectedEntryContext";
 import GenomicQueryBuilderButton from "./genomic/GenomicQueryBuilderButton";
 import AllFilteringTermsButton from "./filters/AllFilteringTermsButton";
 import FilteringTermsDropdownResults from "./filters/FilteringTermsDropdownResults";
-import QueryFilter from "./search/QueryApplied";
+import QueryApplied from "./search/QueryApplied";
 import SearchButton from "./search/SearchButton";
 import FilterTermsExtra from "./search/FilterTemsExtra";
 
@@ -26,11 +26,7 @@ export default function Search({
   selectedTool,
   setSelectedTool,
 }) {
-  const { 
-    entryTypes, 
-    setEntryTypes,
-    setBeaconsInfo  
-  } = useSelectedEntry();
+  const { entryTypes, setEntryTypes, setBeaconsInfo } = useSelectedEntry();
   const { selectedFilter, setSelectedFilter } = useSelectedEntry();
   const { extraFilter, hasSearchResults } = useSelectedEntry();
   const [loading, setLoading] = useState(true);
@@ -41,12 +37,7 @@ export default function Search({
 
   const searchRef = useRef(null);
 
-  // useEffect(() => {
-  //   if (searchRef.current && onHeightChange) {
-  //     const height = searchRef.current.offsetHeight;
-  //     onHeightChange(height);
-  //   }
-  // }, []);
+  console.log("selectedFilter", selectedFilter);
 
   useEffect(() => {
     if (searchRef.current && onHeightChange) {
@@ -93,7 +84,7 @@ export default function Search({
               pathSegment: normalizedSegment,
               originalPathSegment: originalSegment,
             };
-        });
+          });
 
         const sorted = sortEntries(entries);
         setEntryTypes(sorted);
@@ -120,11 +111,13 @@ export default function Search({
       let normalizedData = [];
       if (Array.isArray(data.responses)) {
         normalizedData = data.responses;
-      }
-      else if (data.response) {
+      } else if (data.response) {
         if (Array.isArray(data.response)) {
           normalizedData = data.response;
-        } else if (typeof data.response === 'object' && data.response !== null) {
+        } else if (
+          typeof data.response === "object" &&
+          data.response !== null
+        ) {
           normalizedData = [data.response];
         }
       }
@@ -133,7 +126,7 @@ export default function Search({
       // TODO
       console.error("Search failed", error);
     }
-  }
+  };
 
   useEffect(() => {
     setActiveInput(selectedPathSegment === "g_variants" ? "genomic" : "filter");
@@ -177,13 +170,13 @@ export default function Search({
   const selectedBgColor = lighten(primaryDarkColor, 0.9);
 
   const entryTypeDescriptions = {
-    analyses: "Text for analysis",
-    biosamples: "query biosample data (e.g. histological samples).",
-    cohorts: "Text for cohort",
-    datasets: "Text for dataset",
-    g_variants: "query genomic variants across individuals.",
-    individuals: "query individual-level data (e.g. phenotypes, ancestry).",
-    runs: "Text for run",
+    analyses: "query analysis metadata (e.g. analysis pipelines, methods)",
+    biosamples: "query biosample data (e.g. histological samples)",
+    cohorts: "query cohort-level data (e.g. shared traits, study groups)",
+    datasets: "query datasets-level data (e.g. name, description)",
+    g_variants: "query genomic variants across individuals",
+    individuals: "query individual-level data (e.g. phenotypes, treatment)",
+    runs: "query sequencing run details (e.g. platform, run date)",
   };
 
   const handleAllFilteringClick = () => {
@@ -338,6 +331,8 @@ export default function Search({
           backgroundColor: "#FFFFFF",
           boxShadow: "0px 8px 11px 0px #9BA0AB24",
           p: "24px 32px",
+          // width: "73%",
+          // backgroundColor: "magenta",
         }}
       >
         <Typography
@@ -515,7 +510,7 @@ export default function Search({
           )}
         </Box>
         {extraFilter && <FilterTermsExtra />}
-        {!hasSearchResults && selectedFilter.length > 0 && <QueryFilter />}
+        {!hasSearchResults && selectedFilter.length > 0 && <QueryApplied />}
         <Box
           sx={{
             mt: 5,

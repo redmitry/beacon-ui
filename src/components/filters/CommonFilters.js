@@ -10,7 +10,10 @@ import { useState } from "react";
 import config from "../../config/config.json";
 import FilterLabel from "./../styling/FilterLabel";
 import { useSelectedEntry } from "./../context/SelectedEntryContext";
-import CommonMessage from "../../components/common/CommonMessage";
+import CommonMessage, {
+  COMMON_MESSAGES,
+} from "../../components/common/CommonMessage";
+import { getDisplayLabelAndScope } from "../common/filteringTermsHelpers";
 
 export default function CommonFilters() {
   const filterCategories = config.ui.commonFilters.filterCategories;
@@ -21,14 +24,21 @@ export default function CommonFilters() {
     setLoadingData,
     setResultData,
     setHasSearchResult,
+    selectedPathSegment,
   } = useSelectedEntry();
 
   const getValidLabels = (topic) =>
-    filterLabels[topic]?.filter(
-      (item) =>
-        item.label.trim() !== "" &&
-        !/^(item.label)\d*$/i.test(item.label.trim())
-    ) ?? [];
+    (filterLabels[topic] ?? []).filter((item) => {
+      const label = item.label?.trim();
+      if (!label || /^(item.label)\d*$/i.test(label)) return false;
+
+      const { selectedScope } = getDisplayLabelAndScope(
+        item,
+        selectedPathSegment
+      );
+      return selectedScope !== null || !item.scopes || item.scopes.length === 0;
+    });
+
   const [message, setMessage] = useState(null);
   const [expanded, setExpanded] = useState(() => {
     const initialState = {};
@@ -53,18 +63,18 @@ export default function CommonFilters() {
     setLoadingData(false);
     setResultData([]);
     setHasSearchResult(false);
+
     if (item.type === "alphanumeric") {
       setExtraFilter(item);
     } else {
       setSelectedFilter((prevFilters) => {
         const isDuplicate = prevFilters.some(
-          (filter) => filter.key === item.key
+          (filter) => filter.key === item.key && filter.scope === item.scope
         );
+
         if (isDuplicate) {
-          setMessage(
-            "This filter is already in use. Choose another one to continue."
-          );
-          setTimeout(() => setMessage(null), 5000);
+          setMessage(COMMON_MESSAGES.doubleFilter);
+          setTimeout(() => setMessage(null), 3000);
           return prevFilters;
         }
 
@@ -91,10 +101,7 @@ export default function CommonFilters() {
     <>
       {message && (
         <Box sx={{ mt: 2 }}>
-          <CommonMessage
-            text="This filter is already in use. Choose another one to continue."
-            type="error"
-          />
+          <CommonMessage text={COMMON_MESSAGES.doubleFilter} type="error" />
         </Box>
       )}
       <Box>
@@ -134,14 +141,25 @@ export default function CommonFilters() {
                     gap: 1,
                   }}
                 >
-                  {validLabels.map((item) => (
-                    <FilterLabel
-                      key={item.label}
-                      label={item.label}
-                      onClick={() => handleCommonFilterChange(item)}
-                      bgColor="common"
-                    />
-                  ))}
+                  {validLabels.map((item) => {
+                    const { selectedScope, allScopes } =
+                      getDisplayLabelAndScope(item, selectedPathSegment);
+
+                    return (
+                      <FilterLabel
+                        key={item.label}
+                        label={item.label}
+                        onClick={() =>
+                          handleCommonFilterChange({
+                            ...item,
+                            scope: selectedScope || allScopes?.[0] || null,
+                            scopes: allScopes ?? [],
+                          })
+                        }
+                        bgColor="common"
+                      />
+                    );
+                  })}
                 </Box>
               </AccordionDetails>
             </Accordion>
