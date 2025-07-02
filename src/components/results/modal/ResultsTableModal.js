@@ -18,20 +18,21 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 1200,
+  height: 750,
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
   p: 4,
 };
 
-const ResultsTableRowModal = ({ open, subRow, onClose }) => {
+const ResultsTableModal = ({ open, subRow, onClose }) => {
   const { selectedPathSegment, selectedFilter } = useSelectedEntry();
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [dataTable, setDataTable] = useState([]);
-
 
   const parseType = (item) => {
     switch(item) {
@@ -51,6 +52,14 @@ const ResultsTableRowModal = ({ open, subRow, onClose }) => {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
   }
+
+  const handleClose = () => {
+    setPage(0);
+    setTotalPages(0);
+    setTotalItems(0);
+    setDataTable([]);
+    onClose();
+  };
 
   const queryBuilder = (page) => {
     let skipItems = page * rowsPerPage;
@@ -79,34 +88,34 @@ const ResultsTableRowModal = ({ open, subRow, onClose }) => {
     const fetchTableItems = async () => {
       try {
         setLoading(true);
-        let url = `${config.apiUrl}/${tableType}/${subRow.id}/${selectedPathSegment}`;
-        let response;
-        if(selectedFilter.length > 0) {
-          let query = queryBuilder(page);
-          const requestOptions = {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              query
-            })
-          };
-          response = await fetch(url, requestOptions);
-          const data = await response.json();
-          const results = data.response?.resultSets;
-          const beacon = results.find((item) => {
-            const id = subRow.beaconId || subRow.id;
-            const itemId = item.beaconId || item.id;
-            return id === itemId;
-          });
+        const url = `${config.apiUrl}/${tableType}/${subRow.id}/${selectedPathSegment}`;
+        let query = queryBuilder(page);
 
-          let totalDatasetsPages = Math.ceil(beacon.resultsCount / rowsPerPage);
-          setTotalPages (totalDatasetsPages)
-          setDataTable(beacon.results);
-        } else {
-          response = await fetch(url);
-        }
+        const requestOptions = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            query
+          })
+        };
+
+        const response = await fetch(url, requestOptions);
+        const data = await response.json();
+        const results = data.response?.resultSets;
+
+        const beacon = results.find((item) => {
+          const id = subRow.beaconId || subRow.id;
+          const itemId = item.beaconId || item.id;
+          return id === itemId;
+        });
+
+        const totalDatasetsPages = Math.ceil(beacon.resultsCount / rowsPerPage);
+        
+        setTotalItems(beacon.resultsCount);
+        setTotalPages(totalDatasetsPages)
+        setDataTable(beacon.results);
       } catch (err) {
         console.error("Failed to fetch modal table", err);
       } finally {
@@ -115,12 +124,12 @@ const ResultsTableRowModal = ({ open, subRow, onClose }) => {
     }
 
     fetchTableItems();
-  }, [page, rowsPerPage]);
+  }, [subRow, page, rowsPerPage]);
 
   return (
     <Modal
         open={open}
-        onClose={onClose}
+        onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
@@ -132,7 +141,7 @@ const ResultsTableRowModal = ({ open, subRow, onClose }) => {
           }}>
             <InputAdornment position="end">
               <IconButton
-                onClick={() => onClose()}
+                onClick={() => handleClose()}
                 size="small"
                 sx={{ color: config.ui.colors.darkPrimary }}
               >
@@ -202,7 +211,6 @@ const ResultsTableRowModal = ({ open, subRow, onClose }) => {
                 )}
               </Box>
               <Box>
-                
               </Box>
             </Box>
             <Box>
@@ -211,6 +219,7 @@ const ResultsTableRowModal = ({ open, subRow, onClose }) => {
                 <>
                   <ResultsTableModalBody 
                     dataTable={dataTable}
+                    totalItems={totalItems}
                     page={page}
                     rowsPerPage={rowsPerPage}
                     totalPages={totalPages}
@@ -230,4 +239,4 @@ const ResultsTableRowModal = ({ open, subRow, onClose }) => {
   )
 }
 
-export default ResultsTableRowModal;
+export default ResultsTableModal;

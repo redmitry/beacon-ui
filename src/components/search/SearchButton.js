@@ -104,12 +104,23 @@ export default function SearchButton({ setSelectedTool }) {
       requestedGranularity: "record",
     };
 
-    let filterData = params.map((item) => ({
-      id: item.key,
-      scope: selectedPathSegment,
-    }));
+    let filterData = params.map((item) => {
+      if (item.operator) {
+        return {
+          id: item.field,
+          operator: item.operator,
+          value: item.value,
+        };
+      } else {
+        return {
+          id: item.key ?? item.id,
+          scope: selectedPathSegment,
+        };
+      }
+    });
 
     filter.query.filters = filterData;
+
     return filter;
   };
 

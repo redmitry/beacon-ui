@@ -8,19 +8,15 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  CircularProgress,
   tableCellClasses,
-  Pagination,
   TablePagination
 } from "@mui/material";
 import { styled } from '@mui/material/styles';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import config from '../../../config/config.json';
-import { DATASET_TABLE_INDIVIDUAL } from '../../../lib/constants';
+import { DATASET_TABLE_NETWORK } from '../../../lib/constants';
 import ResultsTableModalRow from './ResultsTableModalRow';
 
-const ResultsTableModalBody = ({ dataTable, page, totalPages, rowsPerPage, handleChangePage, handleChangeRowsPerPage }) => {
+const ResultsTableModalBody = ({ dataTable, totalItems, page, rowsPerPage, handleChangePage, handleChangeRowsPerPage }) => {
   const [expandedRow, setExpandedRow] = useState(null);
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -72,7 +68,88 @@ const ResultsTableModalBody = ({ dataTable, page, totalPages, rowsPerPage, handl
       setExpandedRow(item);
     }
   };
-  
+
+  function formatHeaderName(header) {
+    const withSpaces = header.replace(/([A-Z])/g, ' $1');
+    return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
+  }
+
+
+  const cleanAndParseInfo = (infoString) => {
+    try {
+      if (typeof infoString !== "string") return null;
+
+      const cleaned = infoString.replace(/"|"/g, '"');
+      const parsed = JSON.parse(cleaned);
+      return parsed;
+    } catch (error) {
+      console.log("Failed to parse item.info:", error);
+      return null;
+    }
+  };
+
+  const headersSet = new Set();
+  dataTable.forEach(obj => {
+    Object.keys(obj).forEach(key => {
+      headersSet.add(key);
+    });
+  });
+
+  const headers = Array.from(headersSet);
+
+  const indexedHeaders = {};
+  headers.forEach((header, index) => {
+    indexedHeaders[index] = {
+      id: header,
+      name: formatHeaderName(header)
+    };
+  });
+
+  const headersArray = Object.values(indexedHeaders);
+  const sortedHeaders = [
+    ...headersArray.filter(h => h.id === "id"),
+    ...headersArray.filter(h => h.id !== "id")
+  ];
+
+  function summarizeValue(value) {
+    if (value == null) return "-";
+
+    if (Array.isArray(value)) {
+      return value.map((el) => summarizeValue(el)).join(", ");
+    }
+
+    if (typeof value === "object") {
+      if (value.label) {
+        return value.label;
+      }
+
+      if (value.id) {
+        return value.id;
+      }
+
+      const nestedValues = Object.values(value).map((v) => summarizeValue(v)).filter(Boolean);
+
+      if (nestedValues.length) {
+        return nestedValues.join(", ");
+      }
+
+      return "-";
+    }
+
+    if (typeof value === "string" || typeof value === "number") {
+      return value;
+    }
+
+    return "-";
+  }
+
+  function renderCellContent(item, column) {
+    const value = item[column];
+    if (!value) return "-";
+
+    return summarizeValue(value);
+  }
+
   return (
     <Box>
       <Paper
@@ -88,25 +165,31 @@ const ResultsTableModalBody = ({ dataTable, page, totalPages, rowsPerPage, handl
             <Table stickyHeader aria-label="Results table">
               <TableHead>
                 <StyledTableRow>
-                  {DATASET_TABLE_INDIVIDUAL.map((column) => (
+                  {sortedHeaders.map((column) => (
                     <TableCell
-                      key={column.column}
-                      style={{ width: column.width }}
+                      key={column.id}
                       sx={headerCellStyle}
                     >
-                      {column.label}
+                      {column.name}
                     </TableCell>
                   ))}
                 </StyledTableRow>
               </TableHead>
               <TableBody>
-                { dataTable.map((item) => {
+                { dataTable.map((item, index) => {
                   const isExpanded = expandedRow?.id === item.id;
-                  
+                  let id = item.id;
+                  const parsedInfo = cleanAndParseInfo(item.info);
+                  if (parsedInfo?.sampleID) {
+                    id += `_${parsedInfo.sampleID}`;
+                  } else {
+                    id += `_${index}`;
+                  }
+
                   return (
-                    <Fragment key={ item.id }>
+                    <Fragment key={id}>
                       <StyledTableRow
-                        key={`row-${item.id}`}
+                        key={`row-${id}`}
                         hover
                         sx={{
                           '&.MuiTableRow-root': {
@@ -116,34 +199,22 @@ const ResultsTableModalBody = ({ dataTable, page, totalPages, rowsPerPage, handl
                             borderBottom: '1px solid rgba(224, 224, 224, 1)',
                             py: 1.5,
                           },
-                          fontWeight: "bold" 
-                        }}>
-                        <StyledTableCell 
-                          sx={{ fontSize: "11px" }} 
-                          style={{ width: DATASET_TABLE_INDIVIDUAL[0].width }}>
-                          <Box display="flex" alignItems="center" gap={1}>
-                            { item.beaconId ? item.beaconId : item.id }
-                          </Box>
-                        </StyledTableCell >
-                        <StyledTableCell sx={{ fontSize: "11px" }} style={{ width: DATASET_TABLE_INDIVIDUAL[1].width }}>
-                          { item[DATASET_TABLE_INDIVIDUAL[1].column] ? getDiseases(item[DATASET_TABLE_INDIVIDUAL[1].column]) : "-" }
-                        </StyledTableCell >
-                        <StyledTableCell sx={{ fontSize: "11px" }} style={{ width: DATASET_TABLE_INDIVIDUAL[2].width }}>
-                          { item[DATASET_TABLE_INDIVIDUAL[2].column] ? getGeographicOrigin(item[DATASET_TABLE_INDIVIDUAL[2].column]) : "-" }
-                        </StyledTableCell >
-                        <StyledTableCell sx={{ fontSize: "11px" }} style={{ width: DATASET_TABLE_INDIVIDUAL[3].width }}>
-                          { item[DATASET_TABLE_INDIVIDUAL[3].column] ? getPhenotypic(item[DATASET_TABLE_INDIVIDUAL[3].column]) : "-" }
-                        </StyledTableCell >
-                        <StyledTableCell sx={{ fontSize: "11px" }} style={{ width: DATASET_TABLE_INDIVIDUAL[4].width }}>
-                          { item[DATASET_TABLE_INDIVIDUAL[4].column] ? getSex(item[DATASET_TABLE_INDIVIDUAL[4].column]) : "-" }
-                        </StyledTableCell >
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {Object.values(indexedHeaders).map((colConfig) => (
+                          <StyledTableCell
+                            key={`${id}-${colConfig.id}`}
+                            sx={{ fontSize: "11px" }}
+                            style={{ width: colConfig.width }}
+                          >
+                            {renderCellContent(item, colConfig.id)}
+                          </StyledTableCell>
+                        ))}
                       </StyledTableRow>
 
-                      { isExpanded && (
-                        <ResultsTableModalRow
-                          key={`expanded-${item.id}`}
-                          item={expandedRow} 
-                        />
+                      {isExpanded && (
+                        <ResultsTableModalRow key={`expanded-${id}`} item={expandedRow} />
                       )}
                     </Fragment>
                   );
@@ -153,7 +224,7 @@ const ResultsTableModalBody = ({ dataTable, page, totalPages, rowsPerPage, handl
           </TableContainer>
           <TablePagination
             component="div"
-            count={totalPages}
+            count={totalItems}
             page={page}
             onPageChange={handleChangePage}
             rowsPerPage={rowsPerPage}

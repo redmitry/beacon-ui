@@ -24,7 +24,8 @@ export default function ResultsFilters() {
   return (
     <Box
       sx={{
-        p: 2
+        pt: "5px",
+        pb: "30px"
       }}>
       <QueryAppliedItems handleFilterRemove={handleFilterRemove} />
     </Box>

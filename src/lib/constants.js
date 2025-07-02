@@ -119,7 +119,31 @@ export const DATASET_TABLE = [
   }
 ];
 
-export const DATASET_TABLE_INDIVIDUAL = [
+export const DATASET_TABLE_NETWORK = [
+  {
+    column: 'id',
+    label: 'Id',
+    width: '20%'
+  }, {
+    column: 'diseases',
+    label: 'Diseases',
+    width: '20%'
+  }, {
+    column: 'geographicOrigin',
+    label: 'Geographic Origin',
+    width: '20%'
+  }, {
+    column: 'phenotypicFeatures',
+    label: 'Phenotypic Features',
+    width: '20%'
+  }, {
+    column: 'sex',
+    label: 'Sex',
+    width: '20%'
+  }
+];
+
+export const DATASET_TABLE_SINGLE = [
   {
     column: 'id',
     label: 'Id',
