@@ -2,6 +2,8 @@ import { Button } from "@mui/material";
 import config from "../../config/config.json";
 import SearchIcon from "@mui/icons-material/Search";
 import { useSelectedEntry } from "../context/SelectedEntryContext";
+import { COMMON_MESSAGES } from "../common/CommonMessage";
+import { PATH_SEGMENT_TO_ENTRY_ID } from "../../components/common/textFormatting";
 
 export default function SearchButton({ setSelectedTool }) {
   const {
@@ -10,28 +12,38 @@ export default function SearchButton({ setSelectedTool }) {
     setResultData,
     setHasSearchResult,
     selectedFilter,
+    entryTypesConfig,
+    setMessage,
   } = useSelectedEntry();
 
   const handleSearch = async () => {
+    const entryTypeId = PATH_SEGMENT_TO_ENTRY_ID[selectedPathSegment];
+    const configForEntry = entryTypesConfig?.[entryTypeId];
+    const nonFilteredAllowed =
+      configForEntry?.nonFilteredQueriesAllowed ?? true;
+    if (!nonFilteredAllowed && selectedFilter.length === 0) {
+      console.log("🚫 Search blocked - filters are required");
+      setMessage(COMMON_MESSAGES.addFilter);
+      setResultData([]);
+      setHasSearchResult(true);
+      return;
+    }
+    setMessage(null);
     setSelectedTool(null);
     setLoadingData(true);
     setResultData([]);
 
     try {
-      // TODO filters items
-      let url = `${config.apiUrl}/${selectedPathSegment}`;
+      const url = `${config.apiUrl}/${selectedPathSegment}`;
       let response;
       if (selectedFilter.length > 0) {
-        let query = queryBuilder(selectedFilter);
-
+        const query = queryBuilder(selectedFilter);
         const requestOptions = {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            query,
-          }),
+          body: JSON.stringify({ query }),
         };
         response = await fetch(url, requestOptions);
       } else {
@@ -39,12 +51,14 @@ export default function SearchButton({ setSelectedTool }) {
       }
 
       if (!response.ok) {
-        // TODO show error!
+        console.error("Fetch failed:", response.status);
+        setResultData([]);
+        setHasSearchResult(true);
+        return;
       }
 
       const data = await response.json();
-
-      // group beacons
+      // console.log("Response data:", data);
       const groupedArray = Object.values(
         Object.values(data.response.resultSets).reduce((acc, item) => {
           const isBeaconNetwork = !!item.beaconId;
@@ -76,11 +90,11 @@ export default function SearchButton({ setSelectedTool }) {
           return acc;
         }, {})
       );
-
       setResultData(groupedArray);
+      setHasSearchResult(true);
     } catch (error) {
-      // TODO show msg to user!
-      console.error("Search failed", error);
+      setResultData([]);
+      setHasSearchResult(true);
     } finally {
       setHasSearchResult(true);
       setLoadingData(false);

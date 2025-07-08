@@ -27,6 +27,7 @@ export default function Search({
   setSelectedTool,
 }) {
   const { entryTypes, setEntryTypes, setBeaconsInfo } = useSelectedEntry();
+  const { entryTypesConfig, setEntryTypesConfig } = useSelectedEntry();
   const { selectedFilter, setSelectedFilter } = useSelectedEntry();
   const { extraFilter, hasSearchResults } = useSelectedEntry();
   const [loading, setLoading] = useState(true);
@@ -37,7 +38,7 @@ export default function Search({
 
   const searchRef = useRef(null);
 
-  console.log("selectedFilter", selectedFilter);
+  // console.log("selectedFilter", selectedFilter);
 
   useEffect(() => {
     if (searchRef.current && onHeightChange) {
@@ -78,7 +79,6 @@ export default function Search({
               originalSegment === "genomicVariations"
                 ? "g_variants"
                 : originalSegment;
-
             return {
               id: key,
               pathSegment: normalizedSegment,
@@ -101,6 +101,25 @@ export default function Search({
     };
 
     fetchEntryTypes();
+  }, []);
+
+  const fetchConfiguration = async () => {
+    try {
+      const res = await fetch(`${config.apiUrl}/configuration`);
+      const data = await res.json();
+      setEntryTypesConfig(data.response.entryTypes || {});
+    } catch (err) {
+      console.error("Error fetching configuration:", err);
+    }
+  };
+
+  useEffect(() => {
+    const fetchAll = async () => {
+      await fetchConfiguration();
+      setLoading(false);
+    };
+
+    fetchAll();
   }, []);
 
   const handleBeaconsInfo = async () => {
@@ -478,7 +497,6 @@ export default function Search({
           )}
         </Box>
         {extraFilter && <FilterTermsExtra />}
-        {/* {!hasSearchResults && selectedFilter.length > 0 && <QueryApplied />} */}
         {selectedFilter.length > 0 && <QueryApplied />}
         <Box
           sx={{
@@ -513,7 +531,12 @@ export default function Search({
             />
           </Box>
           <Box>
-            <SearchButton setSelectedTool={setSelectedTool} />
+            <SearchButton
+              setSelectedTool={setSelectedTool}
+              entryTypesConfig={entryTypesConfig}
+              selectedPathSegment={selectedPathSegment}
+              selectedFilter={selectedFilter}
+            />
           </Box>
         </Box>
       </Box>
