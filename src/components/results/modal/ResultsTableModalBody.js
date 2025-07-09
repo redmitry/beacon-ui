@@ -73,6 +73,7 @@ const ResultsTableModalBody = ({ dataTable, totalItems, page, rowsPerPage, handl
   });
 
   const headers = Array.from(headersSet);
+  console.log(headers)
 
   const indexedHeaders = {};
   headers.forEach((header, index) => {
@@ -87,6 +88,9 @@ const ResultsTableModalBody = ({ dataTable, totalItems, page, rowsPerPage, handl
     ...headersArray.filter(h => h.id === "id"),
     ...headersArray.filter(h => h.id !== "id")
   ];
+
+  console.log(sortedHeaders)
+
 
   function summarizeValue(value) {
     if (value == null) return "-";
@@ -179,7 +183,7 @@ const ResultsTableModalBody = ({ dataTable, totalItems, page, rowsPerPage, handl
                           fontWeight: "bold",
                         }}
                       >
-                        {Object.values(indexedHeaders).map((colConfig) => (
+                        {Object.values(sortedHeaders).map((colConfig) => (
                           <StyledTableCell
                             key={`${id}-${colConfig.id}`}
                             sx={{ fontSize: "11px" }}
