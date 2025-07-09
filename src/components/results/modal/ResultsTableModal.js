@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import {
   Box,
-  Typography
+  Typography,
+  Link
 } from "@mui/material";
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
@@ -18,7 +19,6 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 1200,
-  height: 670,
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
@@ -34,6 +34,7 @@ const ResultsTableModal = ({ open, subRow, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [dataTable, setDataTable] = useState([]);
+  const [url, setUrl] = useState("");
 
   const parseType = (item) => {
     switch(item) {
@@ -107,6 +108,7 @@ const ResultsTableModal = ({ open, subRow, onClose }) => {
       try {
         setLoading(true);
         const url = `${config.apiUrl}/${tableType}/${subRow.id}/${selectedPathSegment}`;
+        setUrl(url);
         let query = queryBuilder(page);
 
         const requestOptions = {
@@ -228,7 +230,17 @@ const ResultsTableModal = ({ open, subRow, onClose }) => {
                   </Box>
                 )}
               </Box>
-              <Box>
+              <Box sx={{ paddingBottom: "15px" }}>
+                <Typography sx={{
+                  color: `${ config.ui.colors.darkPrimary }`,
+                  fontWeight: 700,
+                  fontSize: "13px",
+                  fontStyle: "italic"
+                }}>
+                  <Link href={url} color="inherit" underline="hover" target="_blank" rel="noopener noreferrer">
+                    { url }
+                  </Link>
+                </Typography>
               </Box>
             </Box>
             <Box>

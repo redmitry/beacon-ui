@@ -73,7 +73,6 @@ const ResultsTableModalBody = ({ dataTable, totalItems, page, rowsPerPage, handl
   });
 
   const headers = Array.from(headersSet);
-  console.log(headers)
 
   const indexedHeaders = {};
   headers.forEach((header, index) => {
@@ -84,13 +83,18 @@ const ResultsTableModalBody = ({ dataTable, totalItems, page, rowsPerPage, handl
   });
 
   const headersArray = Object.values(indexedHeaders);
-  const sortedHeaders = [
-    ...headersArray.filter(h => h.id === "id"),
-    ...headersArray.filter(h => h.id !== "id")
-  ];
+  const primaryId = headersArray.find(h => h.id === "id") 
+    ? "id" 
+    : headersArray.find(h => h.id === "variantInternalId") 
+    ? "variantInternalId" 
+    : null;
 
-  console.log(sortedHeaders)
-
+  const sortedHeaders = primaryId
+    ? [
+        ...headersArray.filter(h => h.id === primaryId),
+        ...headersArray.filter(h => h.id !== primaryId)
+      ]
+    : headersArray;
 
   function summarizeValue(value) {
     if (value == null) return "-";
@@ -158,7 +162,7 @@ const ResultsTableModalBody = ({ dataTable, totalItems, page, rowsPerPage, handl
               </TableHead>
               <TableBody>
                 { dataTable.map((item, index) => {
-                  const isExpanded = expandedRow?.id === item.id;
+                  const isExpanded = expandedRow  && (expandedRow?.id === item.id);
                   let id = item.id;
                   const parsedInfo = cleanAndParseInfo(item.info);
                   if (parsedInfo?.sampleID) {
