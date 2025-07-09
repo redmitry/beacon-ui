@@ -235,7 +235,7 @@ export default function Search({
                 pl: 3,
                 pr: 2,
                 py: 0,
-                height: "100%",
+                height: "47px",
                 borderTopLeftRadius: "999px",
                 borderBottomLeftRadius: "999px",
                 ".MuiSelect-icon": {
@@ -263,6 +263,7 @@ export default function Search({
               fontFamily: '"Open Sans", sans-serif',
               fontSize: "14px",
               pr: 2,
+              height: "47px",
             }}
           />
         </Box>
@@ -313,13 +314,11 @@ export default function Search({
       <Box
         ref={searchRef}
         sx={{
-          mb: 6,
+          mb: { lg: 6, md: 6, sm: 2, xs: 3 },
           borderRadius: "10px",
           backgroundColor: "#FFFFFF",
           boxShadow: "0px 8px 11px 0px #9BA0AB24",
           p: "24px 32px",
-          // width: "73%",
-          // backgroundColor: "magenta",
         }}
       >
         <Typography
@@ -351,7 +350,10 @@ export default function Search({
               title={
                 <Box
                   component="ul"
-                  sx={{ pl: "20px", fontFamily: '"Open Sans", sans-serif' }}
+                  sx={{
+                    pl: { xs: "5px", lg: "20px" },
+                    fontFamily: '"Open Sans", sans-serif',
+                  }}
                 >
                   {entryTypes.map((entry) => (
                     <li key={entry.pathSegment}>
@@ -370,7 +372,10 @@ export default function Search({
                     backgroundColor: "#fff",
                     color: "#000",
                     border: "1px solid black",
-                    minWidth: "400px",
+                    minWidth: {
+                      xs: "361px",
+                      sm: "400px",
+                    },
                   },
                 },
                 arrow: {

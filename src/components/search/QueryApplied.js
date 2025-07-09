@@ -1,8 +1,8 @@
 import { Box, Typography, Button } from "@mui/material";
 import { useSelectedEntry } from "../context/SelectedEntryContext";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import QueryAppliedItems from "./QueryAppliedItems";
 import config from "../../config/config.json";
+import deleteIcon from "../../assets/logos/delete.svg";
 
 export default function QueryApplied({ variant }) {
   const {
@@ -12,14 +12,17 @@ export default function QueryApplied({ variant }) {
     setHasSearchResult,
   } = useSelectedEntry();
 
+  const primaryDarkColor = config.ui.colors.darkPrimary;
+
   const handleFilterRemove = (item) => {
     // If something has change, reload filter
     setLoadingData(false);
     setResultData([]);
     setHasSearchResult(false);
-
     setSelectedFilter((prevFilters) =>
-      prevFilters.filter((filter) => filter.key !== item.key)
+      prevFilters.filter(
+        (filter) => !(filter.key === item.key && filter.scope === item.scope)
+      )
     );
   };
 
@@ -63,13 +66,27 @@ export default function QueryApplied({ variant }) {
             }}
           >
             <Button
+              onClick={() => {
+                setSelectedFilter([]);
+                setResultData([]);
+                setLoadingData(false);
+                setHasSearchResult(false);
+              }}
               sx={{
                 textTransform: "none",
                 fontSize: "14px",
                 pl: 2,
                 ml: 2,
+                backgroundColor: "transparent",
+                color: primaryDarkColor,
               }}
-              startIcon={<DeleteOutlineIcon />}
+              startIcon={
+                <img
+                  src={deleteIcon}
+                  alt="Delete"
+                  style={{ width: 18, height: 18, marginRight: 4 }}
+                />
+              }
             >
               Clear All
             </Button>

@@ -54,7 +54,12 @@ export default function QueryAppliedItems({
         }}
       >
         {selectedFilter.map((filter) => {
-          const keyValue = `${filter.key}__${filter.scope}`;
+          const keyValue =
+            filter.key && filter.scope
+              ? `${filter.key}__${filter.scope}`
+              : `${filter.id || filter.label || Math.random()}__${
+                  filter.bgColor || "common"
+                }`;
           const bgColor = filter.bgColor === "genomic" ? "genomic" : "common";
 
           return (

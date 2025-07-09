@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { Box, Tabs, Tab, Typography } from "@mui/material";
 import CommonFilters from "./CommonFilters";
 import GenomicAnnotations from "../genomic/GenomicAnnotations";
-import config from "../../config/config.json";
 import { useSelectedEntry } from "../context/SelectedEntryContext";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
+  {
+    /* This is the main container for the common filters and genomic annotation */
+  }
   return (
     <div
       role="tabpanel"
@@ -94,17 +96,20 @@ export default function FiltersContainer({
         value={tabValue}
         onChange={handleChange}
         aria-label="Filter tabs"
-        centered
         sx={{
           backgroundColor: "#F5F5F5",
           borderRadius: "0px",
           padding: "4px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-
+          width: { md: "290px", lg: "338px" },
           "& .MuiTabs-indicator": {
             display: "none",
+          },
+          "& .MuiTabs-flexContainer": {
+            justifyContent: {
+              xs: "flex-start",
+              md: "center",
+              lg: "center",
+            },
           },
         }}
       >
@@ -116,6 +121,7 @@ export default function FiltersContainer({
             disableRipple
             sx={{
               textTransform: "none",
+              paddingX: { xs: "12px", md: "9.5px", lg: "12px" },
               fontSize: "13px",
               borderRadius: "8px",
               borderBottomLeftRadius: "0px",
@@ -138,7 +144,7 @@ export default function FiltersContainer({
           />
         ))}
       </Tabs>
-      {/* This is for entire box where the filters are located */}
+      {/* This is for entire box where the filters are located, excluding the tabs on top */}
       <Box
         sx={{
           boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.05)",
@@ -147,9 +153,20 @@ export default function FiltersContainer({
           borderBottomLeftRadius: "8px",
           borderBottomRightRadius: "8px",
           backgroundColor: "white",
+          // backgroundColor: {
+          //   lg: "salmon",
+          //   md: "pink",
+          //   sm: "lightgreen",
+          //   xs: "lightblue",
+          // },
           mt: "-4px",
           overflow: "hidden",
-          height: `${searchHeight}px`,
+          height: {
+            lg: `${searchHeight}px`,
+            md: `${searchHeight}px`,
+            sm: "350px",
+            xs: "350px",
+          },
         }}
       >
         {tabs.map((tab, i) => (

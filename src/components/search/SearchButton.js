@@ -14,6 +14,7 @@ export default function SearchButton({ setSelectedTool }) {
     selectedFilter,
     entryTypesConfig,
     setMessage,
+    setHasSearchBeenTriggered,
   } = useSelectedEntry();
 
   const handleSearch = async () => {
@@ -32,6 +33,7 @@ export default function SearchButton({ setSelectedTool }) {
     setSelectedTool(null);
     setLoadingData(true);
     setResultData([]);
+    setHasSearchBeenTriggered(true);
 
     try {
       const url = `${config.apiUrl}/${selectedPathSegment}`;
