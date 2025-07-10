@@ -8,12 +8,12 @@ export default function BeaconTypeBanner() {
 
   const sharedStyles = {
     boxShadow: "0px 8px 11px 0px #9BA0AB24",
-    height: "218px",
+    minHeight: "218px",
     width: "100%",
     borderRadius: "12px",
     overflow: "hidden",
     mb: 3,
-    backgroundColor: "white",
+    backgroundColor: "transparent",
   };
 
   let content = null;

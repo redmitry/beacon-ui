@@ -44,12 +44,12 @@ export default function HomePage({ selectedTool, setSelectedTool }) {
             display: "flex",
             flexDirection: "column",
             width: { lg: "60%", md: "60%" },
-            // backgroundColor: {
-            //   lg: "lightsalmon",
-            //   md: "pink",
-            //   sm: "lightgreen",
-            //   xs: "lightblue",
-            // },
+            backgroundColor: {
+              lg: "lightsalmon",
+              md: "pink",
+              sm: "lightgreen",
+              xs: "lightblue",
+            },
           }}
         >
           <Founders />
@@ -67,7 +67,7 @@ export default function HomePage({ selectedTool, setSelectedTool }) {
               // maxWidth: "338px",
               flexShrink: 0,
               mt: { xs: "0px", md: "42px" },
-              mb: { xs: "80px", sm: "80px", md: "40px", lg: "0px" },
+              mb: { xs: "25px", lg: "0px" },
               alignSelf: "flex-start",
               // height: `${searchHeight}px`,
               height: {
