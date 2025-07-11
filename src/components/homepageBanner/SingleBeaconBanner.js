@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { alpha } from "@mui/material/styles";
 import { Box, Typography, Tabs, Tab, Link } from "@mui/material";
 import config from "../../config/config.json";
 import { useSelectedEntry } from "../context/SelectedEntryContext";
@@ -20,30 +21,43 @@ function TabPanel({ children, value, index, ...other }) {
 // TODO: Add Loader!
 export default function SingleBeaconBanner() {
   const [tabValue, setTabValue] = useState(0);
-  const [beaconInfo, setBeaconInfo] = useState();
-  const { entryTypes } = useSelectedEntry();
+  const { entryTypes, beaconsInfo } = useSelectedEntry();
+  const [localDatasets, setLocalDatasets] = useState([]);
+  const [selectedDataset, setSelectedDataset] = useState(null);
 
-  useEffect(() => {
-    const fetchBeaconInfo = async () => {
-      try {
-        const res = await fetch(`${config.apiUrl}`);
-        const data = await res.json();
-        setBeaconInfo(data.response);
-      } catch (error) {
-        console.error("Failed to fetch beacon info:", error);
-      }
-    };
-    fetchBeaconInfo();
-  }, []);
-
-  console.log("beaconInfo", beaconInfo);
+  const beaconInfo = beaconsInfo?.[0];
 
   const handleChange = (event, newValue) => {
     setTabValue(newValue);
   };
 
+  useEffect(() => {
+    async function fetchDatasets() {
+      try {
+        const res = await fetch(`${config.apiUrl}/datasets`);
+        const json = await res.json();
+        const datasets = json.response?.collections || [];
+        setLocalDatasets({ collections: datasets });
+        if (datasets.length > 0) {
+          setSelectedDataset(datasets[0]);
+        }
+      } catch (err) {
+        console.error("❌ Error fetching datasets:", err);
+      }
+    }
+
+    fetchDatasets();
+  }, []);
+
+  const baseBgColor = alpha(config.ui.colors.primary, 0.05);
+
   return (
-    <Box>
+    <Box
+      sx={{
+        width: "100%",
+        backgroundColor: "transparent",
+      }}
+    >
       {/* Tabs Header */}
       <Tabs
         value={tabValue}
@@ -51,7 +65,6 @@ export default function SingleBeaconBanner() {
         aria-label="Beacon Info Tabs"
         sx={{
           backgroundColor: "#F5F5F5",
-          borderRadius: "0px",
           px: 2,
           "& .MuiTabs-indicator": { display: "none" },
         }}
@@ -97,12 +110,12 @@ export default function SingleBeaconBanner() {
       {/* Content Box */}
       <Box
         sx={{
-          backgroundColor: "white",
-          borderRadius: "8px",
           boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.05)",
+          borderRadius: "8px",
+          backgroundColor: "white",
         }}
       >
-        {/* Panel 1 – Beacon Info */}
+        {/* Option 1 – Beacon Information */}
         <TabPanel value={tabValue} index={0}>
           <Typography
             variant="h6"
@@ -235,7 +248,7 @@ export default function SingleBeaconBanner() {
           )}
         </TabPanel>
 
-        {/* Panel 2 – Datasets Info */}
+        {/* Option 2 – Datasets Information */}
         <TabPanel value={tabValue} index={1}>
           <Typography
             variant="h6"
@@ -248,7 +261,120 @@ export default function SingleBeaconBanner() {
           >
             Datasets Information
           </Typography>
-          <Typography variant="body2">TODO</Typography>
+          {beaconInfo && (
+            <>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  gap: "14px",
+                  minWidth: "250px",
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "14px",
+                    flex: "1 1 35%",
+                    minWidth: "250px",
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontFamily: '"Open Sans", sans-serif',
+                      fontSize: "14px",
+                    }}
+                  >
+                    Select your dataset of interest to see the information:
+                  </Typography>
+
+                  {localDatasets?.collections?.length > 0 ? (
+                    localDatasets.collections.map((ds, idx) => (
+                      <Box
+                        key={ds.id || idx}
+                        onClick={() => setSelectedDataset(ds)}
+                        sx={{
+                          backgroundColor: baseBgColor,
+                          borderRadius: "8px",
+                          border:
+                            selectedDataset?.id === ds.id
+                              ? `1px solid ${config.ui.colors.primary}`
+                              : "1px solid transparent",
+                          cursor: "pointer",
+                          transition: "all 0.2s ease",
+                          "&:hover": {
+                            border: `1px solid ${config.ui.colors.primary}`,
+                          },
+                        }}
+                      >
+                        <Typography
+                          variant="subtitle2"
+                          sx={{ m: 1, fontSize: "12px" }}
+                        >
+                          {ds.name || ds.id || `Dataset ${idx + 1}`}
+                        </Typography>
+                      </Box>
+                    ))
+                  ) : (
+                    <Typography variant="body2" sx={{ fontSize: "12px" }}>
+                      No datasets available.
+                    </Typography>
+                  )}
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: 2,
+                    flex: "1 1 60%",
+                    justifyContent: "flex-start",
+                    backgroundColor: "white",
+                    border: `1px solid ${baseBgColor}`,
+                    borderRadius: "8px",
+                  }}
+                >
+                  <Box sx={{ m: 2 }}>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        mb: 3,
+                        fontFamily: '"Open Sans", sans-serif',
+                        fontWeight: 700,
+                        fontSize: "14px",
+                      }}
+                    >
+                      Dataset Name:&nbsp;
+                      <span style={{ fontWeight: 200 }}>
+                        {selectedDataset?.name || selectedDataset?.id || "—"}
+                      </span>
+                    </Typography>
+
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        mb: 3,
+                        fontFamily: '"Open Sans", sans-serif',
+                        fontWeight: 700,
+                        fontSize: "14px",
+                      }}
+                    >
+                      Description:
+                      <p style={{ fontWeight: 200 }}>
+                        {selectedDataset?.description
+                          ? selectedDataset.description.length > 505
+                            ? selectedDataset.description.slice(0, 505) + "..."
+                            : selectedDataset.description
+                          : "—"}
+                      </p>
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+            </>
+          )}
         </TabPanel>
       </Box>
     </Box>

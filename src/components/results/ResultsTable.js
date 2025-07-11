@@ -186,7 +186,6 @@ export default function ResultsTable() {
                             ) : (
                               <KeyboardArrowUpIcon />
                             ))}
-
                           {iconUrl && (
                             <img
                               className="table-icon"

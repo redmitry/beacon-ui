@@ -10,10 +10,11 @@ export default function BeaconTypeBanner() {
     boxShadow: "0px 8px 11px 0px #9BA0AB24",
     minHeight: "218px",
     width: "100%",
-    borderRadius: "12px",
+    display: "flex",
+    marginTop: { lg: "-60px", md: "-60px", sm: "0px", xs: "0px" },
     overflow: "hidden",
     mb: 3,
-    backgroundColor: "transparent",
+    borderRadius: "8px",
   };
 
   let content = null;

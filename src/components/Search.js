@@ -503,19 +503,48 @@ export default function Search({
         </Box>
         {extraFilter && <FilterTermsExtra />}
         {selectedFilter.length > 0 && <QueryApplied />}
+
         <Box
           sx={{
             mt: 5,
-            display: "flex",
             gap: 2,
             flexWrap: "wrap",
-            justifyContent: "space-between",
+            display: "flex",
+            flexDirection: {
+              xs: "column",
+              sm: "row",
+              md: "row",
+            },
+            justifyContent: {
+              xs: "center",
+              sm: "space-between",
+              md: "space-between",
+            },
+            alignItems: "center",
+            textAlign: "center",
+            "@media (max-width: 1008px) and (min-width: 900px)": {
+              flexDirection: "column",
+            },
+            "@media (max-width: 653px)": {
+              flexDirection: "column",
+            },
           }}
         >
           <Box
             sx={{
               display: "flex",
-              gap: 2,
+              gap: 4,
+              "@media (max-width: 1008px) and (min-width: 900px)": {
+                width: "100%",
+                justifyContent: "center",
+
+                gap: 8,
+              },
+              "@media (max-width: 653px)": {
+                width: "100%",
+                justifyContent: "center",
+                gap: 8,
+              },
             }}
           >
             {hasGenomic && (
@@ -535,6 +564,7 @@ export default function Search({
               selected={selectedTool === "allFilteringTerms"}
             />
           </Box>
+
           <Box>
             <SearchButton
               setSelectedTool={setSelectedTool}

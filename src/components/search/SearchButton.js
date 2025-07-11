@@ -143,12 +143,13 @@ export default function SearchButton({ setSelectedTool }) {
   return (
     <Button
       variant="contained"
+      fullWidth
       sx={{
         borderRadius: "999px",
         textTransform: "none",
         fontSize: "14px",
-        pl: 2,
-        ml: 2,
+        // pl: 2,
+        // ml: 2,
         backgroundColor: config.ui.colors.primary,
         border: `1px solid ${config.ui.colors.primary}`,
         boxShadow: "none",

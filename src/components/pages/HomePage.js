@@ -28,7 +28,6 @@ export default function HomePage({ selectedTool, setSelectedTool }) {
   return (
     <>
       {/* Main container */}
-
       <Box
         sx={{
           display: "flex",
@@ -64,12 +63,10 @@ export default function HomePage({ selectedTool, setSelectedTool }) {
           <Box
             sx={{
               width: { xs: "100%", sm: "100%", md: "290px", lg: "338px" },
-              // maxWidth: "338px",
               flexShrink: 0,
               mt: { xs: "0px", md: "42px" },
               mb: { xs: "25px", lg: "0px" },
               alignSelf: "flex-start",
-              // height: `${searchHeight}px`,
               height: {
                 lg: `${searchHeight}px`,
                 md: `${searchHeight}px`,
@@ -100,7 +97,7 @@ export default function HomePage({ selectedTool, setSelectedTool }) {
               display: "flex",
               justifyContent: "center",
               width: "100%",
-              marginTop: "-40px",
+              marginTop: { lg: "-40px", md: "-40px", sm: "20px", xs: "20px" },
               marginBottom: "40px",
             }}
           >

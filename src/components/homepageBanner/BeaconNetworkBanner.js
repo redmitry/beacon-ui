@@ -41,7 +41,14 @@ export default function BeaconNetworkBanner() {
   };
 
   return (
-    <Box>
+    <Box
+      sx={{
+        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.05)",
+        borderRadius: "8px",
+        backgroundColor: "white",
+        width: "100%",
+      }}
+    >
       <Typography
         variant="h6"
         sx={{
