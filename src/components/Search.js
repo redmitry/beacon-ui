@@ -15,6 +15,7 @@ import { darken, lighten } from "@mui/system";
 import SearchIcon from "@mui/icons-material/Search";
 import { useSelectedEntry } from "./context/SelectedEntryContext";
 import GenomicQueryBuilderButton from "./genomic/GenomicQueryBuilderButton";
+import GenomicQueryBuilderDialog from "./genomic/GenomicQueryBuilderDialog";
 import AllFilteringTermsButton from "./filters/AllFilteringTermsButton";
 import FilteringTermsDropdownResults from "./filters/FilteringTermsDropdownResults";
 import QueryApplied from "./search/QueryApplied";
@@ -35,6 +36,7 @@ export default function Search({
   const [searchInput, setSearchInput] = useState("");
   const { selectedPathSegment, setSelectedPathSegment } = useSelectedEntry();
   const [assembly, setAssembly] = useState(config.assemblyId[0]);
+  const [open, setOpen] = useState(false);
 
   const searchRef = useRef(null);
 
@@ -202,6 +204,14 @@ export default function Search({
     setSelectedTool((prev) =>
       prev === "allFilteringTerms" ? null : "allFilteringTerms"
     );
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
   };
 
   const renderInput = (type) => {
@@ -548,16 +558,23 @@ export default function Search({
             }}
           >
             {hasGenomic && (
-              <GenomicQueryBuilderButton
-                onClick={() =>
-                  setSelectedTool((prev) =>
-                    prev === "genomicQueryBuilder"
-                      ? null
-                      : "genomicQueryBuilder"
-                  )
-                }
-                selected={selectedTool === "genomicQueryBuilder"}
-              />
+              <>
+                <GenomicQueryBuilderButton
+                  onClick={() => {
+                    setSelectedTool((prev) =>
+                      prev === "genomicQueryBuilder"
+                        ? null
+                        : "genomicQueryBuilder"
+                    );
+                    handleClickOpen();
+                  }}
+                  selected={selectedTool === "genomicQueryBuilder"}
+                />
+                <GenomicQueryBuilderDialog
+                  open={open}
+                  handleClose={handleClose}
+                />
+              </>
             )}
             <AllFilteringTermsButton
               onClick={handleAllFilteringClick}

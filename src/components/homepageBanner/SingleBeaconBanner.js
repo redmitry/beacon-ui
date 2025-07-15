@@ -3,6 +3,7 @@ import { alpha } from "@mui/material/styles";
 import { Box, Typography, Tabs, Tab, Link } from "@mui/material";
 import config from "../../config/config.json";
 import { useSelectedEntry } from "../context/SelectedEntryContext";
+import Loader from "../common/Loader";
 
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -18,21 +19,28 @@ function TabPanel({ children, value, index, ...other }) {
   );
 }
 
-// TODO: Add Loader!
+// This is a part of the initial homepage, for single beacons only
 export default function SingleBeaconBanner() {
   const [tabValue, setTabValue] = useState(0);
-  const { entryTypes, beaconsInfo } = useSelectedEntry();
   const [localDatasets, setLocalDatasets] = useState([]);
   const [selectedDataset, setSelectedDataset] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const { entryTypes, beaconsInfo } = useSelectedEntry();
 
   const beaconInfo = beaconsInfo?.[0];
 
+  // Function for the tab selection on top of the banner
   const handleChange = (event, newValue) => {
     setTabValue(newValue);
   };
 
+  console.log("localDatasets", localDatasets);
+
+  // Fetch datasets on component mount
+  // Saves the full list to local state and preselects the first dataset
   useEffect(() => {
     async function fetchDatasets() {
+      setLoading(true);
       try {
         const res = await fetch(`${config.apiUrl}/datasets`);
         const json = await res.json();
@@ -43,11 +51,15 @@ export default function SingleBeaconBanner() {
         }
       } catch (err) {
         console.error("❌ Error fetching datasets:", err);
+      } finally {
+        setLoading(false);
       }
     }
 
     fetchDatasets();
   }, []);
+
+  if (loading) return <Loader />;
 
   const baseBgColor = alpha(config.ui.colors.primary, 0.05);
 
@@ -116,140 +128,148 @@ export default function SingleBeaconBanner() {
         }}
       >
         {/* Option 1 – Beacon Information */}
-        <TabPanel value={tabValue} index={0}>
-          <Typography
-            variant="h6"
-            sx={{
-              mb: 3,
-              fontFamily: '"Open Sans", sans-serif',
-              fontWeight: 700,
-              fontSize: "16px",
-            }}
-          >
-            Beacon Information
-          </Typography>
-          {beaconInfo && (
-            <>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: "14px",
-                  flex: "1 1 60%",
-                  minWidth: "250px",
-                }}
-              >
+        {beaconInfo && (
+          <TabPanel value={tabValue} index={0}>
+            {loading ? (
+              <Loader />
+            ) : (
+              <>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    mb: 3,
+                    fontFamily: '"Open Sans", sans-serif',
+                    fontWeight: 700,
+                    fontSize: "16px",
+                  }}
+                >
+                  Beacon Information
+                </Typography>
+
                 <Box
                   sx={{
                     display: "flex",
-                    flexDirection: "column",
+                    flexDirection: "row",
                     gap: "14px",
                     flex: "1 1 60%",
                     minWidth: "250px",
                   }}
                 >
-                  <Typography
-                    variant="body2"
+                  {/* Left Column. Rendering of single beacon information. */}
+                  <Box
                     sx={{
-                      fontFamily: '"Open Sans", sans-serif',
-                      fontSize: "14px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "14px",
+                      flex: "1 1 60%",
+                      minWidth: "250px",
                     }}
                   >
-                    <strong>Organization:</strong>{" "}
-                    {beaconInfo.organization?.name}
-                  </Typography>
-
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      fontFamily: '"Open Sans", sans-serif',
-                      fontSize: "14px",
-                      color: "#000",
-                    }}
-                  >
-                    <strong>Organization URL:</strong>{" "}
-                    <Link
-                      href={beaconInfo.organization?.contactUrl}
-                      target="_blank"
-                      rel="noopener"
-                      sx={{ color: "#3176B1" }}
-                    >
-                      {beaconInfo.organization?.contactUrl?.replace(
-                        "mailto:",
-                        ""
-                      )}
-                    </Link>
-                  </Typography>
-
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      fontFamily: '"Open Sans", sans-serif',
-                      fontSize: "14px",
-                      color: "#000",
-                    }}
-                  >
-                    <strong>Beacon URL:</strong>{" "}
-                    <Link
-                      href={beaconInfo.welcomeUrl}
-                      target="_blank"
-                      rel="noopener"
-                      sx={{ color: "#3176B1" }}
-                    >
-                      {beaconInfo.welcomeUrl}
-                    </Link>
-                  </Typography>
-
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      fontFamily: '"Open Sans", sans-serif',
-                      fontSize: "14px",
-                      color: "#000",
-                    }}
-                  >
-                    <strong>Types of information:</strong>{" "}
-                    {entryTypes?.length > 0
-                      ? entryTypes
-                          .map((entry) =>
-                            entry.pathSegment === "g_variants"
-                              ? "Genomic Variants"
-                              : entry.pathSegment.charAt(0).toUpperCase() +
-                                entry.pathSegment.slice(1)
-                          )
-                          .join(", ")
-                      : "Not available"}
-                  </Typography>
-                </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    gap: 2,
-                    flex: "1 1 35%",
-                    justifyContent: "flex-start",
-                    minWidth: "150px",
-                  }}
-                >
-                  {beaconInfo.organization?.logoUrl && (
-                    <Box
-                      component="img"
-                      src={beaconInfo.organization.logoUrl}
-                      alt="Organization Logo"
+                    <Typography
+                      variant="body2"
                       sx={{
-                        height: "50px",
-                        objectFit: "contain",
+                        fontFamily: '"Open Sans", sans-serif',
+                        fontSize: "14px",
                       }}
-                    />
-                  )}
+                    >
+                      <strong>Organization:</strong>{" "}
+                      {beaconInfo.organization?.name}
+                    </Typography>
+
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontFamily: '"Open Sans", sans-serif',
+                        fontSize: "14px",
+                        color: "#000",
+                      }}
+                    >
+                      <strong>Organization URL:</strong>{" "}
+                      <Link
+                        href={beaconInfo.organization?.contactUrl}
+                        target="_blank"
+                        rel="noopener"
+                        sx={{ color: "#3176B1" }}
+                      >
+                        {beaconInfo.organization?.contactUrl?.replace(
+                          "mailto:",
+                          ""
+                        )}
+                      </Link>
+                    </Typography>
+
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontFamily: '"Open Sans", sans-serif',
+                        fontSize: "14px",
+                        color: "#000",
+                      }}
+                    >
+                      <strong>Beacon URL:</strong>{" "}
+                      <Link
+                        href={beaconInfo.welcomeUrl}
+                        target="_blank"
+                        rel="noopener"
+                        sx={{ color: "#3176B1" }}
+                      >
+                        {beaconInfo.welcomeUrl}
+                      </Link>
+                    </Typography>
+
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontFamily: '"Open Sans", sans-serif',
+                        fontSize: "14px",
+                        color: "#000",
+                      }}
+                    >
+                      <strong>Types of information:</strong>{" "}
+                      {entryTypes?.length > 0
+                        ? entryTypes
+                            .map((entry) =>
+                              entry.pathSegment === "g_variants"
+                                ? "Genomic Variants"
+                                : entry.pathSegment.charAt(0).toUpperCase() +
+                                  entry.pathSegment.slice(1)
+                            )
+                            .join(", ")
+                        : "Not available"}
+                    </Typography>
+                  </Box>
+
+                  {/* Right Column - Logo */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      gap: 2,
+                      flex: "1 1 35%",
+                      justifyContent: "flex-start",
+                      minWidth: "150px",
+                    }}
+                  >
+                    {beaconInfo.organization?.logoUrl && (
+                      <Box
+                        component="img"
+                        src={beaconInfo.organization.logoUrl}
+                        alt="Organization Logo"
+                        sx={{
+                          height: "50px",
+                          objectFit: "contain",
+                        }}
+                      />
+                    )}
+                  </Box>
                 </Box>
-              </Box>
-            </>
-          )}
-        </TabPanel>
+              </>
+            )}
+          </TabPanel>
+        )}
 
         {/* Option 2 – Datasets Information */}
-        <TabPanel value={tabValue} index={1}>
+        {/* <TabPanel value={tabValue} index={1}>
           <Typography
             variant="h6"
             sx={{
@@ -375,7 +395,142 @@ export default function SingleBeaconBanner() {
               </Box>
             </>
           )}
-        </TabPanel>
+        </TabPanel> */}
+        {beaconInfo && (
+          <TabPanel value={tabValue} index={1}>
+            {loading ? (
+              <Loader />
+            ) : (
+              <>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    mb: 3,
+                    fontFamily: '"Open Sans", sans-serif',
+                    fontWeight: 700,
+                    fontSize: "16px",
+                  }}
+                >
+                  Datasets Information
+                </Typography>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: "14px",
+                    minWidth: "250px",
+                  }}
+                >
+                  {/* Left Column – Dataset Selector - Rendering all datasets included in the Single Beacon. */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "14px",
+                      flex: "1 1 35%",
+                      minWidth: "250px",
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontFamily: '"Open Sans", sans-serif',
+                        fontSize: "14px",
+                      }}
+                    >
+                      Select your dataset of interest to see the information:
+                    </Typography>
+
+                    {localDatasets?.collections?.length > 0 ? (
+                      localDatasets.collections.map((ds, idx) => (
+                        <Box
+                          key={ds.id || idx}
+                          onClick={() => setSelectedDataset(ds)}
+                          sx={{
+                            backgroundColor: baseBgColor,
+                            borderRadius: "8px",
+                            border:
+                              selectedDataset?.id === ds.id
+                                ? `1px solid ${config.ui.colors.primary}`
+                                : "1px solid transparent",
+                            cursor: "pointer",
+                            transition: "all 0.2s ease",
+                            "&:hover": {
+                              border: `1px solid ${config.ui.colors.primary}`,
+                            },
+                          }}
+                        >
+                          <Typography
+                            variant="subtitle2"
+                            sx={{ m: 1, fontSize: "12px" }}
+                          >
+                            {ds.name || ds.id || `Dataset ${idx + 1}`}
+                          </Typography>
+                        </Box>
+                      ))
+                    ) : (
+                      <Typography variant="body2" sx={{ fontSize: "12px" }}>
+                        No datasets available.
+                      </Typography>
+                    )}
+                  </Box>
+
+                  {/* Right Column – Rendering of the description of each datatset */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      gap: 2,
+                      flex: "1 1 60%",
+                      justifyContent: "flex-start",
+                      backgroundColor: "white",
+                      border: `1px solid ${baseBgColor}`,
+                      borderRadius: "8px",
+                    }}
+                  >
+                    <Box sx={{ m: 2 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          mb: 3,
+                          fontFamily: '"Open Sans", sans-serif',
+                          fontWeight: 700,
+                          fontSize: "14px",
+                        }}
+                      >
+                        Dataset Name:&nbsp;
+                        <span style={{ fontWeight: 200 }}>
+                          {selectedDataset?.name || selectedDataset?.id || "—"}
+                        </span>
+                      </Typography>
+
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          mb: 3,
+                          fontFamily: '"Open Sans", sans-serif',
+                          fontWeight: 700,
+                          fontSize: "14px",
+                        }}
+                      >
+                        Description:
+                        <p style={{ fontWeight: 200 }}>
+                          {selectedDataset?.description
+                            ? selectedDataset.description.length > 505
+                              ? selectedDataset.description.slice(0, 505) +
+                                "..."
+                              : selectedDataset.description
+                            : "—"}
+                        </p>
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
+              </>
+            )}
+          </TabPanel>
+        )}
       </Box>
     </Box>
   );

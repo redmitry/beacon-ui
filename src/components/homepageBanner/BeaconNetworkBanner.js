@@ -1,18 +1,24 @@
 import { Box, Typography, Grid } from "@mui/material";
 import { useEffect, useState } from "react";
 import config from "../../config/config.json";
+import Loader from "../common/Loader";
 
+// This is a part of the initial homepage, for network beacons only
 export default function BeaconNetworkBanner() {
   const [logos, setLogos] = useState([]);
-
+  const [loading, setLoading] = useState(true);
+  // Fetch the list of logos of each single beacon that is included in the network.
+  // It runs on page load
   useEffect(() => {
     const fetchLogos = async () => {
+      setLoading(true);
       try {
         const res = await fetch(`${config.apiUrl}/`);
         const data = await res.json();
 
         const entries = data.responses || [];
 
+        // Remove duplicate logos and clean the data
         const seen = new Set();
         const cleaned = entries
           .map((entry) => {
@@ -30,12 +36,15 @@ export default function BeaconNetworkBanner() {
         setLogos(cleaned);
       } catch (err) {
         console.error("Error loading beacon network logos:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchLogos();
   }, []);
 
+  // If a logo fails to load, remove it from the list
   const handleLogoError = (logoUrlToRemove) => {
     setLogos((prev) => prev.filter((l) => l.logoUrl !== logoUrlToRemove));
   };
@@ -63,29 +72,33 @@ export default function BeaconNetworkBanner() {
       </Typography>
 
       <Box sx={{ m: 4 }}>
-        <Grid
-          container
-          spacing={2}
-          justifyContent="space-evenly"
-          alignItems="center"
-        >
-          {logos.map((entry) => (
-            <Grid key={entry.beaconId}>
-              <Box
-                component="img"
-                src={entry.logoUrl}
-                alt={entry.beaconId}
-                onError={() => handleLogoError(entry.logoUrl)}
-                sx={{
-                  width: { sm: "150px", xs: "110px" },
-                  height: "50px",
-                  objectFit: "contain",
-                  padding: "4px",
-                }}
-              />
-            </Grid>
-          ))}
-        </Grid>
+        {loading ? (
+          <Loader />
+        ) : (
+          <Grid
+            container
+            spacing={2}
+            justifyContent="space-evenly"
+            alignItems="center"
+          >
+            {logos.map((entry) => (
+              <Grid key={entry.beaconId}>
+                <Box
+                  component="img"
+                  src={entry.logoUrl}
+                  alt={entry.beaconId}
+                  onError={() => handleLogoError(entry.logoUrl)}
+                  sx={{
+                    width: { sm: "150px", xs: "110px" },
+                    height: "50px",
+                    objectFit: "contain",
+                    padding: "4px",
+                  }}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        )}
       </Box>
     </Box>
   );

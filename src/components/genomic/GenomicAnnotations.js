@@ -39,69 +39,80 @@ export default function GenomicAnnotations() {
 
   const filterLabels = {
     "SNP Examples": [
+      { key: "TP53", id: "TP53", label: "TP53" },
       {
-        id: "TP53",
-        label: "TP53",
-      },
-      {
+        key: "7661960T>C",
         id: "7661960T>C",
         label: "7661960T>C",
       },
       {
+        key: "NC_000023.10 : 33038255C>A",
         id: "NC_000023.10 : 33038255C>A",
         label: "NC_000023.10 : 33038255C>A",
       },
     ],
     "CNV Examples": [
       {
+        key: "NC_000001.11 : 1234del",
         id: "NC_000001.11 : 1234del",
         label: "NC_000001.11 : 1234del",
       },
       {
+        key: "MSK1 : 7572837_7578461del",
         id: "MSK1 : 7572837_7578461del",
         label: "MSK1 : 7572837_7578461del",
       },
       {
+        key: "NC_000001.11 : [5000, 7676]",
         id: "NC_000001.11 : [5000, 7676]",
         label: "NC_000001.11 : [5000, 7676]",
       },
       {
+        key: "[7669, 10000]del",
         id: "[7669, 10000]del",
         label: "[7669, 10000]del",
       },
     ],
     "Protein Examples": [
       {
+        key: "TP53 : p.Trp285Cys",
         id: "TP53 : p.Trp285Cys",
         label: "TP53 : p.Trp285Cys",
       },
       {
+        key: "NP_003997.1:p.Trp24Cys",
         id: "NP_003997.1:p.Trp24Cys",
         label: "NP_003997.1:p.Trp24Cys",
       },
     ],
     "Molecular Effect": [
       {
+        key: "Missense Variant",
         id: "Missense Variant",
         label: "Missense Variant",
       },
       {
+        key: "Frameshift Variant",
         id: "Frameshift Variant",
         label: "Frameshift Variant",
       },
       {
+        key: "Stop gained",
         id: "Stop gained",
         label: "Stop gained",
       },
       {
+        key: "Gain of function",
         id: "Gain of function",
         label: "Gain of function",
       },
       {
+        key: "Loss of function",
         id: "Loss of function",
         label: "Loss of function",
       },
       {
+        key: "Null mutation",
         id: "Null mutation",
         label: "Null mutation",
       },
@@ -159,8 +170,6 @@ export default function GenomicAnnotations() {
         setTimeout(() => setMessage(null), 3000);
         return prevGenomicAnnotation;
       }
-
-      console.log("prevGenomicAnnotation", prevGenomicAnnotation);
       return [...prevGenomicAnnotation, item];
     });
   };

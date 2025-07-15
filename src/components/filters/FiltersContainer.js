@@ -146,10 +146,7 @@ export default function FiltersContainer({
       <Box
         sx={{
           boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.05)",
-          borderTopLeftRadius: "8px",
-          borderTopRightRadius: "8px",
-          borderBottomLeftRadius: "8px",
-          borderBottomRightRadius: "8px",
+          borderRadius: "8px",
           backgroundColor: "white",
           // backgroundColor: {
           //   lg: "salmon",

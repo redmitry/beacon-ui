@@ -43,12 +43,12 @@ export default function HomePage({ selectedTool, setSelectedTool }) {
             display: "flex",
             flexDirection: "column",
             width: { lg: "60%", md: "60%" },
-            backgroundColor: {
-              lg: "lightsalmon",
-              md: "pink",
-              sm: "lightgreen",
-              xs: "lightblue",
-            },
+            // backgroundColor: {
+            //   lg: "lightsalmon",
+            //   md: "pink",
+            //   sm: "lightgreen",
+            //   xs: "lightblue",
+            // },
           }}
         >
           <Founders />
@@ -98,7 +98,7 @@ export default function HomePage({ selectedTool, setSelectedTool }) {
               justifyContent: "center",
               width: "100%",
               marginTop: { lg: "-40px", md: "-40px", sm: "20px", xs: "20px" },
-              marginBottom: "40px",
+              marginBottom: { lg: "30px", md: "30px", sm: "30px", xs: "30px" },
             }}
           >
             <AllFilteringTermsComponent />
@@ -107,6 +107,7 @@ export default function HomePage({ selectedTool, setSelectedTool }) {
       </Box>
       <Box
         sx={{
+          marginTop: { lg: "-30px", md: "-30px", sm: "20px", xs: "0px" },
           marginBottom: "30px",
         }}
       >
