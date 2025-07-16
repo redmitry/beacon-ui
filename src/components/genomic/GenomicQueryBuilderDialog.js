@@ -8,6 +8,11 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import StyledGenomicLabels from "../genomic/StyledGenomicLabels";
+import GeneIdForm from "./GeneIdForm";
+import GenomicSubmitButton from "../genomic/GenomicSubmitButton";
+import { Formik, Form } from "formik";
+import * as Yup from "yup";
+import config from "../../config/config.json";
 
 const genomicQueryTypes = [
   "GeneID",
@@ -21,6 +26,12 @@ export default function GenomicQueryBuilderDialog({ open, handleClose }) {
   const [selectedQueryType, setSelectedQueryType] = useState(
     genomicQueryTypes[0]
   );
+
+  const formComponentsMap = {
+    GeneID: GeneIdForm,
+  };
+
+  const SelectedFormComponent = formComponentsMap[selectedQueryType];
 
   return (
     <Dialog
@@ -61,10 +72,14 @@ export default function GenomicQueryBuilderDialog({ open, handleClose }) {
           <CloseIcon />
         </IconButton>
       </Box>
-
-      {/* Dialog content goes here */}
       <DialogContent>
-        <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 2,
+            flexWrap: "wrap",
+          }}
+        >
           {genomicQueryTypes.map((label, index) => (
             <StyledGenomicLabels
               key={index}
@@ -73,6 +88,32 @@ export default function GenomicQueryBuilderDialog({ open, handleClose }) {
               onClick={() => setSelectedQueryType(label)}
             />
           ))}
+        </Box>
+        <Box sx={{ mt: 4 }}>
+          {SelectedFormComponent && (
+            <Formik
+              initialValues={{ geneId: "", assemblyId: config.assemblyId[0] }}
+              validationSchema={Yup.object({
+                geneId: Yup.string().required("Gene ID is required"),
+              })}
+              onSubmit={(values) => {
+                console.log("Form submitted:", values);
+              }}
+            >
+              <Form>
+                <SelectedFormComponent />
+                <Box
+                  sx={{
+                    mt: 2,
+                    display: "flex",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <GenomicSubmitButton />
+                </Box>
+              </Form>
+            </Formik>
+          )}
         </Box>
       </DialogContent>
     </Dialog>
