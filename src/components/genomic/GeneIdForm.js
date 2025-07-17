@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Box, TextField, Button, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import config from "../../config/config.json";
 import GenomicInputBox from "../genomic/GenomicInputBox";
 
@@ -14,18 +15,19 @@ export default function GeneIdForm({ onSubmit }) {
   });
 
   const primaryDarkColor = config.ui.colors.darkPrimary;
+  const [selectedInput, setSelectedInput] = useState("basesChange");
+
   return (
-    <form onSubmit={formik.handleSubmit}>
+    <Box>
       <Box
         sx={{
-          mt: 3,
+          mt: 2,
           display: "flex",
           gap: 6,
           width: "100%",
-          backgroundColor: "papayawhip",
         }}
       >
-        <Box sx={{ width: "50%", backgroundColor: "lemonchiffon" }}>
+        <Box sx={{ width: "30%" }}>
           <Typography
             variant="h6"
             sx={{
@@ -39,9 +41,8 @@ export default function GeneIdForm({ onSubmit }) {
             Main Parameters
           </Typography>
           <Typography
-            variant="h1"
             sx={{
-              mb: 3,
+              mb: 2,
               fontFamily: '"Open Sans", sans-serif',
               fontWeight: 400,
               fontSize: "12px",
@@ -57,13 +58,8 @@ export default function GeneIdForm({ onSubmit }) {
             required={true}
           />
         </Box>
-        <Box
-          sx={{
-            width: "70%",
-            justifyContent: "space-between",
-            backgroundColor: "mistyrose",
-          }}
-        >
+
+        <Box sx={{ width: "70%" }}>
           <Typography
             variant="h6"
             sx={{
@@ -77,9 +73,8 @@ export default function GeneIdForm({ onSubmit }) {
             Optional parameters
           </Typography>
           <Typography
-            variant="h1"
             sx={{
-              mb: 3,
+              mb: 2,
               fontFamily: '"Open Sans", sans-serif',
               fontWeight: 400,
               fontSize: "12px",
@@ -88,46 +83,62 @@ export default function GeneIdForm({ onSubmit }) {
           >
             Please select one:
           </Typography>
+
+          {/* Optional Input Row */}
           <Box
-            // sx={{
-            //   display: "flex",
-            //   flexDirection: "row",
-            //   gap: 2,
-            //   flexWrap: "wrap",
-            // }}
             sx={{
               display: "flex",
               flexDirection: "row",
-              flexWrap: "wrap", // ❗ prevent wrapping
               gap: 2,
               width: "100%",
-              justifyContent: "space-between", // distributes space evenly
+              justifyContent: "space-between",
+              borderRadius: "10px",
             }}
           >
-            <GenomicInputBox
-              name="geneId"
-              label="Gene ID"
-              placeholder="ex. BRAF"
-              required={false}
-            />
-            <GenomicInputBox
-              name="geneId"
-              label="Gene ID"
-              placeholder="ex. BRAF"
-              required={false}
-            />
-            <GenomicInputBox
-              name="geneId"
-              label="Gene ID"
-              placeholder="ex. BRAF"
-              required={false}
-            />
+            <Box sx={{ flex: 1 }}>
+              <GenomicInputBox
+                name="variationType"
+                label="Variation Type"
+                description="Select the Variation Type"
+                options={[
+                  "DEL (Copy Number Loss)",
+                  "SNP (Single Nucleotide Polymorphism)",
+                  "DUP",
+                  "BND",
+                ]}
+                isSelectable
+                isSelected={selectedInput === "variationType"}
+                onSelect={() => setSelectedInput("variationType")}
+              />
+            </Box>
+
+            <Box sx={{ flex: 1 }}>
+              <GenomicInputBox
+                name="basesChange"
+                label="Bases Change"
+                placeholder="ex. BRAF"
+                isSelectable
+                isSelected={selectedInput === "basesChange"}
+                onSelect={() => setSelectedInput("basesChange")}
+              />
+            </Box>
+
+            <Box sx={{ flex: 1 }}>
+              <GenomicInputBox
+                name="aminoacidChange"
+                label="Aminoacid Change"
+                placeholder="ex. BRAF"
+                isSelectable
+                isSelected={selectedInput === "aminoacidChange"}
+                onSelect={() => setSelectedInput("aminoacidChange")}
+              />
+            </Box>
           </Box>
+
           <Typography
-            variant="h1"
             sx={{
-              mb: 3,
-              mt: 4,
+              mb: 2,
+              mt: 3,
               fontFamily: '"Open Sans", sans-serif',
               fontWeight: 400,
               fontSize: "12px",
@@ -136,40 +147,46 @@ export default function GeneIdForm({ onSubmit }) {
           >
             You can add the Genomic Location
           </Typography>
+
+          {/* Genomic Location Row */}
           <Box
             sx={{
               display: "flex",
               flexDirection: "row",
-              flexWrap: "wrap", // ❗ prevent wrapping
               gap: 2,
               width: "100%",
-              justifyContent: "space-between", // distributes space evenly
+              justifyContent: "space-between",
+              borderRadius: "10px",
             }}
           >
-            <GenomicInputBox
-              name="assemblyId"
-              label="Assembly ID"
-              description="Select the reference genome:"
-              options={config.assemblyId}
-              required={false}
-            />
-            <GenomicInputBox
-              name="Start"
-              label="Start"
-              description="Add the location start:"
-              placeholder="ex. 7572837"
-              required={false}
-            />
-            <GenomicInputBox
-              name="End"
-              label="End"
-              description="Add the location end:"
-              placeholder="ex. 7578641"
-              required={false}
-            />
+            <Box sx={{ flex: 1 }}>
+              <GenomicInputBox
+                name="assemblyId"
+                label="Assembly ID"
+                description="Select the reference genome:"
+                options={config.assemblyId}
+              />
+            </Box>
+            <Box sx={{ flex: 1 }}>
+              <GenomicInputBox
+                name="Start"
+                label="Start"
+                description="Add the location start:"
+                placeholder="ex. 7572837"
+              />
+            </Box>
+
+            <Box sx={{ flex: 1 }}>
+              <GenomicInputBox
+                name="End"
+                label="End"
+                description="Add the location end:"
+                placeholder="ex. 7578641"
+              />
+            </Box>
           </Box>
         </Box>
       </Box>
-    </form>
+    </Box>
   );
 }

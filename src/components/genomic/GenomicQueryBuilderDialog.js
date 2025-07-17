@@ -72,7 +72,7 @@ export default function GenomicQueryBuilderDialog({ open, handleClose }) {
           <CloseIcon />
         </IconButton>
       </Box>
-      <DialogContent>
+      <DialogContent sx={{ pt: 1 }}>
         <Box
           sx={{
             display: "flex",
@@ -92,7 +92,11 @@ export default function GenomicQueryBuilderDialog({ open, handleClose }) {
         <Box sx={{ mt: 4 }}>
           {SelectedFormComponent && (
             <Formik
-              initialValues={{ geneId: "", assemblyId: config.assemblyId[0] }}
+              initialValues={{
+                geneId: "",
+                assemblyId: config.assemblyId[0],
+                variationType: "DEL (Copy Number Loss)",
+              }}
               validationSchema={Yup.object({
                 geneId: Yup.string().required("Gene ID is required"),
               })}
@@ -102,9 +106,9 @@ export default function GenomicQueryBuilderDialog({ open, handleClose }) {
             >
               <Form>
                 <SelectedFormComponent />
+
                 <Box
                   sx={{
-                    mt: 2,
                     display: "flex",
                     justifyContent: "flex-end",
                   }}

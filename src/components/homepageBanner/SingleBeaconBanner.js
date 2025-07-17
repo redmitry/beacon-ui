@@ -34,7 +34,7 @@ export default function SingleBeaconBanner() {
     setTabValue(newValue);
   };
 
-  console.log("localDatasets", localDatasets);
+  // console.log("localDatasets", localDatasets);
 
   // Fetch datasets on component mount
   // Saves the full list to local state and preselects the first dataset
