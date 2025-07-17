@@ -1,4 +1,4 @@
-import { Box, TextField, Select, MenuItem } from "@mui/material";
+import { Box, TextField, Select, MenuItem, Typography } from "@mui/material";
 import { useField, useFormikContext } from "formik";
 import config from "../../config/config.json";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -9,7 +9,7 @@ import {
   textFieldStyle,
   FieldLabel,
   FieldHeader,
-} from "./genomicInputBoxStyling";
+} from "./styling/genomicInputBoxStyling";
 
 export default function GenomicInputBox({
   name,
@@ -21,12 +21,12 @@ export default function GenomicInputBox({
   isSelectable = false,
   isSelected = false,
   onSelect = () => {},
+  endAdornmentLabel = "",
 }) {
   const [field, meta, helpers] = useField(name);
   const { values, setFieldValue } = useFormikContext();
   const error = meta.touched && meta.error;
   const primaryDarkColor = config.ui.colors.darkPrimary;
-
   const isDisabled = isSelectable && !isSelected;
 
   const renderAminoAcidChangeFields = () => (
@@ -138,6 +138,20 @@ export default function GenomicInputBox({
         helperText={error}
         disabled={isDisabled}
         sx={textFieldStyle}
+        InputProps={{
+          endAdornment: endAdornmentLabel ? (
+            <Typography
+              sx={{
+                fontSize: "12px",
+                color: primaryDarkColor,
+                fontFamily: '"Open Sans", sans-serif',
+                mr: 1,
+              }}
+            >
+              {endAdornmentLabel}
+            </Typography>
+          ) : null,
+        }}
       />
     );
   };

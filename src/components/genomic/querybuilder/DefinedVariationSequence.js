@@ -2,10 +2,11 @@ import { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Box, Typography } from "@mui/material";
-import config from "../../config/config.json";
-import GenomicInputBox from "../genomic/GenomicInputBox";
+import config from "../../../config/config.json";
+import GenomicInputBox from "../GenomicInputBox";
+import { mainBoxTypography } from "../styling/genomicInputBoxStyling";
 
-export default function GeneIdForm({ onSubmit }) {
+export default function DefinedVariationSequence({ onSubmit }) {
   const formik = useFormik({
     initialValues: { geneId: "" },
     validationSchema: Yup.object({
@@ -14,8 +15,7 @@ export default function GeneIdForm({ onSubmit }) {
     onSubmit,
   });
 
-  const primaryDarkColor = config.ui.colors.darkPrimary;
-  const [selectedInput, setSelectedInput] = useState("basesChange");
+  const [selectedInput, setSelectedInput] = useState("variationType");
 
   return (
     <Box>
@@ -31,22 +31,18 @@ export default function GeneIdForm({ onSubmit }) {
           <Typography
             variant="h6"
             sx={{
-              mb: 2,
-              fontFamily: '"Open Sans", sans-serif',
+              ...mainBoxTypography,
+              mt: 0,
               fontWeight: 700,
               fontSize: "14px",
-              color: primaryDarkColor,
             }}
           >
             Main Parameters
           </Typography>
           <Typography
             sx={{
-              mb: 2,
-              fontFamily: '"Open Sans", sans-serif',
-              fontWeight: 400,
-              fontSize: "12px",
-              color: primaryDarkColor,
+              ...mainBoxTypography,
+              mt: 0,
             }}
           >
             You need to fill in the fields with a (*)
@@ -63,22 +59,18 @@ export default function GeneIdForm({ onSubmit }) {
           <Typography
             variant="h6"
             sx={{
-              mb: 2,
-              fontFamily: '"Open Sans", sans-serif',
+              ...mainBoxTypography,
+              mt: 0,
               fontWeight: 700,
               fontSize: "14px",
-              color: primaryDarkColor,
             }}
           >
             Optional parameters
           </Typography>
           <Typography
             sx={{
-              mb: 2,
-              fontFamily: '"Open Sans", sans-serif',
-              fontWeight: 400,
-              fontSize: "12px",
-              color: primaryDarkColor,
+              ...mainBoxTypography,
+              mt: 0,
             }}
           >
             Please select one:
@@ -135,16 +127,7 @@ export default function GeneIdForm({ onSubmit }) {
             </Box>
           </Box>
 
-          <Typography
-            sx={{
-              mb: 2,
-              mt: 3,
-              fontFamily: '"Open Sans", sans-serif',
-              fontWeight: 400,
-              fontSize: "12px",
-              color: primaryDarkColor,
-            }}
-          >
+          <Typography sx={mainBoxTypography}>
             You can add the Genomic Location
           </Typography>
 

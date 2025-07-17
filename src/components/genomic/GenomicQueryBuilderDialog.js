@@ -7,8 +7,12 @@ import {
   Box,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import StyledGenomicLabels from "../genomic/StyledGenomicLabels";
-import GeneIdForm from "./GeneIdForm";
+import StyledGenomicLabels from "./styling/StyledGenomicLabels";
+import GeneIdForm from "./querybuilder/GeneIdForm";
+import GenomicLocationRage from "./querybuilder/GenomicLocationRage";
+import GenomicAlleleQuery from "./querybuilder/GenomicAlleleQuery";
+import GenomicLocationBracket from "./querybuilder/GenomicLocationBracket";
+import DefinedVariationSequence from "./querybuilder/DefinedVariationSequence";
 import GenomicSubmitButton from "../genomic/GenomicSubmitButton";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
@@ -29,6 +33,24 @@ export default function GenomicQueryBuilderDialog({ open, handleClose }) {
 
   const formComponentsMap = {
     GeneID: GeneIdForm,
+    "Genetic location (Range)": GenomicLocationRage,
+    "Genetic location aprox (Bracket)": GenomicLocationBracket,
+    "Defined short variation (Sequence)": DefinedVariationSequence,
+    "Genomic Allele Query (HGVS)": GenomicAlleleQuery,
+  };
+
+  const validationSchemaMap = {
+    GeneID: Yup.object({
+      geneId: Yup.string().required("Gene ID is required"),
+    }),
+    "Genomic Allele Query (HGVS)": Yup.object({
+      GenomicHGVSshortForm: Yup.string().required(
+        "Genomic HGVS short form is required"
+      ),
+    }),
+    "Genetic location (Range)": Yup.object({}),
+    "Genetic location aprox (Bracket)": Yup.object({}),
+    "Defined short variation (Sequence)": Yup.object({}),
   };
 
   const SelectedFormComponent = formComponentsMap[selectedQueryType];
@@ -96,10 +118,9 @@ export default function GenomicQueryBuilderDialog({ open, handleClose }) {
                 geneId: "",
                 assemblyId: config.assemblyId[0],
                 variationType: "DEL (Copy Number Loss)",
+                GenomicHGVSshortForm: "",
               }}
-              validationSchema={Yup.object({
-                geneId: Yup.string().required("Gene ID is required"),
-              })}
+              validationSchema={validationSchemaMap[selectedQueryType]}
               onSubmit={(values) => {
                 console.log("Form submitted:", values);
               }}

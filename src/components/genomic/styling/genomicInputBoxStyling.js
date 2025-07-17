@@ -1,5 +1,5 @@
 import { Typography, Box, Radio } from "@mui/material";
-import config from "../../config/config.json";
+import config from "../../../config/config.json";
 
 const primaryDarkColor = config.ui.colors.darkPrimary;
 
@@ -13,6 +13,15 @@ export const selectStyle = {
     color: primaryDarkColor,
     padding: "12px 16px",
   },
+};
+
+export const mainBoxTypography = {
+  mt: 3,
+  mb: 2,
+  fontFamily: '"Open Sans", sans-serif',
+  fontWeight: 400,
+  fontSize: "12px",
+  color: primaryDarkColor,
 };
 
 export const textFieldStyle = {
