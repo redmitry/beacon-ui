@@ -15,8 +15,6 @@ export default function GenomicLocationBracket({ onSubmit }) {
     onSubmit,
   });
 
-  const [selectedInput, setSelectedInput] = useState("variationType");
-
   return (
     <Box>
       <Box
@@ -27,7 +25,7 @@ export default function GenomicLocationBracket({ onSubmit }) {
           width: "100%",
         }}
       >
-        <Box sx={{ width: "30%" }}>
+        <Box sx={{ width: "60%" }}>
           <Typography
             variant="h6"
             sx={{
@@ -47,15 +45,61 @@ export default function GenomicLocationBracket({ onSubmit }) {
           >
             You need to fill in the fields with a (*)
           </Typography>
-          <GenomicInputBox
-            name="geneId"
-            label="Gene ID"
-            placeholder="ex. BRAF"
-            required={true}
-          />
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              width: "100%",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                gap: 2,
+                width: "100%",
+                flexWrap: "wrap",
+              }}
+            >
+              <Box sx={{ flex: 1, minWidth: "120px" }}>
+                <GenomicInputBox
+                  name="assemblyId"
+                  label="Assembly ID"
+                  options={config.assemblyId}
+                  placeholder={config.assemblyId[0]}
+                  required={true}
+                />
+              </Box>
+              <Box sx={{ flex: 1, minWidth: "120px" }}>
+                <GenomicInputBox
+                  // In the range context chromosome is also reference name
+                  name="chromosome"
+                  label="Chromosome"
+                  options={config.assemblyId}
+                  placeholder="ex. Chr 1 (NC_000001.11)"
+                  required={true}
+                />
+              </Box>
+            </Box>
+            <GenomicInputBox
+              name="start-braket"
+              label="Start Braket"
+              placeholder="ex. 5000000"
+              required={true}
+              endAdornmentLabel="(Min)"
+            />
+            <GenomicInputBox
+              name="end-braket"
+              label="End Braket"
+              placeholder="ex. 7676592"
+              required={true}
+              endAdornmentLabel="(Min)"
+            />
+          </Box>
         </Box>
 
-        <Box sx={{ width: "70%" }}>
+        <Box sx={{ width: "40%" }}>
           <Typography
             variant="h6"
             sx={{
@@ -73,7 +117,7 @@ export default function GenomicLocationBracket({ onSubmit }) {
               mt: 0,
             }}
           >
-            Please select one:
+            You can add the Variant Length
           </Typography>
 
           {/* Optional Input Row */}
@@ -92,79 +136,13 @@ export default function GenomicLocationBracket({ onSubmit }) {
                 name="variationType"
                 label="Variation Type"
                 description="Select the Variation Type"
+                placeholder="DEL (Copy Number Loss)"
                 options={[
                   "DEL (Copy Number Loss)",
                   "SNP (Single Nucleotide Polymorphism)",
                   "DUP",
                   "BND",
                 ]}
-                isSelectable
-                isSelected={selectedInput === "variationType"}
-                onSelect={() => setSelectedInput("variationType")}
-              />
-            </Box>
-
-            <Box sx={{ flex: 1 }}>
-              <GenomicInputBox
-                name="basesChange"
-                label="Bases Change"
-                placeholder="ex. BRAF"
-                isSelectable
-                isSelected={selectedInput === "basesChange"}
-                onSelect={() => setSelectedInput("basesChange")}
-              />
-            </Box>
-
-            <Box sx={{ flex: 1 }}>
-              <GenomicInputBox
-                name="aminoacidChange"
-                label="Aminoacid Change"
-                placeholder="ex. BRAF"
-                isSelectable
-                isSelected={selectedInput === "aminoacidChange"}
-                onSelect={() => setSelectedInput("aminoacidChange")}
-              />
-            </Box>
-          </Box>
-
-          <Typography sx={mainBoxTypography}>
-            You can add the Genomic Location
-          </Typography>
-
-          {/* Genomic Location Row */}
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              gap: 2,
-              width: "100%",
-              justifyContent: "space-between",
-              borderRadius: "10px",
-            }}
-          >
-            <Box sx={{ flex: 1 }}>
-              <GenomicInputBox
-                name="assemblyId"
-                label="Assembly ID"
-                description="Select the reference genome:"
-                options={config.assemblyId}
-              />
-            </Box>
-            <Box sx={{ flex: 1 }}>
-              <GenomicInputBox
-                name="Start"
-                label="Start"
-                description="Add the location start:"
-                placeholder="ex. 7572837"
-              />
-            </Box>
-
-            <Box sx={{ flex: 1 }}>
-              <GenomicInputBox
-                name="End"
-                label="End"
-                description="Add the location end:"
-                placeholder="ex. 7578641"
               />
             </Box>
           </Box>

@@ -58,14 +58,15 @@ export default function GenomicLocationRage({ onSubmit }) {
             <GenomicInputBox
               name="assemblyId"
               label="Assembly ID"
-              description="Select the reference genome:"
+              placeholder={config.assemblyId[0]}
               options={config.assemblyId}
               required={true}
             />
             <GenomicInputBox
+              // In the range context chromosome is also reference name
               name="chromosome"
               label="Chromosome"
-              description="Select the reference genome:"
+              placeholder="ex. Chr 1 (NC_000001.11)"
               options={config.assemblyId}
               required={true}
             />
@@ -135,6 +136,7 @@ export default function GenomicLocationRage({ onSubmit }) {
                 name="variationType"
                 label="Variation Type"
                 description="Select the Variation Type"
+                placeholder="DEL (Copy Number Loss)"
                 options={[
                   "DEL (Copy Number Loss)",
                   "SNP (Single Nucleotide Polymorphism)",

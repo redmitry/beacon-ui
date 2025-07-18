@@ -16,7 +16,6 @@ import DefinedVariationSequence from "./querybuilder/DefinedVariationSequence";
 import GenomicSubmitButton from "../genomic/GenomicSubmitButton";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import config from "../../config/config.json";
 
 const genomicQueryTypes = [
   "GeneID",
@@ -94,52 +93,47 @@ export default function GenomicQueryBuilderDialog({ open, handleClose }) {
           <CloseIcon />
         </IconButton>
       </Box>
+
       <DialogContent sx={{ pt: 1 }}>
-        <Box
-          sx={{
-            display: "flex",
-            gap: 2,
-            flexWrap: "wrap",
+        <Formik
+          enableReinitialize
+          initialValues={{
+            geneId: "",
+            assemblyId: "",
+            variationType: "",
+            GenomicHGVSshortForm: "",
+          }}
+          validationSchema={validationSchemaMap[selectedQueryType]}
+          onSubmit={(values) => {
+            console.log("Form submitted:", values);
           }}
         >
-          {genomicQueryTypes.map((label, index) => (
-            <StyledGenomicLabels
-              key={index}
-              label={label}
-              selected={selectedQueryType === label}
-              onClick={() => setSelectedQueryType(label)}
-            />
-          ))}
-        </Box>
-        <Box sx={{ mt: 4 }}>
-          {SelectedFormComponent && (
-            <Formik
-              initialValues={{
-                geneId: "",
-                assemblyId: config.assemblyId[0],
-                variationType: "DEL (Copy Number Loss)",
-                GenomicHGVSshortForm: "",
-              }}
-              validationSchema={validationSchemaMap[selectedQueryType]}
-              onSubmit={(values) => {
-                console.log("Form submitted:", values);
-              }}
-            >
-              <Form>
-                <SelectedFormComponent />
+          {({ resetForm, isValid, dirty }) => (
+            <Form>
+              <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                {genomicQueryTypes.map((label, index) => (
+                  <StyledGenomicLabels
+                    key={index}
+                    label={label}
+                    selected={selectedQueryType === label}
+                    onClick={() => {
+                      setSelectedQueryType(label);
+                      resetForm();
+                    }}
+                  />
+                ))}
+              </Box>
 
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                  }}
-                >
-                  <GenomicSubmitButton />
-                </Box>
-              </Form>
-            </Formik>
+              <Box sx={{ mt: 4 }}>
+                {SelectedFormComponent && <SelectedFormComponent />}
+              </Box>
+
+              <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
+                <GenomicSubmitButton disabled={!isValid || !dirty} />
+              </Box>
+            </Form>
           )}
-        </Box>
+        </Formik>
       </DialogContent>
     </Dialog>
   );

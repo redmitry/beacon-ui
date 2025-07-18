@@ -22,6 +22,11 @@ export default function GenomicInputBox({
   isSelected = false,
   onSelect = () => {},
   endAdornmentLabel = "",
+  customRefLabel,
+  customAltLabel,
+  customRefPlaceholder,
+  customAltPlaceholder,
+  customPaddingTop,
 }) {
   const [field, meta, helpers] = useField(name);
   const { values, setFieldValue } = useFormikContext();
@@ -81,27 +86,33 @@ export default function GenomicInputBox({
 
   const renderBasesChangeFields = () => (
     <Box sx={{ display: "flex", alignItems: "center" }}>
-      <Box>
-        <FieldLabel>Ref. Bases</FieldLabel>
+      <Box sx={{ width: "100%" }}>
+        <FieldLabel>{customRefLabel || "Ref. Bases"}</FieldLabel>
         <TextField
           value={values.refBases || ""}
           onChange={(e) => setFieldValue("refBases", e.target.value)}
-          placeholder="T"
+          placeholder={customRefPlaceholder || "T"}
           disabled={isDisabled}
-          sx={textFieldStyle}
+          sx={{ ...textFieldStyle, width: "100%" }}
         />
       </Box>
-      <Box sx={{ display: "flex", alignItems: "flex-end", pt: "8%" }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "flex-end",
+          pt: customPaddingTop || "8%",
+        }}
+      >
         <KeyboardArrowRightIcon sx={{ color: "#999", fontSize: "24px" }} />
       </Box>
-      <Box>
-        <FieldLabel>Alt. Bases</FieldLabel>
+      <Box sx={{ width: "100%" }}>
+        <FieldLabel>{customAltLabel || "Alt. Bases"}</FieldLabel>
         <TextField
           value={values.altBases || ""}
           onChange={(e) => setFieldValue("altBases", e.target.value)}
-          placeholder="G"
+          placeholder={customAltPlaceholder || "G"}
           disabled={isDisabled}
-          sx={textFieldStyle}
+          sx={{ ...textFieldStyle, width: "100%" }}
         />
       </Box>
     </Box>
@@ -115,12 +126,39 @@ export default function GenomicInputBox({
         <Select
           fullWidth
           IconComponent={KeyboardArrowDownIcon}
+          displayEmpty
           {...field}
           onChange={(e) => helpers.setValue(e.target.value)}
           error={!!error}
           disabled={isDisabled}
-          sx={selectStyle}
+          sx={{
+            ...selectStyle,
+            "& .MuiSelect-select": {
+              fontFamily: '"Open Sans", sans-serif',
+              fontSize: "14px",
+              color: field.value ? config.ui.colors.darkPrimary : "#999",
+              padding: "12px 16px",
+            },
+          }}
+          renderValue={(selected) =>
+            selected ? (
+              selected
+            ) : (
+              <span
+                style={{
+                  fontFamily: '"Open Sans", sans-serif',
+                  fontSize: "14px",
+                  color: "#999",
+                }}
+              >
+                {placeholder}
+              </span>
+            )
+          }
         >
+          <MenuItem value="" disabled>
+            {placeholder}
+          </MenuItem>
           {options.map((option) => (
             <MenuItem key={option} value={option} sx={{ fontSize: "12px" }}>
               {option}

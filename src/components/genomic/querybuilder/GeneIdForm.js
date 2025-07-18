@@ -91,6 +91,7 @@ export default function GeneIdForm({ onSubmit }) {
                 name="variationType"
                 label="Variation Type"
                 description="Select the Variation Type"
+                placeholder="DEL (Copy Number Loss)"
                 options={[
                   "DEL (Copy Number Loss)",
                   "SNP (Single Nucleotide Polymorphism)",
@@ -107,7 +108,6 @@ export default function GeneIdForm({ onSubmit }) {
               <GenomicInputBox
                 name="basesChange"
                 label="Bases Change"
-                placeholder="ex. BRAF"
                 isSelectable
                 isSelected={selectedInput === "basesChange"}
                 onSelect={() => setSelectedInput("basesChange")}
@@ -118,7 +118,6 @@ export default function GeneIdForm({ onSubmit }) {
               <GenomicInputBox
                 name="aminoacidChange"
                 label="Aminoacid Change"
-                placeholder="ex. BRAF"
                 isSelectable
                 isSelected={selectedInput === "aminoacidChange"}
                 onSelect={() => setSelectedInput("aminoacidChange")}
@@ -146,6 +145,7 @@ export default function GeneIdForm({ onSubmit }) {
                 name="assemblyId"
                 label="Assembly ID"
                 description="Select the reference genome:"
+                placeholder={config.assemblyId[0]}
                 options={config.assemblyId}
               />
             </Box>

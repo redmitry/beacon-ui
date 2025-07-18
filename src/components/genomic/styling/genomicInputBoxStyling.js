@@ -33,7 +33,7 @@ export const textFieldStyle = {
   "& input": {
     fontFamily: '"Open Sans", sans-serif',
     fontSize: "14px",
-    color: primaryDarkColor,
+    color: "primaryDarkColor",
     padding: "12px 16px",
   },
 };
