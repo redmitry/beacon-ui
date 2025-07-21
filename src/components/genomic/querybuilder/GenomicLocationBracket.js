@@ -1,20 +1,9 @@
-import { useState } from "react";
-import { useFormik } from "formik";
-import * as Yup from "yup";
 import { Box, Typography } from "@mui/material";
 import config from "../../../config/config.json";
 import GenomicInputBox from "../GenomicInputBox";
 import { mainBoxTypography } from "../styling/genomicInputBoxStyling";
 
-export default function GenomicLocationBracket({ onSubmit }) {
-  const formik = useFormik({
-    initialValues: { geneId: "" },
-    validationSchema: Yup.object({
-      geneId: Yup.string().required("Gene ID is required"),
-    }),
-    onSubmit,
-  });
-
+export default function GenomicLocationBracket() {
   return (
     <Box>
       <Box
@@ -83,14 +72,14 @@ export default function GenomicLocationBracket({ onSubmit }) {
               </Box>
             </Box>
             <GenomicInputBox
-              name="start-braket"
+              name="start"
               label="Start Braket"
               placeholder="ex. 5000000"
               required={true}
               endAdornmentLabel="(Min)"
             />
             <GenomicInputBox
-              name="end-braket"
+              name="end"
               label="End Braket"
               placeholder="ex. 7676592"
               required={true}

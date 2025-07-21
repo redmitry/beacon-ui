@@ -1,20 +1,9 @@
-import { useState } from "react";
-import { useFormik } from "formik";
-import * as Yup from "yup";
 import { Box, Typography } from "@mui/material";
 import config from "../../../config/config.json";
 import GenomicInputBox from "../GenomicInputBox";
 import { mainBoxTypography } from "../styling/genomicInputBoxStyling";
 
-export default function DefinedVariationSequence({ onSubmit }) {
-  const formik = useFormik({
-    initialValues: { geneId: "" },
-    validationSchema: Yup.object({
-      geneId: Yup.string().required("Gene ID is required"),
-    }),
-    onSubmit,
-  });
-
+export default function DefinedVariationSequence() {
   return (
     <Box>
       <Box

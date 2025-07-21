@@ -1,20 +1,10 @@
 import { useState } from "react";
-import { useFormik } from "formik";
-import * as Yup from "yup";
 import { Box, Typography } from "@mui/material";
 import config from "../../../config/config.json";
 import GenomicInputBox from "../GenomicInputBox";
 import { mainBoxTypography } from "../styling/genomicInputBoxStyling";
 
-export default function GenomicLocationRage({ onSubmit }) {
-  const formik = useFormik({
-    initialValues: { geneId: "" },
-    validationSchema: Yup.object({
-      geneId: Yup.string().required("Gene ID is required"),
-    }),
-    onSubmit,
-  });
-
+export default function GenomicLocationRage() {
   const [selectedInput, setSelectedInput] = useState("variationType");
 
   return (
@@ -81,7 +71,7 @@ export default function GenomicLocationRage({ onSubmit }) {
             >
               <Box sx={{ flex: 1, minWidth: "120px" }}>
                 <GenomicInputBox
-                  name="Start"
+                  name="start"
                   label="Start"
                   required={true}
                   placeholder="ex. 7572837"
@@ -89,7 +79,7 @@ export default function GenomicLocationRage({ onSubmit }) {
               </Box>
               <Box sx={{ flex: 1, minWidth: "120px" }}>
                 <GenomicInputBox
-                  name="End"
+                  name="end"
                   label="End"
                   required={true}
                   placeholder="ex. 7578641"
@@ -189,7 +179,7 @@ export default function GenomicLocationRage({ onSubmit }) {
           >
             <Box sx={{ flex: 1 }}>
               <GenomicInputBox
-                name="Min Variant Length"
+                name="minVariantLength"
                 label="Min Variant Length"
                 description="Select the Min Variant Length in bases"
                 placeholder="ex. 5"
@@ -199,7 +189,7 @@ export default function GenomicLocationRage({ onSubmit }) {
 
             <Box sx={{ flex: 1 }}>
               <GenomicInputBox
-                name="Max Variant Length"
+                name="maxVariantLength"
                 label="Max Variant Length"
                 description="Select the Max Variant Length in bases"
                 placeholder="ex. 125"

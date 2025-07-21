@@ -34,7 +34,7 @@ export default function GenomicAlleleQuery() {
             You need to fill in the fields with a (*)
           </Typography>
           <GenomicInputBox
-            name="GenomicHGVSshortForm"
+            name="genomicHGVSshortForm"
             label="Genomic HGVS short form"
             placeholder="ex. NM_004006.2:c.4375C>T"
             required={true}

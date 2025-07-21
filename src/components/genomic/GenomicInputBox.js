@@ -34,6 +34,10 @@ export default function GenomicInputBox({
   const primaryDarkColor = config.ui.colors.darkPrimary;
   const isDisabled = isSelectable && !isSelected;
 
+  const [refField, refMeta] = useField("refBases");
+  const [altField, altMeta] = useField("altBases");
+  const [aaPositionField, aaPositionMeta] = useField("aaPosition");
+
   const renderAminoAcidChangeFields = () => (
     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
       <Box sx={{ flex: 1 }}>
@@ -53,17 +57,20 @@ export default function GenomicInputBox({
           ))}
         </Select>
       </Box>
+
       <Box sx={{ flex: 1 }}>
         <FieldLabel>Position</FieldLabel>
         <TextField
           fullWidth
-          value={values.aaPosition || ""}
-          onChange={(e) => setFieldValue("aaPosition", e.target.value)}
+          {...aaPositionField}
+          error={aaPositionMeta.touched && Boolean(aaPositionMeta.error)}
+          helperText={aaPositionMeta.touched && aaPositionMeta.error}
           placeholder="600"
           disabled={isDisabled}
           sx={textFieldStyle}
         />
       </Box>
+
       <Box sx={{ flex: 1 }}>
         <FieldLabel>Alt AA</FieldLabel>
         <Select
@@ -85,12 +92,13 @@ export default function GenomicInputBox({
   );
 
   const renderBasesChangeFields = () => (
-    <Box sx={{ display: "flex", alignItems: "center" }}>
+    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
       <Box sx={{ width: "100%" }}>
         <FieldLabel>{customRefLabel || "Ref. Bases"}</FieldLabel>
         <TextField
-          value={values.refBases || ""}
-          onChange={(e) => setFieldValue("refBases", e.target.value)}
+          {...refField}
+          error={refMeta.touched && Boolean(refMeta.error)}
+          helperText={refMeta.touched && refMeta.error}
           placeholder={customRefPlaceholder || "T"}
           disabled={isDisabled}
           sx={{ ...textFieldStyle, width: "100%" }}
@@ -108,8 +116,9 @@ export default function GenomicInputBox({
       <Box sx={{ width: "100%" }}>
         <FieldLabel>{customAltLabel || "Alt. Bases"}</FieldLabel>
         <TextField
-          value={values.altBases || ""}
-          onChange={(e) => setFieldValue("altBases", e.target.value)}
+          {...altField}
+          error={altMeta.touched && Boolean(altMeta.error)}
+          helperText={altMeta.touched && altMeta.error}
           placeholder={customAltPlaceholder || "G"}
           disabled={isDisabled}
           sx={{ ...textFieldStyle, width: "100%" }}

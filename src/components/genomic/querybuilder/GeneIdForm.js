@@ -1,20 +1,10 @@
 import { useState } from "react";
-import { useFormik } from "formik";
-import * as Yup from "yup";
 import { Box, Typography } from "@mui/material";
 import config from "../../../config/config.json";
 import GenomicInputBox from "../GenomicInputBox";
 import { mainBoxTypography } from "../styling/genomicInputBoxStyling";
 
-export default function GeneIdForm({ onSubmit }) {
-  const formik = useFormik({
-    initialValues: { geneId: "" },
-    validationSchema: Yup.object({
-      geneId: Yup.string().required("Gene ID is required"),
-    }),
-    onSubmit,
-  });
-
+export default function GeneIdForm() {
   const [selectedInput, setSelectedInput] = useState("variationType");
   return (
     <Box>
@@ -151,7 +141,7 @@ export default function GeneIdForm({ onSubmit }) {
             </Box>
             <Box sx={{ flex: 1 }}>
               <GenomicInputBox
-                name="Start"
+                name="start"
                 label="Start"
                 description="Add the location start:"
                 placeholder="ex. 7572837"
@@ -160,7 +150,7 @@ export default function GeneIdForm({ onSubmit }) {
 
             <Box sx={{ flex: 1 }}>
               <GenomicInputBox
-                name="End"
+                name="end"
                 label="End"
                 description="Add the location end:"
                 placeholder="ex. 7578641"
