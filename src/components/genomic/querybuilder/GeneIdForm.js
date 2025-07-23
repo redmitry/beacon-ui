@@ -81,13 +81,8 @@ export default function GeneIdForm() {
                 name="variationType"
                 label="Variation Type"
                 description="Select the Variation Type"
-                placeholder="DEL (Copy Number Loss)"
-                options={[
-                  "DEL (Copy Number Loss)",
-                  "SNP (Single Nucleotide Polymorphism)",
-                  "DUP",
-                  "BND",
-                ]}
+                placeholder={config.variationType[0]}
+                options={config.variationType}
                 isSelectable
                 isSelected={selectedInput === "variationType"}
                 onSelect={() => setSelectedInput("variationType")}

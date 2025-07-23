@@ -12,7 +12,32 @@ export const PATH_SEGMENT_TO_ENTRY_ID = {
   runs: "run",
 };
 
-export const AMINO_ACIDS = [
+export const VALID_SINGLE_CODES = [
+  "A",
+  "C",
+  "D",
+  "E",
+  "F",
+  "G",
+  "H",
+  "I",
+  "K",
+  "L",
+  "M",
+  "N",
+  "P",
+  "Q",
+  "R",
+  "S",
+  "T",
+  "V",
+  "W",
+  "Y",
+  "X",
+  "*",
+];
+
+export const VALID_THREE_LETTER = [
   "Ala",
   "Cys",
   "Asp",
@@ -33,4 +58,5 @@ export const AMINO_ACIDS = [
   "Val",
   "Trp",
   "Tyr",
+  "Ter",
 ];

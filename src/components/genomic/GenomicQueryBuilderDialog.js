@@ -39,38 +39,52 @@ export default function GenomicQueryBuilderDialog({ open, handleClose }) {
     "Genomic Allele Query (HGVS)": GenomicAlleleQuery,
   };
 
+  const basePattern = /^[ACGTRYSWKMBDHVN.\-]+$/;
+
   const validationSchemaMap = {
     GeneID: Yup.object({
       geneId: Yup.string().required("Gene ID is required"),
 
       refBases: Yup.string()
-        .matches(/^[ATCG]+$/, "Only A, T, C, G are allowed")
+        .matches(
+          basePattern,
+          "Only valid IUPAC codes (except U) and characters '.' or '-' are allowed"
+        )
         .optional(),
 
       altBases: Yup.string()
-        .matches(/^[ATCG]+$/, "Only A, T, C, G are allowed")
-        .optional(),
+        .matches(
+          basePattern,
+          "Only valid IUPAC codes (except U) and characters '.' or '-' are allowed"
+        )
+        .optional()
+        .test(
+          "not-equal-to-ref",
+          "Ref and Alt bases must not be the same",
+          function (value) {
+            const { refBases } = this.parent;
+            if (!refBases || !value) return true;
+            return refBases !== value;
+          }
+        ),
+
+      refAa: Yup.string().optional(),
+      altAa: Yup.string().optional(),
 
       aaPosition: Yup.number()
         .typeError("Position must be a number")
         .integer("Position must be an integer")
         .min(1, "Position must be greater than 0")
-        .max(30000, "Position must be within a valid protein length")
         .optional(),
-
-      refAa: Yup.string().optional(), // Selected in the dropdown
-      altAa: Yup.string().optional(), // Selected in the dropdown
 
       start: Yup.number()
         .typeError("Start must be a number")
         .integer("Start must be an integer")
-        .min(1, "Start must be greater than 0")
         .optional(),
+
       end: Yup.number()
         .typeError("End must be a number")
         .integer("End must be an integer")
-        .min(1, "End must be greater than 0")
-        .max(250_000_000, "End must be within a valid genomic range")
         .when("start", (start, schema) =>
           start
             ? schema.min(start, "End must be greater than or equal to Start")

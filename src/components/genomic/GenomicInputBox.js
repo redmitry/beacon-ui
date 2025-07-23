@@ -3,7 +3,10 @@ import { useField, useFormikContext } from "formik";
 import config from "../../config/config.json";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import { AMINO_ACIDS } from "../common/textFormatting";
+import {
+  VALID_SINGLE_CODES,
+  VALID_THREE_LETTER,
+} from "../common/textFormatting";
 import {
   selectStyle,
   textFieldStyle,
@@ -38,58 +41,92 @@ export default function GenomicInputBox({
   const [altField, altMeta] = useField("altBases");
   const [aaPositionField, aaPositionMeta] = useField("aaPosition");
 
-  const renderAminoAcidChangeFields = () => (
-    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-      <Box sx={{ flex: 1 }}>
-        <FieldLabel>Ref AA</FieldLabel>
-        <Select
-          fullWidth
-          value={values.refAa || ""}
-          onChange={(e) => setFieldValue("refAa", e.target.value)}
-          disabled={isDisabled}
-          IconComponent={KeyboardArrowDownIcon}
-          sx={selectStyle}
-        >
-          {AMINO_ACIDS.map((aa) => (
-            <MenuItem key={aa} value={aa} sx={{ fontSize: "12px" }}>
-              {aa}
-            </MenuItem>
-          ))}
-        </Select>
-      </Box>
+  //   This function displays three inputs for selecting the reference amino acid, its position, and the alternate amino acid, with logic to ensure valid format matching and dropdowns
+  const renderAminoAcidChangeFields = () => {
+    // Determine what type of code (1-letter or 3-letter) was selected for Ref AA based on users choice
+    const refIsThreeLetter = VALID_THREE_LETTER.includes(values.refAa);
+    const refIsOneLetter = VALID_SINGLE_CODES.includes(values.refAa);
 
-      <Box sx={{ flex: 1 }}>
-        <FieldLabel>Position</FieldLabel>
-        <TextField
-          fullWidth
-          {...aaPositionField}
-          error={aaPositionMeta.touched && Boolean(aaPositionMeta.error)}
-          helperText={aaPositionMeta.touched && aaPositionMeta.error}
-          placeholder="600"
-          disabled={isDisabled}
-          sx={textFieldStyle}
-        />
-      </Box>
+    // Determine what type of code was selected in Alt AA, used if Ref AA is empty
+    const altIsThreeLetter = VALID_THREE_LETTER.includes(values.altAa);
+    const altIsOneLetter = VALID_SINGLE_CODES.includes(values.altAa);
 
-      <Box sx={{ flex: 1 }}>
-        <FieldLabel>Alt AA</FieldLabel>
-        <Select
-          fullWidth
-          value={values.altAa || ""}
-          onChange={(e) => setFieldValue("altAa", e.target.value)}
-          disabled={isDisabled}
-          IconComponent={KeyboardArrowDownIcon}
-          sx={selectStyle}
-        >
-          {AMINO_ACIDS.map((aa) => (
-            <MenuItem key={aa} value={aa} sx={{ fontSize: "12px" }}>
-              {aa}
-            </MenuItem>
-          ))}
-        </Select>
+    // Generate the Alt AA options to match Ref AA format
+    const altAminoAcidOptions = refIsThreeLetter
+      ? VALID_THREE_LETTER
+      : refIsOneLetter
+      ? VALID_SINGLE_CODES
+      : [...VALID_SINGLE_CODES, ...VALID_THREE_LETTER]; // if Ref AA is empty or invalid then both lists are shown
+
+    // Generate the Ref AA options to match Alt AA format if Ref AA is empty
+    const refAminoAcidOptions = [...VALID_SINGLE_CODES, ...VALID_THREE_LETTER]
+      .filter((aa) => !["*", "X", "Ter"].includes(aa)) // Ref AA options should exclude invalid values (*, X, Ter)
+      .filter((aa) =>
+        values.refAa
+          ? true
+          : altIsThreeLetter
+          ? VALID_THREE_LETTER.includes(aa)
+          : altIsOneLetter
+          ? VALID_SINGLE_CODES.includes(aa)
+          : true
+      );
+
+    return (
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        {/* REF AA */}
+        <Box sx={{ flex: 1 }}>
+          <FieldLabel>Ref AA</FieldLabel>
+          <Select
+            fullWidth
+            value={values.refAa || ""}
+            onChange={(e) => setFieldValue("refAa", e.target.value)}
+            disabled={isDisabled}
+            IconComponent={KeyboardArrowDownIcon}
+            sx={selectStyle}
+          >
+            {refAminoAcidOptions.map((aa) => (
+              <MenuItem key={aa} value={aa} sx={{ fontSize: "12px" }}>
+                {aa}
+              </MenuItem>
+            ))}
+          </Select>
+        </Box>
+
+        {/* AA Position */}
+        <Box sx={{ flex: 1 }}>
+          <FieldLabel>Position</FieldLabel>
+          <TextField
+            fullWidth
+            {...aaPositionField}
+            error={aaPositionMeta.touched && Boolean(aaPositionMeta.error)}
+            helperText={aaPositionMeta.touched && aaPositionMeta.error}
+            placeholder="600"
+            disabled={isDisabled}
+            sx={textFieldStyle}
+          />
+        </Box>
+
+        {/* ALT AA */}
+        <Box sx={{ flex: 1 }}>
+          <FieldLabel>Alt AA</FieldLabel>
+          <Select
+            fullWidth
+            value={values.altAa || ""}
+            onChange={(e) => setFieldValue("altAa", e.target.value)}
+            disabled={isDisabled}
+            IconComponent={KeyboardArrowDownIcon}
+            sx={selectStyle}
+          >
+            {altAminoAcidOptions.map((aa) => (
+              <MenuItem key={aa} value={aa} sx={{ fontSize: "12px" }}>
+                {aa}
+              </MenuItem>
+            ))}
+          </Select>
+        </Box>
       </Box>
-    </Box>
-  );
+    );
+  };
 
   const renderBasesChangeFields = () => (
     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
