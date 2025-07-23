@@ -1,3 +1,4 @@
+import * as Yup from "yup";
 import { useState } from "react";
 import {
   Dialog,
@@ -15,9 +16,27 @@ import GenomicLocationBracket from "./querybuilder/GenomicLocationBracket";
 import DefinedVariationSequence from "./querybuilder/DefinedVariationSequence";
 import GenomicSubmitButton from "../genomic/GenomicSubmitButton";
 import { Formik, Form } from "formik";
+import {
+  assemblyIdRequired,
+  chromosomeValidator,
+  createStartValidator,
+  createEndValidator,
+  refBasesValidator,
+  altBasesValidator,
+  refAaValidator,
+  aaPositionValidator,
+  altAaValidator,
+  minVariantLength,
+  maxVariantLength,
+  assemblyIdOptional,
+  requiredRefBases,
+  requiredAltBases,
+  genomicHGVSshortForm,
+  geneId,
+} from "../genomic/genomicQueryBuilderValidator";
 
-import * as Yup from "yup";
-
+// List of all query types shown as options in the UI
+// Used to display the selection buttons and control which form is shown
 const genomicQueryTypes = [
   "GeneID",
   "Genetic location (Range)",
@@ -27,10 +46,13 @@ const genomicQueryTypes = [
 ];
 
 export default function GenomicQueryBuilderDialog({ open, handleClose }) {
+  // This selectes on load the first query type, without user's interaction
   const [selectedQueryType, setSelectedQueryType] = useState(
     genomicQueryTypes[0]
   );
 
+  // This map links each query type label to the corresponding form component
+  // It tells the app which form to display based on the user's selection
   const formComponentsMap = {
     GeneID: GeneIdForm,
     "Genetic location (Range)": GenomicLocationRage,
@@ -39,49 +61,20 @@ export default function GenomicQueryBuilderDialog({ open, handleClose }) {
     "Genomic Allele Query (HGVS)": GenomicAlleleQuery,
   };
 
-  const basePattern = /^[ACGTRYSWKMBDHVN.\-]+$/;
-
+  // The rules of the validation schema can be checked in the component: genomicQueryBuilderValidator
   const validationSchemaMap = {
     GeneID: Yup.object({
-      geneId: Yup.string().required("Gene ID is required"),
-
-      refBases: Yup.string()
-        .matches(
-          basePattern,
-          "Only valid IUPAC codes (except U) and characters '.' or '-' are allowed"
-        )
-        .optional(),
-
-      altBases: Yup.string()
-        .matches(
-          basePattern,
-          "Only valid IUPAC codes (except U) and characters '.' or '-' are allowed"
-        )
-        .optional()
-        .test(
-          "not-equal-to-ref",
-          "Ref and Alt bases must not be the same",
-          function (value) {
-            const { refBases } = this.parent;
-            if (!refBases || !value) return true;
-            return refBases !== value;
-          }
-        ),
-
-      refAa: Yup.string().optional(),
-      altAa: Yup.string().optional(),
-
-      aaPosition: Yup.number()
-        .typeError("Position must be a number")
-        .integer("Position must be an integer")
-        .min(1, "Position must be greater than 0")
-        .optional(),
-
+      geneId,
+      refBases: refBasesValidator,
+      altBases: altBasesValidator,
+      refAa: refAaValidator,
+      altAa: altAaValidator,
+      aaPosition: aaPositionValidator,
+      assemblyId: assemblyIdOptional,
       start: Yup.number()
         .typeError("Start must be a number")
         .integer("Start must be an integer")
         .optional(),
-
       end: Yup.number()
         .typeError("End must be a number")
         .integer("End must be an integer")
@@ -92,109 +85,45 @@ export default function GenomicQueryBuilderDialog({ open, handleClose }) {
         )
         .optional(),
     }),
-
     "Genetic location (Range)": Yup.object({
-      assemblyId: Yup.string().required("Assembly ID is required"),
-      chromosome: Yup.string().required("Chromosome is required"),
-      start: Yup.number()
-        .typeError("Start must be a number")
-        .integer("Start must be an integer")
-        .min(1, "Start must be greater than 0")
-        .required("Start is required"),
-      end: Yup.number()
-        .typeError("End must be a number")
-        .integer("End must be an integer")
-        .min(1, "End must be greater than 0")
-        .max(250_000_000, "End must be within a valid genomic range")
-        .when("start", (start, schema) =>
-          start
-            ? schema.min(start, "End must be greater than or equal to Start")
-            : schema
-        )
-        .required("End is required"),
-      refBases: Yup.string()
-        .matches(/^[ATCG]+$/, "Only A, T, C, G are allowed")
-        .optional(),
-
-      altBases: Yup.string()
-        .matches(/^[ATCG]+$/, "Only A, T, C, G are allowed")
-        .optional(),
-
-      aaPosition: Yup.number()
-        .typeError("Position must be a number")
-        .integer("Position must be an integer")
-        .min(1, "Position must be greater than 0")
-        .max(30000, "Position must be within a valid protein length")
-        .optional(),
-
-      refAa: Yup.string().optional(), // Selected in the dropdown
-      altAa: Yup.string().optional(), // Selected in the dropdown
-      minVariantLength: Yup.number()
-        .typeError("Must be a number")
-        .integer("Must be an integer")
-        .min(1, "Must be at least 1")
-        .max(1000000, "Too large"),
-      maxVariantLength: Yup.number()
-        .typeError("Must be a number")
-        .integer("Must be an integer")
-        .min(1, "Must be at least 1")
-        .max(1000000, "Too large")
-        .test(
-          "is-greater",
-          "Max must be greater than or equal to Min",
-          function (value) {
-            const { minVariantLength } = this.parent;
-            return !value || !minVariantLength || value >= minVariantLength;
-          }
-        ),
+      assemblyId: assemblyIdRequired,
+      chromosome: chromosomeValidator.required("Chromosome is required"),
+      start: createStartValidator("Start"),
+      end: createEndValidator("End", "Start"),
+      refBases: refBasesValidator,
+      altBases: altBasesValidator,
+      refAa: refAaValidator,
+      altAa: altAaValidator,
+      aaPosition: aaPositionValidator,
+      minVariantLength,
+      maxVariantLength,
     }),
     "Genetic location aprox (Bracket)": Yup.object({
-      assemblyId: Yup.string().required("Assembly ID is required"),
-      chromosome: Yup.string().required("Chromosome is required"),
-      start: Yup.number()
-        .typeError("Start braket must be a number")
-        .integer("Start braket must be an integer")
-        .min(1, "Start braket must be greater than 0")
-        .required("Start braket is required"),
-      end: Yup.number()
-        .typeError("End  braket must be a number")
-        .integer("End braket must be an integer")
-        .min(1, "End braket must be greater than 0")
-        .max(250_000_000, "End braket must be within a valid genomic range")
-        .when("start", (start, schema) =>
-          start
-            ? schema.min(
-                start,
-                "End braket must be greater than or equal to Start braket"
-              )
-            : schema
-        )
-        .required("End is required"),
+      assemblyId: assemblyIdRequired,
+      chromosome: chromosomeValidator.required("Chromosome is required"),
+      start: createStartValidator("Start braket"),
+      end: createEndValidator("End braket", "Start braket"),
     }),
+
     "Defined short variation (Sequence)": Yup.object({
-      chromosome: Yup.string().required("Chromosome is required"),
-      start: Yup.number()
-        .typeError("Start braket must be a number")
-        .integer("Start braket must be an integer")
-        .min(1, "Start braket must be greater than 0")
-        .required("Start braket is required"),
-      refBases: Yup.string()
-        .required("Reference Base is required")
-        .matches(/^[ATCG]+$/, "Only A, T, C, G are allowed"),
-      altBases: Yup.string()
-        .required("Alternate Base is required")
-        .matches(/^[ATCG]+$/, "Only A, T, C, G are allowed"),
+      assemblyId: assemblyIdOptional,
+      chromosome: chromosomeValidator.required("Chromosome is required"),
+      start: createStartValidator("Start"),
+      refBases: requiredRefBases,
+      altBases: requiredAltBases,
     }),
+
     "Genomic Allele Query (HGVS)": Yup.object({
-      genomicHGVSshortForm: Yup.string().required(
-        "Genomic HGVS short form is required"
-      ),
+      genomicHGVSshortForm,
     }),
   };
 
+  // Get the form component that matches the currently selected query type
+  // This is used to render the correct form in the UI based on user's selection
   const SelectedFormComponent = formComponentsMap[selectedQueryType];
 
   return (
+    // This is the empty dialog
     <Dialog
       open={open}
       onClose={handleClose}
@@ -207,6 +136,7 @@ export default function GenomicQueryBuilderDialog({ open, handleClose }) {
         },
       }}
     >
+      {/* This is the box in which the title is contained */}
       <Box
         sx={{
           display: "flex",
@@ -214,6 +144,7 @@ export default function GenomicQueryBuilderDialog({ open, handleClose }) {
           alignItems: "center",
         }}
       >
+        {/* Title that is consistent across all query types */}
         <DialogTitle
           sx={{
             fontSize: "16px",
@@ -223,6 +154,7 @@ export default function GenomicQueryBuilderDialog({ open, handleClose }) {
         >
           Genomic Query Builder
         </DialogTitle>
+        {/* This is the icon to close the dialog + the dialog closes by tapping outside of it  */}
         <IconButton
           edge="start"
           color="inherit"
@@ -234,7 +166,11 @@ export default function GenomicQueryBuilderDialog({ open, handleClose }) {
         </IconButton>
       </Box>
 
+      {/*The dyamic content of the dialog starts here */}
       <DialogContent sx={{ pt: 1 }}>
+        {/* This is the form wrapper that controls validation and submission, 
+        it uses dynamic initial values as empty and validation schemas based on the
+        selected query type */}
         <Formik
           enableReinitialize
           validateOnMount
@@ -254,12 +190,15 @@ export default function GenomicQueryBuilderDialog({ open, handleClose }) {
             genomicHGVSshortForm: "",
           }}
           validationSchema={validationSchemaMap[selectedQueryType]}
+          // This handles the form submission
           onSubmit={(values) => {
             console.log("Form submitted:", values);
           }}
         >
           {({ resetForm, isValid, dirty }) => (
             <Form>
+              {/* Render the selectable query type buttons */}
+              {/* When a user clicks a button, the form type changes and the form is reset */}
               <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
                 {genomicQueryTypes.map((label, index) => (
                   <StyledGenomicLabels
@@ -268,16 +207,16 @@ export default function GenomicQueryBuilderDialog({ open, handleClose }) {
                     selected={selectedQueryType === label}
                     onClick={() => {
                       setSelectedQueryType(label);
-                      resetForm();
+                      resetForm(); // Clears the form when switching query type
                     }}
                   />
                 ))}
               </Box>
-
+              {/* Render the selected form based on the current query type based on user's selection */}
               <Box sx={{ mt: 4 }}>
                 {SelectedFormComponent && <SelectedFormComponent />}
               </Box>
-
+              {/* Submit button is shown at the bottom right of all the query types and is disabled if the form is invalid or untouched */}
               <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
                 <GenomicSubmitButton disabled={!isValid || !dirty} />
               </Box>

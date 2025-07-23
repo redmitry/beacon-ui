@@ -65,7 +65,6 @@ export default function GenomicLocationBracket() {
                   // In the range context chromosome is also reference name
                   name="chromosome"
                   label="Chromosome"
-                  options={config.assemblyId}
                   placeholder="ex. Chr 1 (NC_000001.11)"
                   required={true}
                 />
@@ -125,13 +124,8 @@ export default function GenomicLocationBracket() {
                 name="variationType"
                 label="Variation Type"
                 description="Select the Variation Type"
-                placeholder="DEL (Copy Number Loss)"
-                options={[
-                  "DEL (Copy Number Loss)",
-                  "SNP (Single Nucleotide Polymorphism)",
-                  "DUP",
-                  "BND",
-                ]}
+                placeholder={config.variationType[0]}
+                options={config.variationType}
               />
             </Box>
           </Box>

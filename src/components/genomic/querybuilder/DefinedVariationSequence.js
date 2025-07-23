@@ -61,7 +61,6 @@ export default function DefinedVariationSequence() {
             label="Chromosome"
             placeholder="ex. Chr 1 (NC_000001.11)"
             description={"Select the reference value:"}
-            options={config.assemblyId}
             required={true}
           />
           <GenomicInputBox

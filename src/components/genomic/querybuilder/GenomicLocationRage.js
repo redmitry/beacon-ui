@@ -57,7 +57,6 @@ export default function GenomicLocationRage() {
               name="chromosome"
               label="Chromosome"
               placeholder="ex. Chr 1 (NC_000001.11)"
-              options={config.assemblyId}
               required={true}
             />
             <Box
@@ -126,13 +125,8 @@ export default function GenomicLocationRage() {
                 name="variationType"
                 label="Variation Type"
                 description="Select the Variation Type"
-                placeholder="DEL (Copy Number Loss)"
-                options={[
-                  "DEL (Copy Number Loss)",
-                  "SNP (Single Nucleotide Polymorphism)",
-                  "DUP",
-                  "BND",
-                ]}
+                placeholder={config.variationType[0]}
+                options={config.variationType}
                 isSelectable
                 isSelected={selectedInput === "variationType"}
                 onSelect={() => setSelectedInput("variationType")}
