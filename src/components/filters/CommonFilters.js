@@ -8,12 +8,12 @@ import {
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { useState } from "react";
 import config from "../../config/config.json";
-import FilterLabel from "./../styling/FilterLabel";
 import { useSelectedEntry } from "./../context/SelectedEntryContext";
 import CommonMessage, {
   COMMON_MESSAGES,
 } from "../../components/common/CommonMessage";
 import { getDisplayLabelAndScope } from "../common/filteringTermsHelpers";
+import FilterLabelRemovable from "../styling/FilterLabelRemovable";
 
 export default function CommonFilters() {
   const filterCategories = config.ui.commonFilters.filterCategories;
@@ -146,7 +146,8 @@ export default function CommonFilters() {
                       getDisplayLabelAndScope(item, selectedPathSegment);
 
                     return (
-                      <FilterLabel
+                      <FilterLabelRemovable
+                        variant="simple"
                         key={item.label}
                         label={item.label}
                         onClick={() =>

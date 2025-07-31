@@ -6,9 +6,13 @@ import Search from "../Search";
 import AllFilteringTermsComponent from "../filters/AllFilteringTermsComponent";
 import ResultsContainer from "../results/ResultsContainer";
 import config from "../../config/config.json";
+import BeaconTypeBanner from "../homepageBanner/BeaconTypeBanner";
+import { useSelectedEntry } from "../context/SelectedEntryContext";
 
 export default function HomePage({ selectedTool, setSelectedTool }) {
   const [searchHeight, setSearchHeight] = useState(null);
+
+  const { hasSearchBeenTriggered } = useSelectedEntry();
 
   const hasGenomicAnnotationsConfig =
     !!config.ui?.genomicAnnotations?.visibleGenomicCategories;
@@ -23,11 +27,14 @@ export default function HomePage({ selectedTool, setSelectedTool }) {
 
   return (
     <>
+      {/* Main container */}
       <Box
         sx={{
           display: "flex",
           flexDirection: { xs: "column", md: "row" },
-          gap: 4,
+          gap: { lg: 4, md: 4, sm: 0 },
+          flexWrap: "wrap",
+          flexGrow: 1,
         }}
       >
         <Box
@@ -35,6 +42,13 @@ export default function HomePage({ selectedTool, setSelectedTool }) {
             flexGrow: { xs: 0, md: 1 },
             display: "flex",
             flexDirection: "column",
+            width: { lg: "60%", md: "60%" },
+            // backgroundColor: {
+            //   lg: "lightsalmon",
+            //   md: "pink",
+            //   sm: "lightgreen",
+            //   xs: "lightblue",
+            // },
           }}
         >
           <Founders />
@@ -48,13 +62,17 @@ export default function HomePage({ selectedTool, setSelectedTool }) {
         {shouldShowFilters && (
           <Box
             sx={{
-              width: { xs: "100%", md: "338px" },
-              maxWidth: "338px",
+              width: { xs: "100%", sm: "100%", md: "290px", lg: "338px" },
               flexShrink: 0,
               mt: { xs: "0px", md: "42px" },
-              mb: { xs: "50px", md: "40px", lg: "0px" },
+              mb: { xs: "25px", lg: "0px" },
               alignSelf: "flex-start",
-              height: `${searchHeight}px`,
+              height: {
+                lg: `${searchHeight}px`,
+                md: `${searchHeight}px`,
+                sm: "auto",
+                xs: "auto",
+              },
               p: 0,
               borderRadius: "12px",
               display: "flex",
@@ -69,6 +87,9 @@ export default function HomePage({ selectedTool, setSelectedTool }) {
             />
           </Box>
         )}
+        {!hasSearchBeenTriggered && selectedTool !== "allFilteringTerms" && (
+          <BeaconTypeBanner />
+        )}
       </Box>
       <Box>
         {selectedTool === "allFilteringTerms" && (
@@ -77,7 +98,8 @@ export default function HomePage({ selectedTool, setSelectedTool }) {
               display: "flex",
               justifyContent: "center",
               width: "100%",
-              paddingBottom: "40px",
+              marginTop: { lg: "-40px", md: "-40px", sm: "20px", xs: "20px" },
+              marginBottom: { lg: "30px", md: "30px", sm: "30px", xs: "30px" },
             }}
           >
             <AllFilteringTermsComponent />
@@ -86,6 +108,7 @@ export default function HomePage({ selectedTool, setSelectedTool }) {
       </Box>
       <Box
         sx={{
+          marginTop: { lg: "-30px", md: "-30px", sm: "20px", xs: "0px" },
           marginBottom: "30px",
         }}
       >

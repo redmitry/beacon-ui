@@ -19,15 +19,42 @@ export default function Footer({ navItems }) {
       <Box
         sx={{
           display: "flex",
-          flexDirection: { xs: "column", sm: "row" },
+          flexDirection: { xs: "column", sm: "column", md: "row" },
+          "@media (max-width: 1044px) and (min-width: 900px)": {
+            flexDirection: "column",
+          },
           justifyContent: "space-between",
           alignItems: "center",
           gap: 2,
-          mx: 4,
+          mr: 1,
         }}
       >
-        <Box sx={{ display: "flex", gap: 3, alignItems: "center" }}>
-          <Typography variant="body2" color="black">
+        <Box
+          sx={{
+            display: "flex",
+            gap: { xs: 2, md: 3 },
+            "@media (max-width: 1044px) and (min-width: 721px)": {
+              gap: 6,
+            },
+            "@media (max-width: 648px) and (min-width:633px)": {
+              gap: 4,
+            },
+            alignItems: "center",
+          }}
+        >
+          <Typography
+            variant="body2"
+            color="black"
+            sx={{
+              fontSize: {
+                xs: "12px",
+                sm: "14px",
+              },
+              "@media (max-width: 648px) and (min-width:600px)": {
+                fontSize: "12px",
+              },
+            }}
+          >
             Beacon User Interface template provided by:
           </Typography>
           <MuiLink
@@ -68,6 +95,9 @@ export default function Footer({ navItems }) {
                   sx={{
                     fontFamily: '"Open Sans", sans-serif',
                     fontSize: "14px",
+                    "@media (max-width: 452px)": {
+                      fontSize: "12px",
+                    },
                     color: "#333",
                     "&:hover": { textDecoration: "underline" },
                   }}
@@ -83,6 +113,9 @@ export default function Footer({ navItems }) {
                   sx={{
                     fontFamily: '"Open Sans", sans-serif',
                     fontSize: "14px",
+                    "@media (max-width: 452px)": {
+                      fontSize: "12px",
+                    },
                     color: "#333",
                     "&:hover": { textDecoration: "underline" },
                   }}

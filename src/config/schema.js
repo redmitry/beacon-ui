@@ -37,6 +37,17 @@ const schema = Joi.object({
       "string.min": "assemblyId values cannot be empty strings",
     }),
 
+  // Set this value according to the variant type used in your VCF file.
+  variationType: Joi.array()
+    .items(Joi.string().min(1))
+    .min(1)
+    .required()
+    .messages({
+      "any.required": "variationType is required.",
+      "array.min": "At least one variationType must be provided.",
+      "string.min": "Each variationType must be a non-empty string.",
+    }),
+
   ui: Joi.object({
     showExternalNavBarLink: Joi.boolean().optional(),
 

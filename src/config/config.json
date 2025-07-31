@@ -4,6 +4,13 @@
   "apiUrlNetwork": "https://beacon-network-backend-demo.ega-archive.org/beacon-network/v2.0.0",
   "apiUrlSingle": "https://beacon-spain.ega-archive.org/api",
   "assemblyId": ["GRCh38", "GRCh37", "NCBI36"],
+
+  "variationType": [
+    "DEL (Copy Number Loss)",
+    "SNP (Single Nucleotide Polymorphism)",
+    "DUP",
+    "BND"
+  ],
   "ui": {
     "title": "EGA Beacon Network Browser",
     "entryTypesOrder": [
@@ -65,7 +72,7 @@
             "key": "weight",
             "id": "weight",
             "label": "Weight",
-            "type": "pipao"
+            "type": "alphanumeric"
           },
           {
             "key": "height",
@@ -78,7 +85,7 @@
             "id": "label6",
             "label": "label6",
             "type": "ontology",
-            "scopes": ["individual", "biosample", "cohort"]
+            "scopes": ["observed"]
           }
         ],
         "Cancer": [
@@ -87,7 +94,7 @@
             "label": "Colon adenocarcinoma",
             "type": "ontology",
             "id": "NCIT:C4910",
-            "scopes": ["individual", "biosample", "cohort"]
+            "scopes": ["observed", "unobserved"]
           },
           {
             "key": "Breast Cancer",

@@ -5,13 +5,16 @@ import {
   AccordionSummary,
   AccordionDetails,
 } from "@mui/material";
+import CommonMessage, {
+  COMMON_MESSAGES,
+} from "../../components/common/CommonMessage";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { useState } from "react";
 import config from "../../config/config.json";
-import FilterLabel from "../styling/FilterLabel";
 import { useSelectedEntry } from "./../context/SelectedEntryContext";
-
+import FilterLabelRemovable from "../styling/FilterLabelRemovable";
 export default function GenomicAnnotations() {
+  const [message, setMessage] = useState(null);
   const allGenomicCategories = [
     "SNP Examples",
     "CNV Examples",
@@ -36,57 +39,83 @@ export default function GenomicAnnotations() {
 
   const filterLabels = {
     "SNP Examples": [
+      { key: "TP53", id: "TP53", label: "TP53" },
       {
-        id: "TP53",
-        label: "TP53"
-      }, {
+        key: "7661960T>C",
         id: "7661960T>C",
         label: "7661960T>C",
-      }, {
+      },
+      {
+        key: "NC_000023.10 : 33038255C>A",
         id: "NC_000023.10 : 33038255C>A",
-        label: "NC_000023.10 : 33038255C>A"
-      }],
-    "CNV Examples": [{
+        label: "NC_000023.10 : 33038255C>A",
+      },
+    ],
+    "CNV Examples": [
+      {
+        key: "NC_000001.11 : 1234del",
         id: "NC_000001.11 : 1234del",
-        label:  "NC_000001.11 : 1234del"
-      }, {
-        id:  "MSK1 : 7572837_7578461del",
-        label:  "MSK1 : 7572837_7578461del",
-      }, {
+        label: "NC_000001.11 : 1234del",
+      },
+      {
+        key: "MSK1 : 7572837_7578461del",
+        id: "MSK1 : 7572837_7578461del",
+        label: "MSK1 : 7572837_7578461del",
+      },
+      {
+        key: "NC_000001.11 : [5000, 7676]",
         id: "NC_000001.11 : [5000, 7676]",
-        label: "NC_000001.11 : [5000, 7676]"
-      }, {
+        label: "NC_000001.11 : [5000, 7676]",
+      },
+      {
+        key: "[7669, 10000]del",
         id: "[7669, 10000]del",
-        label: "[7669, 10000]del"
-      }
+        label: "[7669, 10000]del",
+      },
     ],
-    "Protein Examples": [{
+    "Protein Examples": [
+      {
+        key: "TP53 : p.Trp285Cys",
         id: "TP53 : p.Trp285Cys",
-        label: "TP53 : p.Trp285Cys"
-      }, {
+        label: "TP53 : p.Trp285Cys",
+      },
+      {
+        key: "NP_003997.1:p.Trp24Cys",
         id: "NP_003997.1:p.Trp24Cys",
-        label: "NP_003997.1:p.Trp24Cys"
-      }
+        label: "NP_003997.1:p.Trp24Cys",
+      },
     ],
-    "Molecular Effect": [{
+    "Molecular Effect": [
+      {
+        key: "Missense Variant",
         id: "Missense Variant",
-        label: "Missense Variant"
-      }, {
+        label: "Missense Variant",
+      },
+      {
+        key: "Frameshift Variant",
         id: "Frameshift Variant",
-        label: "Frameshift Variant"
-      }, {
+        label: "Frameshift Variant",
+      },
+      {
+        key: "Stop gained",
         id: "Stop gained",
-        label: "Stop gained"
-      }, {
+        label: "Stop gained",
+      },
+      {
+        key: "Gain of function",
         id: "Gain of function",
-        label: "Gain of function"
-      }, {
+        label: "Gain of function",
+      },
+      {
+        key: "Loss of function",
         id: "Loss of function",
-        label: "Loss of function"
-      }, {
+        label: "Loss of function",
+      },
+      {
+        key: "Null mutation",
         id: "Null mutation",
-        label: "Null mutation"
-      }
+        label: "Null mutation",
+      },
     ],
   };
 
@@ -95,9 +124,8 @@ export default function GenomicAnnotations() {
     let firstSet = false;
 
     allGenomicCategories.forEach((topic) => {
-      const validLabels = filterLabels[topic]?.filter(
-        (label) => label.label.trim() !== ""
-      ) || [];
+      const validLabels =
+        filterLabels[topic]?.filter((label) => label.label.trim() !== "") || [];
 
       if (validLabels.length > 0 && !firstSet) {
         initialState[topic] = true;
@@ -131,28 +159,28 @@ export default function GenomicAnnotations() {
     setLoadingData(false);
     setResultData([]);
     setHasSearchResult(false);
-    if (item.type === "alphanumeric") {
-      setExtraFilter(item);
-    } else {
-      setSelectedFilter((prevFilters) => {
-        const isDuplicate = prevFilters.some(
-          (filter) => filter.key === item.key
-        );
-        if (isDuplicate) {
-          setMessage(
-            "This filter is already in use. Choose another one to continue."
-          );
-          setTimeout(() => setMessage(null), 5000);
-          return prevFilters;
-        }
 
-        return [...prevFilters, item];
-      });
-    }
+    setSelectedFilter((prevGenomicAnnotation) => {
+      const isDuplicate = prevGenomicAnnotation.some(
+        (genAnnotation) => genAnnotation.id === item.id
+      );
+
+      if (isDuplicate) {
+        setMessage(COMMON_MESSAGES.doubleFilter);
+        setTimeout(() => setMessage(null), 3000);
+        return prevGenomicAnnotation;
+      }
+      return [...prevGenomicAnnotation, item];
+    });
   };
-  
+
   return (
     <Box>
+      {message && (
+        <Box sx={{ mt: 2 }}>
+          <CommonMessage text={message} type="error" />
+        </Box>
+      )}
       {filterCategories.map((topic) => {
         const validLabels = filterLabels[topic]?.filter(
           (label) => label.label.trim() !== ""
@@ -187,10 +215,13 @@ export default function GenomicAnnotations() {
             <AccordionDetails sx={{ px: 0, pt: 0 }}>
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
                 {validLabels.map((item) => (
-                  <FilterLabel
+                  <FilterLabelRemovable
+                    variant="simple"
                     key={item.label}
                     label={item.label}
-                    onClick={() => handleGenomicFilterChange(item)}
+                    onClick={() =>
+                      handleGenomicFilterChange({ ...item, bgColor: "genomic" })
+                    }
                     bgColor="genomic"
                   />
                 ))}

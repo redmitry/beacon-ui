@@ -1,5 +1,8 @@
-import { BEACON_NETWORK_COLUMNS, BEACON_SINGLE_COLUMNS } from '../../lib/constants';
-import React, { lazy, Suspense } from 'react';
+import {
+  BEACON_NETWORK_COLUMNS,
+  BEACON_SINGLE_COLUMNS,
+} from "../../lib/constants";
+import React, { lazy, Suspense } from "react";
 import {
   Box,
   Paper,
@@ -11,8 +14,9 @@ import {
   TableRow,
   Button,
   Tooltip,
-  IconButton
+  IconButton,
 } from "@mui/material";
+
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import InfoIcon from '@mui/icons-material/Info';
@@ -20,12 +24,12 @@ import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import CalendarViewMonthIcon from '@mui/icons-material/CalendarViewMonth';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import config from '../../config/config.json';
+
 import { useSelectedEntry } from "../context/SelectedEntryContext";
 import { lighten } from "@mui/system";
-import { useState } from 'react';
-import ResultsTableRow from './ResultsTableRow';
-const ResultsTableModal = lazy(() => import('./modal/ResultsTableModal'));
-
+import { useState } from "react";
+import ResultsTableRow from "./ResultsTableRow";
+const ResultsTableModal = lazy(() => import("./modal/ResultsTableModal"));
 
 export default function ResultsTable() {
   const { resultData, beaconsInfo } = useSelectedEntry();
@@ -38,27 +42,29 @@ export default function ResultsTable() {
     fontWeight: 700,
     color: "white",
     transition: "background-color 0.3s ease",
-    textAlign: "left",
-    '&:hover': {
-      backgroundColor: lighten(config.ui.colors.primary, 0.1)
-    }
+    "&:hover": {
+      backgroundColor: lighten(config.ui.colors.primary, 0.1),
+    },
   };
 
   const handleRowClick = (item) => {
-    if(expandedRow && expandedRow.beaconId === item.beaconId) {
+    if (expandedRow && expandedRow.beaconId === item.beaconId) {
       setExpandedRow(null);
     } else {
       setExpandedRow(item);
     }
   };
 
-  let tableColumns = (config.beaconType === 'singleBeacon') ? BEACON_SINGLE_COLUMNS : BEACON_NETWORK_COLUMNS;
+  let tableColumns =
+    config.beaconType === "singleBeacon"
+      ? BEACON_SINGLE_COLUMNS
+      : BEACON_NETWORK_COLUMNS;
 
   const selectedBgColor = lighten(config.ui.colors.primary, 0.9);
 
   const handleRowClicked = (item) => {
     setSelectedSubRow(item);
-  }
+  };
 
   const handleOpenModal = (subRow) => {
     setSelectedSubRow(subRow);
@@ -71,11 +77,11 @@ export default function ResultsTable() {
 
   const getErrors = (data) => {
     return `error code: ${data.error.errorCode}; error message: ${data.error.errorMessage}`;
-  }
+  };
 
   const findBeaconIcon = (beaconId) => {
     let beacon = {};
-    if(config.beaconType === 'singleBeacon') {
+    if (config.beaconType === "singleBeacon") {
       beacon = beaconsInfo[0];
     } else {
       beacon = beaconsInfo.find((item) => {
@@ -84,13 +90,15 @@ export default function ResultsTable() {
       });
     }
 
-    const logo = beacon.response ? beacon.response?.organization?.logoUrl : beacon.organization?.logoUrl;
+    const logo = beacon.response
+      ? beacon.response?.organization?.logoUrl
+      : beacon.organization?.logoUrl;
     return logo ?? null;
   };
 
   const findBeaconEmail = (beaconId) => {
     let beacon = {};
-    if(config.beaconType === 'singleBeacon') {
+    if (config.beaconType === "singleBeacon") {
       beacon = beaconsInfo[0];
     } else {
       beacon = beaconsInfo.find((item) => {
@@ -98,13 +106,15 @@ export default function ResultsTable() {
         return id === beaconId;
       });
     }
-    const email = beacon.response ? beacon.response?.organization?.contactUrl : beacon.organization?.contactUrl;
-    return email?? null;
-  }
+    const email = beacon.response
+      ? beacon.response?.organization?.contactUrl
+      : beacon.organization?.contactUrl;
+    return email ?? null;
+  };
 
   const handleEmail = (email) => {
     window.location.href = `mailto:${email}`;
-  }
+  };
 
   return (
     <Box>
@@ -125,17 +135,17 @@ export default function ResultsTable() {
                     key={column.id}
                     align={column.align}
                     sx={{
-                        ...headerCellStyle,
-                        width: column.width
-                      }}
-                    >
+                      ...headerCellStyle,
+                      width: column.width,
+                    }}
+                  >
                     {column.label}
                   </TableCell>
                 ))}
               </TableRow>
             </TableHead>
             <TableBody>
-              { resultData.map((item, index) => {
+              {resultData.map((item, index) => {
                 const iconUrl = findBeaconIcon(item.beaconId);
                 const itemEmail = findBeaconEmail(item.beaconId);
 
@@ -145,26 +155,24 @@ export default function ResultsTable() {
                       key={index}
                       onClick={() => handleRowClick(item)}
                       sx={{
-                        cursor: 'pointer',
-                        '&:hover': {
+                        cursor: "pointer",
+                        "&:hover": {
                           backgroundColor: selectedBgColor,
                         },
-                        '&.MuiTableRow-root': {
-                          transition: 'background-color 0.2s ease',
+                        "&.MuiTableRow-root": {
+                          transition: "background-color 0.2s ease",
                         },
-                        '& td': {
-                          borderBottom: '1px solid rgba(224, 224, 224, 1)',
+                        "& td": {
+                          borderBottom: "1px solid rgba(224, 224, 224, 1)",
                           py: 1.5,
                         },
                         fontWeight: "bold",
-                        textAlign: "left"
-                      }}>
                       <TableCell sx={{ fontWeight: "bold"  }} style={{ width: BEACON_NETWORK_COLUMNS[0].width }}>
                         <Box display="flex"  justifyContent="flex-start" alignItems="center" gap={1}>
                           { item.info &&
                             <Tooltip title={ getErrors(item.info) }>
                               <IconButton>
-                                <ReportProblemIcon sx={{ color: '#FF8A8A' }} />
+                                <ReportProblemIcon sx={{ color: "#FF8A8A" }} />
                               </IconButton>
                             </Tooltip>
                           }
@@ -180,13 +188,11 @@ export default function ResultsTable() {
                               <KeyboardArrowDownIcon />
                             ) : (
                               <KeyboardArrowUpIcon />
-                            )
-                          )}
-
+                            ))}
                           {iconUrl && (
-                            <img 
-                              className="table-icon" 
-                              src={iconUrl} 
+                            <img
+                              className="table-icon"
+                              src={iconUrl}
                               alt="Beacon logo"
                             />
                           )}
@@ -200,8 +206,30 @@ export default function ResultsTable() {
                       </TableCell>
                       { config.beaconType === 'singleBeacon' &&
                       <TableCell 
-                          sx={{ fontWeight: "bold"  }} 
                           style={{ width: BEACON_NETWORK_COLUMNS[3].width }}
+                        >
+                          <Button
+                            variant="text"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenModal(item);
+                            }}
+                            sx={{
+                              textTransform: "none",
+                              fontSize: "14px",
+                              fontWeight: 400,
+                              fontFamily: '"Open Sans", sans-serif',
+                              color: "gray",
+                              width: "50px",
+                              height: "30px",
+                              minWidth: "30px",
+                              minHeight: "30px",
+                              backgroundColor: "transparent",
+                              padding: 0,
+                              "&:hover": {
+                                color: config.ui.colors.primary,
+                              },
+                            }}
                           >
                             {item.totalResultsCount > 0 ? (
                               <Button
@@ -277,31 +305,32 @@ export default function ResultsTable() {
                         </TableCell>
                     </TableRow>
 
-                    {expandedRow && expandedRow.beaconId && expandedRow.beaconId === item.beaconId && (
-                      <ResultsTableRow 
-                        item={ expandedRow } 
-                        handleRowClicked={ handleRowClicked }
-                        handleOpenModal={ () => handleOpenModal(expandedRow) }
-                      />
-                    )}
+                    {expandedRow &&
+                      expandedRow.beaconId &&
+                      expandedRow.beaconId === item.beaconId && (
+                        <ResultsTableRow
+                          item={expandedRow}
+                          handleRowClicked={handleRowClicked}
+                          handleOpenModal={() => handleOpenModal(expandedRow)}
+                        />
+                      )}
                   </React.Fragment>
-                  )
-                })
-              }
+                );
+              })}
             </TableBody>
           </Table>
         </TableContainer>
       </Paper>
       {selectedSubRow && (
-        <Suspense fallback={ <div>Loading...</div> }>
+        <Suspense fallback={<div>Loading...</div>}>
           <ResultsTableModal
-            subRow={ selectedSubRow }
-            handleRowClicked={ handleRowClicked }
+            subRow={selectedSubRow}
+            handleRowClicked={handleRowClicked}
             open={modalOpen}
             onClose={() => handleCloseModal()}
           />
         </Suspense>
       )}
     </Box>
-  )
+  );
 }

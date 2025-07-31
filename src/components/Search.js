@@ -15,6 +15,7 @@ import { darken, lighten } from "@mui/system";
 import SearchIcon from "@mui/icons-material/Search";
 import { useSelectedEntry } from "./context/SelectedEntryContext";
 import GenomicQueryBuilderButton from "./genomic/GenomicQueryBuilderButton";
+import GenomicQueryBuilderDialog from "./genomic/GenomicQueryBuilderDialog";
 import AllFilteringTermsButton from "./filters/AllFilteringTermsButton";
 import FilteringTermsDropdownResults from "./filters/FilteringTermsDropdownResults";
 import QueryApplied from "./search/QueryApplied";
@@ -27,6 +28,7 @@ export default function Search({
   setSelectedTool,
 }) {
   const { entryTypes, setEntryTypes, setBeaconsInfo } = useSelectedEntry();
+  const { entryTypesConfig, setEntryTypesConfig } = useSelectedEntry();
   const { selectedFilter, setSelectedFilter } = useSelectedEntry();
   const { extraFilter, hasSearchResults } = useSelectedEntry();
   const [loading, setLoading] = useState(true);
@@ -34,6 +36,7 @@ export default function Search({
   const [searchInput, setSearchInput] = useState("");
   const { selectedPathSegment, setSelectedPathSegment } = useSelectedEntry();
   const [assembly, setAssembly] = useState(config.assemblyId[0]);
+  const [open, setOpen] = useState(false);
   const searchRef = useRef(null);
 
   useEffect(() => {
@@ -75,7 +78,6 @@ export default function Search({
               originalSegment === "genomicVariations"
                 ? "g_variants"
                 : originalSegment;
-
             return {
               id: key,
               pathSegment: normalizedSegment,
@@ -98,6 +100,25 @@ export default function Search({
     };
 
     fetchEntryTypes();
+  }, []);
+
+  const fetchConfiguration = async () => {
+    try {
+      const res = await fetch(`${config.apiUrl}/configuration`);
+      const data = await res.json();
+      setEntryTypesConfig(data.response.entryTypes || {});
+    } catch (err) {
+      console.error("Error fetching configuration:", err);
+    }
+  };
+
+  useEffect(() => {
+    const fetchAll = async () => {
+      await fetchConfiguration();
+      setLoading(false);
+    };
+
+    fetchAll();
   }, []);
 
   const handleBeaconsInfo = async () => {
@@ -178,6 +199,14 @@ export default function Search({
     );
   };
 
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   const renderInput = (type) => {
     if (type === "genomic") {
       return (
@@ -209,7 +238,7 @@ export default function Search({
                 pl: 3,
                 pr: 2,
                 py: 0,
-                height: "100%",
+                height: "47px",
                 borderTopLeftRadius: "999px",
                 borderBottomLeftRadius: "999px",
                 ".MuiSelect-icon": {
@@ -237,6 +266,7 @@ export default function Search({
               fontFamily: '"Open Sans", sans-serif',
               fontSize: "14px",
               pr: 2,
+              height: "47px",
             }}
           />
         </Box>
@@ -287,13 +317,11 @@ export default function Search({
       <Box
         ref={searchRef}
         sx={{
-          mb: 6,
+          mb: { lg: 6, md: 6, sm: 2, xs: 3 },
           borderRadius: "10px",
           backgroundColor: "#FFFFFF",
           boxShadow: "0px 8px 11px 0px #9BA0AB24",
           p: "24px 32px",
-          // width: "73%",
-          // backgroundColor: "magenta",
         }}
       >
         <Typography
@@ -325,7 +353,10 @@ export default function Search({
               title={
                 <Box
                   component="ul"
-                  sx={{ pl: "20px", fontFamily: '"Open Sans", sans-serif' }}
+                  sx={{
+                    pl: { xs: "5px", lg: "20px" },
+                    fontFamily: '"Open Sans", sans-serif',
+                  }}
                 >
                   {entryTypes.map((entry) => (
                     <li key={entry.pathSegment}>
@@ -344,7 +375,10 @@ export default function Search({
                     backgroundColor: "#fff",
                     color: "#000",
                     border: "1px solid black",
-                    minWidth: "400px",
+                    minWidth: {
+                      xs: "361px",
+                      sm: "400px",
+                    },
                   },
                 },
                 arrow: {
@@ -471,41 +505,83 @@ export default function Search({
           )}
         </Box>
         {extraFilter && <FilterTermsExtra />}
-        {!hasSearchResults && selectedFilter.length > 0 && <QueryApplied />}
+        {selectedFilter.length > 0 && <QueryApplied />}
+
         <Box
           sx={{
             mt: 5,
-            display: "flex",
             gap: 2,
             flexWrap: "wrap",
-            justifyContent: "space-between",
+            display: "flex",
+            flexDirection: {
+              xs: "column",
+              sm: "row",
+              md: "row",
+            },
+            justifyContent: {
+              xs: "center",
+              sm: "space-between",
+              md: "space-between",
+            },
+            alignItems: "center",
+            textAlign: "center",
+            "@media (max-width: 1008px) and (min-width: 900px)": {
+              flexDirection: "column",
+            },
+            "@media (max-width: 653px)": {
+              flexDirection: "column",
+            },
           }}
         >
           <Box
             sx={{
               display: "flex",
-              gap: 2,
+              gap: 4,
+              "@media (max-width: 1008px) and (min-width: 900px)": {
+                width: "100%",
+                justifyContent: "center",
+
+                gap: 8,
+              },
+              "@media (max-width: 653px)": {
+                width: "100%",
+                justifyContent: "center",
+                gap: 8,
+              },
             }}
           >
             {hasGenomic && (
-              <GenomicQueryBuilderButton
-                onClick={() =>
-                  setSelectedTool((prev) =>
-                    prev === "genomicQueryBuilder"
-                      ? null
-                      : "genomicQueryBuilder"
-                  )
-                }
-                selected={selectedTool === "genomicQueryBuilder"}
-              />
+              <>
+                <GenomicQueryBuilderButton
+                  onClick={() => {
+                    setSelectedTool((prev) =>
+                      prev === "genomicQueryBuilder"
+                        ? null
+                        : "genomicQueryBuilder"
+                    );
+                    handleClickOpen();
+                  }}
+                  selected={selectedTool === "genomicQueryBuilder"}
+                />
+                <GenomicQueryBuilderDialog
+                  open={open}
+                  handleClose={handleClose}
+                />
+              </>
             )}
             <AllFilteringTermsButton
               onClick={handleAllFilteringClick}
               selected={selectedTool === "allFilteringTerms"}
             />
           </Box>
+
           <Box>
-            <SearchButton />
+            <SearchButton
+              setSelectedTool={setSelectedTool}
+              entryTypesConfig={entryTypesConfig}
+              selectedPathSegment={selectedPathSegment}
+              selectedFilter={selectedFilter}
+            />
           </Box>
         </Box>
       </Box>

@@ -9,6 +9,7 @@ export const COMMON_MESSAGES = {
     "This filter is already in use. Choose another one to continue.",
   loadingData: "Loading data...",
   fillFields: "Please fill in all the fields",
+  addFilter: "Please apply at least one filter to run this search.",
 };
 
 export default function CommonMessage({ text, type }) {

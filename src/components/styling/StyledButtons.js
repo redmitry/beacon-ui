@@ -4,13 +4,7 @@ import config from "../../config/config.json";
 import { lighten } from "@mui/system";
 import { alpha } from "@mui/material/styles";
 
-export default function AllFilteringTerms({
-  scope,
-  icon,
-  label,
-  selected,
-  onClick,
-}) {
+export default function StyledButtons({ icon, label, selected, onClick }) {
   return (
     <Button
       variant="outlined"
@@ -19,9 +13,14 @@ export default function AllFilteringTerms({
       sx={{
         borderRadius: "999px",
         textTransform: "none",
-        fontSize: "14px",
+        fontSize: { xs: "13px", sm: "14px" },
         fontWeight: 400,
         fontFamily: '"Open Sans", sans-serif',
+        minWidth: {
+          xs: "140px",
+          sm: "180px",
+        },
+        height: { xs: "45px", sm: "40px" },
         px: 2,
         py: 0.5,
         backgroundColor: selected ? selectedBg : "white",
@@ -29,7 +28,6 @@ export default function AllFilteringTerms({
           selected ? primaryDarkColor : unselectedBorderColor
         }`,
         color: primaryDarkColor,
-
         "&:hover": {
           backgroundColor: selected ? selectedBg : lighten("#fff", 0.05),
           border: `1px solid ${primaryDarkColor}`,
@@ -47,7 +45,7 @@ const selectedBg = alpha(primaryColor, 0.15);
 const primaryDarkColor = config.ui.colors.darkPrimary;
 const selectedBgColor = lighten(primaryDarkColor, 0.9);
 
-AllFilteringTerms.propTypes = {
+StyledButtons.propTypes = {
   icon: PropTypes.element.isRequired,
   label: PropTypes.string.isRequired,
   selected: PropTypes.bool,

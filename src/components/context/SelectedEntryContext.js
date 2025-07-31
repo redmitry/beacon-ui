@@ -11,6 +11,9 @@ export const SelectedEntryProvider = ({ children }) => {
   const [resultData, setResultData] = useState([]);
   const [hasSearchResults, setHasSearchResult] = useState(false);
   const [beaconsInfo, setBeaconsInfo] = useState([]);
+  const [entryTypesConfig, setEntryTypesConfig] = useState({});
+  const [message, setMessage] = useState(null);
+  const [hasSearchBeenTriggered, setHasSearchBeenTriggered] = useState(false);
 
   return (
     <SelectedEntryContext.Provider
@@ -31,6 +34,12 @@ export const SelectedEntryProvider = ({ children }) => {
         setHasSearchResult,
         beaconsInfo,
         setBeaconsInfo,
+        entryTypesConfig,
+        setEntryTypesConfig,
+        message,
+        setMessage,
+        hasSearchBeenTriggered,
+        setHasSearchBeenTriggered,
       }}
     >
       {children}
