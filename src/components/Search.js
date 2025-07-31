@@ -37,10 +37,7 @@ export default function Search({
   const { selectedPathSegment, setSelectedPathSegment } = useSelectedEntry();
   const [assembly, setAssembly] = useState(config.assemblyId[0]);
   const [open, setOpen] = useState(false);
-
   const searchRef = useRef(null);
-
-  // console.log("selectedFilter", selectedFilter);
 
   useEffect(() => {
     if (searchRef.current && onHeightChange) {
@@ -152,10 +149,6 @@ export default function Search({
   useEffect(() => {
     setActiveInput(selectedPathSegment === "g_variants" ? "genomic" : "filter");
   }, [selectedPathSegment]);
-
-  const selectedEntry = entryTypes.find(
-    (e) => e.pathSegment === selectedPathSegment
-  );
 
   const isSingleEntryType = entryTypes.length === 1;
   const onlyEntryPath = entryTypes[0]?.pathSegment;
@@ -300,7 +293,7 @@ export default function Search({
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <SearchIcon sx={{ color: primaryDarkColor, mr: 1 }} />
           <InputBase
-            placeholder="Search by Filtering Terms"
+            placeholder="Search by Filtering Terms (min. 1 letter required)"
             fullWidth
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}

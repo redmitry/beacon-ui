@@ -87,10 +87,11 @@ export default function HomePage({ selectedTool, setSelectedTool }) {
             />
           </Box>
         )}
-
         {!hasSearchBeenTriggered && selectedTool !== "allFilteringTerms" && (
           <BeaconTypeBanner />
         )}
+      </Box>
+      <Box>
         {selectedTool === "allFilteringTerms" && (
           <Box
             sx={{

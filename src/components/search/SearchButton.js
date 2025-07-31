@@ -61,8 +61,12 @@ export default function SearchButton({ setSelectedTool }) {
 
       const data = await response.json();
       // console.log("Response data:", data);
+      
+      // group beacons
+      const rawItems = data?.response?.resultSets ?? data?.response?.collections ?? [];
+
       const groupedArray = Object.values(
-        Object.values(data.response.resultSets).reduce((acc, item) => {
+        Object.values(rawItems).reduce((acc, item) => {
           const isBeaconNetwork = !!item.beaconId;
           const key = isBeaconNetwork ? item.beaconId : item.id;
 
@@ -76,6 +80,7 @@ export default function SearchButton({ setSelectedTool }) {
               totalResultsCount: 0,
               setType: item.setType,
               items: [],
+              description: item.description ?? "",
             };
           }
 
