@@ -60,34 +60,42 @@ export default function Search({
         )
       : entries;
 
+  function filterGenomicVariation([key]) {
+    return !key.toLowerCase().includes("genomicvariation");
+  }
+  
+  function mapEntry([key, value]) {
+    const originalSegment = value.rootUrl?.split("/").pop();
+    const normalizedSegment =
+      originalSegment === "genomicVariations" ? "g_variants" : originalSegment;
+  
+    return {
+      id: key,
+      pathSegment: normalizedSegment,
+      originalPathSegment: originalSegment,
+      rootUrl: value.rootUrl,
+    };
+  }
+  
+  function isUniquePathSegment(entry, index, self) {
+    return index === self.findIndex(e => e.pathSegment === entry.pathSegment);
+  }
+  
   useEffect(() => {
     const fetchEntryTypes = async () => {
       try {
         const res = await fetch(`${config.apiUrl}/map`);
         const data = await res.json();
         const endpointSets = data.response.endpointSets || {};
-
+  
         const entries = Object.entries(endpointSets)
-          .filter(
-            ([key, value]) =>
-              !key.includes("Endpoints") && !key.includes("genomicVariation")
-          )
-          .map(([key, value]) => {
-            const originalSegment = value.rootUrl?.split("/").pop();
-            const normalizedSegment =
-              originalSegment === "genomicVariations"
-                ? "g_variants"
-                : originalSegment;
-            return {
-              id: key,
-              pathSegment: normalizedSegment,
-              originalPathSegment: originalSegment,
-            };
-          });
-
+          .filter(filterGenomicVariation)
+          .map(mapEntry)
+          .filter(isUniquePathSegment);
+  
         const sorted = sortEntries(entries);
         setEntryTypes(sorted);
-
+  
         if (sorted.length > 0) {
           setSelectedPathSegment(sorted[0].pathSegment);
         }
@@ -98,7 +106,7 @@ export default function Search({
         setLoading(false);
       }
     };
-
+  
     fetchEntryTypes();
   }, []);
 

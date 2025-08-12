@@ -1,0 +1,20 @@
+services:
+  web:
+    image: node:20-alpine
+    working_dir: /app
+    command: sh -c "corepack enable && (yarn install --immutable || yarn install --frozen-lockfile) && yarn start"
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - HOST=0.0.0.0
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+      - REACT_APP_KEYCLOAK_URL=http://localhost:8081/
+      - REACT_APP_KEYCLOAK_REALM=unicas
+      - REACT_APP_KEYCLOAK_CLIENT_ID=ui
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+volumes:
+  node_modules:

@@ -90,6 +90,8 @@ export default function ResultsTable() {
       });
     }
 
+    console.log("beacon<: ", beacon);
+
     const logo = beacon.response
       ? beacon.response?.organization?.logoUrl
       : beacon.organization?.logoUrl;
@@ -167,6 +169,7 @@ export default function ResultsTable() {
                           py: 1.5,
                         },
                         fontWeight: "bold",
+                      }}>
                       <TableCell sx={{ fontWeight: "bold"  }} style={{ width: BEACON_NETWORK_COLUMNS[0].width }}>
                         <Box display="flex"  justifyContent="flex-start" alignItems="center" gap={1}>
                           { item.info &&
@@ -202,65 +205,42 @@ export default function ResultsTable() {
                       <TableCell sx={{ fontWeight: "bold"  }} style={{ width: BEACON_NETWORK_COLUMNS[1].width }}>{item.exists ? "Production Beacon" : "Development"}</TableCell>
                       <TableCell sx={{ fontWeight: "bold"  }} style={{ width: BEACON_NETWORK_COLUMNS[2].width }}>{item.items.length>0 ?  item.items.length + " Datasets" : "-"}</TableCell>
                       <TableCell sx={{ fontWeight: "bold"  }} style={{ width: BEACON_NETWORK_COLUMNS[3].width }}>
-                        {item.totalResultsCount>0 ?  new Intl.NumberFormat(navigator.language).format(item.totalResultsCount) : "-"}
+                        {item.totalResultsCount>0 ?  new Intl.NumberFormat(navigator.language, { useGrouping: true }).format(Number(item.totalResultsCount)) : "-"}
                       </TableCell>
                       { config.beaconType === 'singleBeacon' &&
                       <TableCell 
                           style={{ width: BEACON_NETWORK_COLUMNS[3].width }}
                         >
-                          <Button
-                            variant="text"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleOpenModal(item);
-                            }}
-                            sx={{
-                              textTransform: "none",
-                              fontSize: "14px",
-                              fontWeight: 400,
-                              fontFamily: '"Open Sans", sans-serif',
-                              color: "gray",
-                              width: "50px",
-                              height: "30px",
-                              minWidth: "30px",
-                              minHeight: "30px",
-                              backgroundColor: "transparent",
-                              padding: 0,
-                              "&:hover": {
-                                color: config.ui.colors.primary,
-                              },
-                            }}
-                          >
-                            {item.totalResultsCount > 0 ? (
-                              <Button
-                                variant="text"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleOpenModal(item);
-                                }}
-                                sx={{
-                                  textTransform: "none",
-                                  fontSize: "14px",
-                                  fontWeight: 400,
-                                  fontFamily: '"Open Sans", sans-serif',
-                                  color: "gray",
-                                  width: "50px",
-                                  height: "30px",
-                                  minWidth: "30px",
-                                  minHeight: "30px",
-                                  backgroundColor: "transparent",
-                                  padding: 0,
-                                  "&:hover": {
-                                    color: config.ui.colors.primary,
-                                  },
-                                }}
-                              >
-                                <CalendarViewMonthIcon />
-                              </Button>
-                            ) : (
-                              "-"
-                            )}
-                        </TableCell>
+                          {item.totalResultsCount > 0 ? (
+                            <Button
+                              variant="text"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleOpenModal(item);
+                              }}
+                              sx={{
+                                textTransform: "none",
+                                fontSize: "14px",
+                                fontWeight: 400,
+                                fontFamily: '"Open Sans", sans-serif',
+                                color: "gray",
+                                width: "50px",
+                                height: "30px",
+                                minWidth: "30px",
+                                minHeight: "30px",
+                                backgroundColor: "transparent",
+                                padding: 0,
+                                "&:hover": {
+                                  color: config.ui.colors.primary,
+                                },
+                              }}
+                            >
+                              <CalendarViewMonthIcon />
+                            </Button>
+                          ) : (
+                            "-"
+                          )}
+                      </TableCell>
                       }
                       <TableCell
                         style={{ 

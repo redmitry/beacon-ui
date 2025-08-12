@@ -107,7 +107,7 @@ const ResultsTableModal = ({ open, subRow, onClose }) => {
     const fetchTableItems = async () => {
       try {
         setLoading(true);
-        const url = `${config.apiUrl}/${tableType}/${subRow.id}/${selectedPathSegment}`;
+        const url = `${config.apiUrl}/${selectedPathSegment}/${subRow.id}/`;
         setUrl(url);
         let query = queryBuilder(page);
 
@@ -130,6 +130,8 @@ const ResultsTableModal = ({ open, subRow, onClose }) => {
           const itemId = item.beaconId || item.id;
           return id === itemId;
         });
+
+        console.log("beacon: " , beacon);
 
         const totalDatasetsPages = Math.ceil(beacon.resultsCount / rowsPerPage);
         
